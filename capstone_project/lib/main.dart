@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+// *******************************************************************************************
+// START
+// these methods send/issue get and post requests to the python server
 Future getData(url) async {
   var url2 = Uri.parse(url);
   Response response = await get(url2);
@@ -19,6 +22,8 @@ Future sendData(int newNum) async {
 
   return response.body;
 }
+// END
+// *******************************************************************************************
 
 void main() {
   runApp(const MyApp());
@@ -75,6 +80,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // *******************************************************************************************
+  // START
   String result = "0";
   int startUp = 0;
 
@@ -92,11 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
     var data = await getData('http://10.0.2.2:5000/');
     var decodedData = jsonDecode(data);
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       result = decodedData['counter'].toString();
     });
   }
@@ -120,14 +122,11 @@ class _MyHomePageState extends State<MyHomePage> {
     var data = await getData('http://10.0.2.2:5000/zero');
     var decodedData = jsonDecode(data);
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       result = decodedData['counter'].toString();
     });
   }
+  // END
+  // *******************************************************************************************
 
   @override
   Widget build(BuildContext context) {
@@ -189,6 +188,9 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          // *******************************************************************************************
+          // START
+          // here there are three buttons. When pressed, they call these methods
           FloatingActionButton(
             onPressed: _incrementCounter,
             tooltip: 'Increment',
@@ -209,6 +211,8 @@ class _MyHomePageState extends State<MyHomePage> {
             foregroundColor: Colors.yellow,
             child: const Icon(Icons.arrow_circle_right_outlined),
           ),
+          // END
+          // *******************************************************************************************
         ],
       ),
     );

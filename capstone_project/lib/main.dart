@@ -4,6 +4,13 @@ import 'package:http/http.dart';
 
 // *******************************************************************************************
 // START
+// ignore: non_constant_identifier_names
+String IOS_URL = 'http://127.0.0.1:5000/';
+// ignore: non_constant_identifier_names
+String ANDROID_URL = 'http://10.0.2.2:5000/';
+// ignore: non_constant_identifier_names
+String VERSION_URL = ANDROID_URL;
+
 // these methods send/issue get and post requests to the python server
 Future getData(url) async {
   var url2 = Uri.parse(url);
@@ -13,7 +20,8 @@ Future getData(url) async {
 
 Future sendData(int newNum) async {
   final response = await post(
-    Uri.parse('http://10.0.2.2:5000/postData'),
+    // ignore: prefer_interpolation_to_compose_strings
+    Uri.parse(VERSION_URL + 'postData'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -87,7 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void sendANumber() async {
     await sendData(49);
-    var data = await getData('http://10.0.2.2:5000/current');
+    // ignore: prefer_interpolation_to_compose_strings
+    var data = await getData(VERSION_URL + 'current');
     var decodedData = jsonDecode(data);
     setState(() {
       result = decodedData['counter'].toString();
@@ -95,8 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void onLoadApp() async {
-    //var data = await getData('http://127.0.0.1:5000/');
-    var data = await getData('http://10.0.2.2:5000/');
+    var data = await getData(VERSION_URL);
     var decodedData = jsonDecode(data);
     setState(() {
       result = decodedData['counter'].toString();
@@ -104,8 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _incrementCounter() async {
-    //var data = await getData('http://127.0.0.1:5000/');
-    var data = await getData('http://10.0.2.2:5000/incre');
+    // ignore: prefer_interpolation_to_compose_strings
+    var data = await getData(VERSION_URL + 'incre');
     var decodedData = jsonDecode(data);
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -118,8 +126,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _resetToZero() async {
-    //var data = await getData('http://127.0.0.1:5000/');
-    var data = await getData('http://10.0.2.2:5000/zero');
+    // ignore: prefer_interpolation_to_compose_strings
+    var data = await getData(VERSION_URL + 'zero');
     var decodedData = jsonDecode(data);
     setState(() {
       result = decodedData['counter'].toString();

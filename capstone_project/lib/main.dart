@@ -1,4 +1,37 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+
+// *******************************************************************************************
+// START
+// ignore: non_constant_identifier_names
+String IOS_URL = 'http://127.0.0.1:5000/';
+// ignore: non_constant_identifier_names
+String ANDROID_URL = 'http://10.0.2.2:5000/';
+// ignore: non_constant_identifier_names
+String VERSION_URL = ANDROID_URL;
+
+// these methods send/issue get and post requests to the python server
+Future getData(url) async {
+  var url2 = Uri.parse(url);
+  Response response = await get(url2);
+  return response.body;
+}
+
+Future sendData(int newNum) async {
+  final response = await post(
+    // ignore: prefer_interpolation_to_compose_strings
+    Uri.parse(VERSION_URL + 'postData'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode({'counter': newNum}),
+  );
+
+  return response.body;
+}
+// END
+// *******************************************************************************************
 
 void main() {
   runApp(const MyApp());
@@ -55,18 +88,53 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  // *******************************************************************************************
+  // START
+  String result = "0";
+  int startUp = 0;
 
-  void _incrementCounter() {
+  void sendANumber() async {
+    await sendData(49);
+    // ignore: prefer_interpolation_to_compose_strings
+    var data = await getData(VERSION_URL + 'current');
+    var decodedData = jsonDecode(data);
+    setState(() {
+      result = decodedData['counter'].toString();
+    });
+  }
+
+  void onLoadApp() async {
+    var data = await getData(VERSION_URL);
+    var decodedData = jsonDecode(data);
+    setState(() {
+      result = decodedData['counter'].toString();
+    });
+  }
+
+  void _incrementCounter() async {
+    // ignore: prefer_interpolation_to_compose_strings
+    var data = await getData(VERSION_URL + 'incre');
+    var decodedData = jsonDecode(data);
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+      result = decodedData['counter'].toString();
     });
   }
+
+  void _resetToZero() async {
+    // ignore: prefer_interpolation_to_compose_strings
+    var data = await getData(VERSION_URL + 'zero');
+    var decodedData = jsonDecode(data);
+    setState(() {
+      result = decodedData['counter'].toString();
+    });
+  }
+  // END
+  // *******************************************************************************************
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +144,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    if (startUp == 0) {
+      onLoadApp();
+      startUp++;
+    }
     return Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
@@ -109,17 +181,48 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              result,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _incrementCounter,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.add),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
+      //here is my back arrow outlined button
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // *******************************************************************************************
+          // START
+          // here there are three buttons. When pressed, they call these methods
+          FloatingActionButton(
+            onPressed: _incrementCounter,
+            tooltip: 'Increment',
+            backgroundColor: Colors.purple,
+            foregroundColor: Colors.black,
+            child: const Icon(Icons.add),
+          ),
+          const SizedBox(width: 16.0),
+          FloatingActionButton(
+            onPressed: _resetToZero,
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            child: const Icon(Icons.arrow_back_ios_new_outlined),
+          ),
+          FloatingActionButton(
+            onPressed: sendANumber,
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.yellow,
+            child: const Icon(Icons.arrow_circle_right_outlined),
+          ),
+          // END
+          // *******************************************************************************************
+        ],
+      ),
     );
   }
 }

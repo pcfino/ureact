@@ -50,26 +50,55 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Patients',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Patients'),
+          centerTitle: true,
         ),
         body: Center(
-          child: ElevatedButton(
-            child: const Text('Patient'),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PatientPage(),
+          child: Column(
+            children: [
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      child: const Text('Patient'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PatientPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              );
-            },
+              ),
+            ],
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          // backgroundColor: const Color(0xff03dac6),
+          // foregroundColor: Colors.black,
+          onPressed: () {
+            // Respond to button press
+          },
+          child: const Icon(Icons.add),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
+        bottomNavigationBar: BottomAppBar(
+            surfaceTintColor: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                TextButton(onPressed: () {}, child: const Text('Export List')),
+              ],
+            )),
       ),
     );
   }
@@ -83,12 +112,16 @@ class PatientPage extends StatelessWidget {
     return MaterialApp(
       title: 'Patient',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Patient'),
+          centerTitle: true,
+          leading: BackButton(onPressed: () {
+            Navigator.pop(context);
+          }),
         ),
         body: Center(
           child: ElevatedButton(
@@ -103,6 +136,32 @@ class PatientPage extends StatelessWidget {
             },
           ),
         ),
+        bottomNavigationBar: BottomAppBar(
+            surfaceTintColor: Colors.white,
+            shadowColor: Colors.black,
+            child: Row(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    FilledButton(
+                        onPressed: () {},
+                        child: const Text('Create New Incident')),
+                  ],
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {}, child: const Text('Export Data')),
+                    ],
+                  ),
+                ),
+              ],
+            )),
       ),
     );
   }
@@ -116,12 +175,16 @@ class IncidentPage extends StatelessWidget {
     return MaterialApp(
       title: 'Incident',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Incident'),
+          centerTitle: true,
+          leading: BackButton(onPressed: () {
+            Navigator.pop(context);
+          }),
         ),
         body: Center(
           child: ElevatedButton(
@@ -130,7 +193,7 @@ class IncidentPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const RunTestPage(title: 'Run Test'),
+                  builder: (context) => const RunTestPage(title: 'Requests'),
                 ),
               );
             },
@@ -220,80 +283,64 @@ class _RunTestPageState extends State<RunTestPage> {
       onLoadApp();
       startUp++;
     }
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+    return MaterialApp(
+      title: 'Requests',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        useMaterial3: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+          leading: BackButton(onPressed: () {
+            Navigator.pop(context);
+          }),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'You have pushed the button this many times:',
+              ),
+              Text(
+                result,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            // *******************************************************************************************
+            // START
+            // here there are three buttons. When pressed, they call these methods
+            FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Increment',
+              backgroundColor: Colors.purple,
+              foregroundColor: Colors.black,
+              child: const Icon(Icons.add),
             ),
-            Text(
-              result,
-              style: Theme.of(context).textTheme.headlineMedium,
+            const SizedBox(width: 16.0),
+            FloatingActionButton(
+              onPressed: _resetToZero,
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              child: const Icon(Icons.arrow_back_ios_new_outlined),
             ),
+            FloatingActionButton(
+              onPressed: sendANumber,
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.yellow,
+              child: const Icon(Icons.arrow_circle_right_outlined),
+            ),
+            // END
+            // *******************************************************************************************
           ],
         ),
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
-      //here is my back arrow outlined button
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // *******************************************************************************************
-          // START
-          // here there are three buttons. When pressed, they call these methods
-          FloatingActionButton(
-            onPressed: _incrementCounter,
-            tooltip: 'Increment',
-            backgroundColor: Colors.purple,
-            foregroundColor: Colors.black,
-            child: const Icon(Icons.add),
-          ),
-          const SizedBox(width: 16.0),        and
-          FloatingActionButton(
-            onPressed: _resetToZero,
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            child: const Icon(Icons.arrow_back_ios_new_outlined),
-          ),
-          FloatingActionButton(
-            onPressed: sendANumber,
-            backgroundColor: Colors.green,
-            foregroundColor: Colors.yellow,
-            child: const Icon(Icons.arrow_circle_right_outlined),
-          ),
-          // END
-          // *******************************************************************************************
-        ],
       ),
     );
   }

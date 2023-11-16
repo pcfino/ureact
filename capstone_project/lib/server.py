@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
+
 json_file = {"counter": 0}
 
 @app.route('/')
@@ -29,6 +30,17 @@ def zero():
     json_file['counter'] = 0
     return jsonify(json_file)
 
-
+# Run the developement server
 if __name__ == '__main__':
     app.run()
+
+# This is to run as a WSGI server, which essentially means
+# no default logging or hot reload. comment out the  development server code
+# above then uncomment the code below.
+# You will need to install waitress with this command
+# python -m pip install waitress
+"""
+if __name__ == "__main__":
+    from waitress import serve
+    serve(app, host="127.0.0.1", port=5000)
+"""

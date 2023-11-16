@@ -9,7 +9,7 @@ String IOS_URL = 'http://127.0.0.1:5000/';
 // ignore: non_constant_identifier_names
 String ANDROID_URL = 'http://10.0.2.2:5000/';
 // ignore: non_constant_identifier_names
-String VERSION_URL = ANDROID_URL;
+String VERSION_URL = IOS_URL;
 
 // these methods send/issue get and post requests to the python server
 Future getData(url) async {
@@ -57,16 +57,18 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Patients'),
         ),
-        body: ElevatedButton(
-          child: const Text('Patient'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PatientPage(),
-              ),
-            );
-          },
+        body: Center(
+          child: ElevatedButton(
+            child: const Text('Patient'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PatientPage(),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -88,16 +90,18 @@ class PatientPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Patient'),
         ),
-        body: ElevatedButton(
-          child: const Text('Incident'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const IncidentPage(),
-              ),
-            );
-          },
+        body: Center(
+          child: ElevatedButton(
+            child: const Text('Incident'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const IncidentPage(),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -119,16 +123,18 @@ class IncidentPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Incident'),
         ),
-        body: ElevatedButton(
-          child: const Text('Run Test'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const RunTestPage(title: 'Run Test'),
-              ),
-            );
-          },
+        body: Center(
+          child: ElevatedButton(
+            child: const Text('Run Test'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RunTestPage(title: 'Run Test'),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -272,7 +278,7 @@ class _RunTestPageState extends State<RunTestPage> {
             foregroundColor: Colors.black,
             child: const Icon(Icons.add),
           ),
-          const SizedBox(width: 16.0),
+          const SizedBox(width: 16.0),        and
           FloatingActionButton(
             onPressed: _resetToZero,
             backgroundColor: Colors.blue,

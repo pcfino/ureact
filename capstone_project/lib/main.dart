@@ -213,7 +213,6 @@ class IncidentPage extends StatelessWidget {
 class RunTestPage extends StatefulWidget {
   const RunTestPage({super.key, required this.title});
 
-
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -238,7 +237,6 @@ class _RunTestPageState extends State<RunTestPage> {
 
   final List<AccelerometerData> _accelerometerData = [];
   final List<GyroscopeData> _gyroscopeData = [];
-
 
   // *******************************************************************************************
   // START
@@ -288,14 +286,12 @@ class _RunTestPageState extends State<RunTestPage> {
   // END
   // *******************************************************************************************
 
-  
-
   @override
   Widget build(BuildContext context) {
     final accelerometer =
-    _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+        _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
     final gyroscope =
-    _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
+        _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
     final userAccelerometer = _userAccelerometerValues
         ?.map((double v) => v.toStringAsFixed(1))
         .toList();
@@ -335,28 +331,34 @@ class _RunTestPageState extends State<RunTestPage> {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               ElevatedButton(
-                onPressed: () {
-                  // start a stream that saves acceleroemeterData
-                  _streamSubscriptions.add(
-                      accelerometerEvents.listen((AccelerometerEvent event) {
-                        _accelerometerData.add(AccelerometerData(DateTime.now(), <double>[event.x, event.y, event.z]));
-                      })
-                  );
-                  // start a stream that saves gyroscopeData
-                  _streamSubscriptions.add(
-                      gyroscopeEvents.listen((GyroscopeEvent event) {
-                        _gyroscopeData.add(GyroscopeData(DateTime.now(), <double>[event.x, event.y, event.z]));
-                      })
-                  );
-                },
-                child:const Text("Start")
-              ),
+                  onPressed: () {
+                    // start a stream that saves acceleroemeterData
+                    _streamSubscriptions.add(
+                        accelerometerEvents.listen((AccelerometerEvent event) {
+                      _accelerometerData.add(AccelerometerData(
+                          DateTime.now(), <double>[event.x, event.y, event.z]));
+                    }));
+                    // start a stream that saves gyroscopeData
+                    _streamSubscriptions
+                        .add(gyroscopeEvents.listen((GyroscopeEvent event) {
+                      _gyroscopeData.add(GyroscopeData(
+                          DateTime.now(), <double>[event.x, event.y, event.z]));
+                    }));
+                  },
+                  child: const Text("Start")),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: const Text('Acceleromter Results'),
+                          centerTitle: true,
+                          leading: BackButton(onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                        ),
                         body: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -411,53 +413,46 @@ class _RunTestPageState extends State<RunTestPage> {
     );
   }
 
-    @override
-    void dispose() {
-      super.dispose();
-      for (final subscription in _streamSubscriptions) {
-        subscription.cancel();
-      }
+  @override
+  void dispose() {
+    super.dispose();
+    for (final subscription in _streamSubscriptions) {
+      subscription.cancel();
     }
+  }
 
+  @override
+  void initState() {
+    super.initState();
 
-    @override
-    void initState() {
-      super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
 
-
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      });
-
-
-      _streamSubscriptions.add(
-        accelerometerEvents.listen(
-              (AccelerometerEvent event) {
-            setState(() {
-              _accelerometerValues = <double>[event.x, event.y, event.z];
-            });
-          },
-        ),
-      );
-      _streamSubscriptions.add(
-        gyroscopeEvents.listen(
-              (GyroscopeEvent event) {
-            setState(() {
-              _gyroscopeValues = <double>[event.x, event.y, event.z];
-            });
-          },
-        ),
-      );
-      _streamSubscriptions.add(
-        userAccelerometerEvents.listen(
-              (UserAccelerometerEvent event) {
-            setState(() {
-              _userAccelerometerValues = <double>[event.x, event.y, event.z];
-            });
-          },
-        ),
-      );
-
+    _streamSubscriptions.add(
+      accelerometerEvents.listen(
+        (AccelerometerEvent event) {
+          setState(() {
+            _accelerometerValues = <double>[event.x, event.y, event.z];
+          });
+        },
+      ),
+    );
+    _streamSubscriptions.add(
+      gyroscopeEvents.listen(
+        (GyroscopeEvent event) {
+          setState(() {
+            _gyroscopeValues = <double>[event.x, event.y, event.z];
+          });
+        },
+      ),
+    );
+    _streamSubscriptions.add(
+      userAccelerometerEvents.listen(
+        (UserAccelerometerEvent event) {
+          setState(() {
+            _userAccelerometerValues = <double>[event.x, event.y, event.z];
+          });
+        },
+      ),
+    );
   }
 }
-
-

@@ -2,6 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+import 'package:sensors_plus/sensors_plus.dart';
+import 'accelerometer_data.dart';
+import 'gyroscope_data.dart';
+
+import 'dart:async';
+
 // *******************************************************************************************
 // START
 // ignore: non_constant_identifier_names
@@ -223,6 +229,15 @@ class RunTestPage extends StatefulWidget {
 }
 
 class _RunTestPageState extends State<RunTestPage> {
+  List<double>? _accelerometerValues;
+  List<double>? _userAccelerometerValues;
+  List<double>? _gyroscopeValues;
+
+  final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+
+  final List<AccelerometerData> _accelerometerData = [];
+  final List<GyroscopeData> _gyroscopeData = [];
+
   // *******************************************************************************************
   // START
   String result = "0";
@@ -273,6 +288,13 @@ class _RunTestPageState extends State<RunTestPage> {
 
   @override
   Widget build(BuildContext context) {
+    final accelerometer =
+        _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    final gyroscope =
+        _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    final userAccelerometer = _userAccelerometerValues
+        ?.map((double v) => v.toStringAsFixed(1))
+        .toList();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -308,6 +330,52 @@ class _RunTestPageState extends State<RunTestPage> {
                 result,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
+              ElevatedButton(
+                  onPressed: () {
+                    // start a stream that saves acceleroemeterData
+                    _streamSubscriptions.add(
+                        accelerometerEvents.listen((AccelerometerEvent event) {
+                      _accelerometerData.add(AccelerometerData(
+                          DateTime.now(), <double>[event.x, event.y, event.z]));
+                    }));
+                    // start a stream that saves gyroscopeData
+                    _streamSubscriptions
+                        .add(gyroscopeEvents.listen((GyroscopeEvent event) {
+                      _gyroscopeData.add(GyroscopeData(
+                          DateTime.now(), <double>[event.x, event.y, event.z]));
+                    }));
+                  },
+                  child: const Text("Start")),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: const Text('Acceleromter Results'),
+                          centerTitle: true,
+                          leading: BackButton(onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                        ),
+                        body: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              //This is where we would call the python functions
+                              Text("Accelerometer Data: $userAccelerometer"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                  _accelerometerData.clear();
+                  _gyroscopeData.clear();
+                },
+                child: const Text("Stop"),
+              )
             ],
           ),
         ),
@@ -341,6 +409,49 @@ class _RunTestPageState extends State<RunTestPage> {
             // *******************************************************************************************
           ],
         ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (final subscription in _streamSubscriptions) {
+      subscription.cancel();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
+
+    _streamSubscriptions.add(
+      accelerometerEvents.listen(
+        (AccelerometerEvent event) {
+          setState(() {
+            _accelerometerValues = <double>[event.x, event.y, event.z];
+          });
+        },
+      ),
+    );
+    _streamSubscriptions.add(
+      gyroscopeEvents.listen(
+        (GyroscopeEvent event) {
+          setState(() {
+            _gyroscopeValues = <double>[event.x, event.y, event.z];
+          });
+        },
+      ),
+    );
+    _streamSubscriptions.add(
+      userAccelerometerEvents.listen(
+        (UserAccelerometerEvent event) {
+          setState(() {
+            _userAccelerometerValues = <double>[event.x, event.y, event.z];
+          });
+        },
       ),
     );
   }

@@ -101,7 +101,6 @@ class MyApp extends StatelessWidget {
             surfaceTintColor: Colors.white,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TextButton(onPressed: () {}, child: const Text('Export List')),
               ],

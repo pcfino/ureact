@@ -11,7 +11,7 @@ import 'dart:async';
 // *******************************************************************************************
 // START
 // ignore: non_constant_identifier_names
-String IOS_URL = 'http://127.0.0.1:5000/';
+String IOS_URL = 'http://127.0.0.1:8000/';
 // ignore: non_constant_identifier_names
 String ANDROID_URL = 'http://10.0.2.2:5000/';
 // ignore: non_constant_identifier_names
@@ -49,10 +49,10 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    bool isDark = false;
     return MaterialApp(
       title: 'Patients',
       theme: ThemeData(
@@ -67,6 +67,55 @@ class MyApp extends StatelessWidget {
         body: Center(
           child: Column(
             children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SearchAnchor(builder:
+                      (BuildContext context, SearchController controller) {
+                    return SearchBar(
+                      controller: controller,
+                      padding: const MaterialStatePropertyAll<EdgeInsets>(
+                          EdgeInsets.symmetric(horizontal: 16.0)),
+                      onTap: () {
+                        controller.openView();
+                      },
+                      onChanged: (_) {
+                        controller.openView();
+                      },
+                      leading: const Icon(Icons.search),
+                      trailing: <Widget>[
+                        Tooltip(
+                          message: 'Change brightness mode',
+                          child: IconButton(
+                            isSelected: isDark,
+                            onPressed: () {
+                              setState(() {
+                                isDark = !isDark;
+                              });
+                            },
+                            icon: const Icon(Icons.wb_sunny_outlined),
+                            selectedIcon:
+                                const Icon(Icons.brightness_2_outlined),
+                          ),
+                        )
+                      ],
+                    );
+                  }, suggestionsBuilder:
+                      (BuildContext context, SearchController controller) {
+                    return List<ListTile>.generate(5, (int index) {
+                      final String item = 'item $index';
+                      return ListTile(
+                        title: Text(item),
+                        onTap: () {
+                          setState(() {
+                            controller.closeView(item);
+                          });
+                        },
+                      );
+                    });
+                  }),
+                ),
+              ),
               Expanded(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -108,6 +157,8 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+
+  void setState(Null Function() param0) {}
 }
 
 class PatientPage extends StatelessWidget {

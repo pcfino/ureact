@@ -52,7 +52,7 @@ def timeToStability():
     qf = np.logical_and(qaF, qrf)
 
     #find t0
-    peaks, _ = signal.find_peaks(np.flip(accNorm)[fs * 3:], height=5)
+    peaks, _ = signal.find_peaks(np.flip(accNorm[fs * 3:]), height=14.6)
 
     movementF = fs * 3 + peaks[-1]
     release = np.argmax(qf[movementF:]) #reverse of qf? reverse done in movementF?

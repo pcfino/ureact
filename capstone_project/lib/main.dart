@@ -113,6 +113,17 @@ class _MyApp extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Patients'),
           centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.settings,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                // do something
+              },
+            )
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),

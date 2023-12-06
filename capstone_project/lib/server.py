@@ -54,9 +54,18 @@ def timeToStability():
     #find t0
     peaks, _ = signal.find_peaks(np.flip(accNorm[fs * 3:]), height=14.6)
 
-    movementF = fs * 3 + peaks[-1]
-    release = np.argmax(qf[movementF:]) #reverse of qf? reverse done in movementF?
-    release = movementF+release
+    movementF = peaks[-1]
+    flipQf = qf[::-1]
+
+    # find the index of release point
+    release = 0
+    for i, j in enumerate(flipQf[movementF:]):
+        if (j == 1):
+            release = i
+            break
+
+    # adding 2 accounts for index differences between matlab and python
+    release = movementF+release + 2
     t0 = len(accNorm)-release
 
     #find TTS

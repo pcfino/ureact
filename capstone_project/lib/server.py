@@ -68,10 +68,17 @@ def timeToStability():
     release = movementF+release + 2
     t0 = len(accNorm)-release
 
-    #find TTS
-    movementReg = len(accNorm)-movementF
-    EndTTS = np.argmax(qf[movementReg:])
-    EndTTS = EndTTS+movementReg
+    #find TTS with adjustment for indexing differences
+    movementReg = len(accNorm) - (movementF + 2)
+
+    # find the index of release point
+    EndTTS = 0
+    for i, j in enumerate(qf[movementReg:]):
+        if (j == 1):
+            EndTTS = i
+            break
+
+    EndTTS = EndTTS+movementReg + 2
 
     TTS = (EndTTS - t0)/fs
 

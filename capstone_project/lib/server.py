@@ -66,7 +66,7 @@ def timeToStability():
 
     TTS = (EndTTS - t0)/fs
 
-    return jsonify({'t0': str(t0), 'EndTTS': str(EndTTS), 'TTS': str(TTS)})
+    return jsonify(t0 = int(t0), EndTTS = int(EndTTS), TTS = TTS)
 
 # Run the developement server
 if __name__ == '__main__':

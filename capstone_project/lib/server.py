@@ -41,9 +41,7 @@ def timeToStability():
     accNorm = np.linalg.norm(dataAcc, axis=0)
     rotNorm = np.linalg.norm(dataRot, axis=0)
 
-
     b, a = signal.butter(2, 10 / (fs / 2))
-    
 
     #Foot Movement: 9.81*1.07; % based on El-Gohary Threshold for foot movement
     qaF = signal.filtfilt(b, a, accNorm) < 9.81*1.07

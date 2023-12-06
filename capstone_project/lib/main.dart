@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:capstone_project/patient.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
@@ -47,16 +48,65 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
-  // This widget is the root of your application.
+
+  @override
+  State<MyApp> createState() => _MyApp();
+}
+
+class _MyApp extends State<MyApp> {
+  static List<PatientModel> patientList = [
+    PatientModel("Abby", "Smith"),
+    PatientModel("Alex", "Johnson"),
+    PatientModel("Alfred", "Hitchcock"),
+    PatientModel("Amy", "Winehouse"),
+    PatientModel("Arnold", "Schwarzenegger"),
+    PatientModel("Brant", "Kuithe"),
+    PatientModel("Bob", "Thebuilder"),
+    PatientModel("Bobby", "Newport"),
+    PatientModel("Brett", "Favre"),
+    PatientModel("Bill", "Gates"),
+    PatientModel("Cam", "Hoefer"),
+    PatientModel("Charlie", "Crockett"),
+    PatientModel("Carson", "Wells"),
+    PatientModel("Chris", "Jones"),
+    PatientModel("Carson", "Palmer"),
+    PatientModel("Josh", "Allen"),
+    PatientModel("JJ", "Abrams"),
+    PatientModel("Ron", "Burgundy"),
+  ];
+
+  List<PatientModel> displayPatientList = List.from(patientList);
+  void alphabetize() {
+    displayPatientList.sort((a, b) => a.lastName!.compareTo(b.lastName!));
+  }
+
+  void updateList(String value) {
+    setState(() {
+      displayPatientList = patientList
+          .where((element) =>
+              element.lastName!.toLowerCase().contains(value.toLowerCase()) ||
+              element.firstName!.toLowerCase().contains(value.toLowerCase()) ||
+              ("${element.firstName!} ${element.lastName!}")
+                  .toLowerCase()
+                  .contains(value.toLowerCase()) ||
+              ("${element.lastName!}, ${element.firstName!}")
+                  .toLowerCase()
+                  .contains(value.toLowerCase()))
+          .toList();
+    });
+  }
+
+  final ScrollController scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
-    bool isDark = false;
+    alphabetize();
     return MaterialApp(
       title: 'Patients',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
       home: Scaffold(
@@ -64,65 +114,57 @@ class MyApp extends StatelessWidget {
           title: const Text('Patients'),
           centerTitle: true,
         ),
-        body: Center(
-          child: Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SearchAnchor(builder:
-                      (BuildContext context, SearchController controller) {
-                    return SearchBar(
-                      controller: controller,
-                      padding: const MaterialStatePropertyAll<EdgeInsets>(
-                          EdgeInsets.symmetric(horizontal: 16.0)),
-                      onTap: () {
-                        controller.openView();
-                      },
-                      onChanged: (_) {
-                        controller.openView();
-                      },
-                      leading: const Icon(Icons.search),
-                      trailing: <Widget>[
-                        Tooltip(
-                          message: 'Change brightness mode',
-                          child: IconButton(
-                            isSelected: isDark,
-                            onPressed: () {
-                              setState(() {
-                                isDark = !isDark;
-                              });
-                            },
-                            icon: const Icon(Icons.wb_sunny_outlined),
-                            selectedIcon:
-                                const Icon(Icons.brightness_2_outlined),
-                          ),
-                        )
-                      ],
-                    );
-                  }, suggestionsBuilder:
-                      (BuildContext context, SearchController controller) {
-                    return List<ListTile>.generate(5, (int index) {
-                      final String item = 'item $index';
-                      return ListTile(
-                        title: Text(item),
-                        onTap: () {
-                          setState(() {
-                            controller.closeView(item);
-                          });
-                        },
-                      );
-                    });
-                  }),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(children: [
+            TextField(
+              onChanged: (value) => updateList(value),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                prefixIcon: const Icon(Icons.search),
+                prefixIconColor: Colors.red,
+                constraints: const BoxConstraints(
+                  maxHeight: 40,
+                ),
+                filled: true,
+                fillColor: Colors.white10,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(100.0),
                 ),
               ),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      child: const Text('Patient'),
-                      onPressed: () {
+            ),
+            Expanded(
+              child: Scrollbar(
+                thumbVisibility: true,
+                controller: scrollController,
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: displayPatientList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      child: Card(
+                        margin: const EdgeInsets.all(0),
+                        elevation: 0,
+                        color: Colors.white10,
+                        shape: const Border(
+                          bottom: BorderSide(
+                            color: Colors.black,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${displayPatientList[index].lastName!}, ${displayPatientList[index].firstName!}",
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -130,12 +172,12 @@ class MyApp extends StatelessWidget {
                           ),
                         );
                       },
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ]),
         ),
         floatingActionButton: FloatingActionButton(
           // backgroundColor: const Color(0xff03dac6),
@@ -157,8 +199,6 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-
-  void setState(Null Function() param0) {}
 }
 
 class PatientPage extends StatelessWidget {

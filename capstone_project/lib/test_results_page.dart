@@ -1,3 +1,4 @@
+import 'package:capstone_project/main.dart';
 import 'package:flutter/material.dart';
 
 class TestResultsPage extends StatefulWidget {
@@ -25,6 +26,22 @@ class _TestResultsPageState extends State<TestResultsPage> {
               leading: BackButton(onPressed: () {
                 Navigator.pop(context);
               }),
+              actions: <Widget>[
+                IconButton(
+                  icon: const Icon(
+                    Icons.home_outlined,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MyApp(),
+                      ),
+                    );
+                  },
+                )
+              ],
             ),
             body: Center(
               child: Text("Results: ${widget.accelData}"),

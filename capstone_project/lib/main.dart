@@ -3,6 +3,7 @@ import 'package:capstone_project/accelerometer_data.dart';
 import 'package:capstone_project/gyroscope_data.dart';
 import 'package:capstone_project/patient_model.dart';
 import 'package:capstone_project/patient_page.dart';
+import 'package:capstone_project/new_patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
@@ -220,437 +221,435 @@ class _MyApp extends State<MyApp> {
   }
 }
 
-class NewPatientPage extends StatefulWidget {
-  const NewPatientPage({super.key});
+// class NewPatientPage extends StatefulWidget {
+//   const NewPatientPage({super.key});
 
-  @override
-  State<NewPatientPage> createState() => _NewPatientPageState();
-}
+//   @override
+//   State<NewPatientPage> createState() => _NewPatientPageState();
+// }
 
-class _NewPatientPageState extends State<NewPatientPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String selectedValue = ''; // Variable to store the selected dropdown value
-  List<String> items = ['Item 1', 'Item 2', 'Item 3', 'Item 4'];
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'New Patient',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text('New Patient'),
-            centerTitle: true,
-            leading: BackButton(onPressed: () {
-              Navigator.pop(context);
-            }),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: Column(children: [
-                Form(
-                    child: Column(
-                  key: _formKey,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: TextFormField(
-                          decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text('Name'),
-                      )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: TextFormField(
-                          decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text('Gender'),
-                      )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: InputDatePickerFormField(
-                          firstDate: DateTime(1900), lastDate: DateTime(2023)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ], // Only numbers can be entered
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  label: Text('Height (ft)'),
-                                )),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ], // Only numbers can be entered
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  label: Text('Height (in)'),
-                                )),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ], // Only numbers can be entered
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            label: Text('Weight (lbs)'),
-                          )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: TextFormField(
-                          decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text('Sport'),
-                      )),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: TextFormField(
-                          decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text('Third Party ID'),
-                      )),
-                    ),
-                  ],
-                )),
-              ]),
-            ),
-          ),
-          bottomNavigationBar: BottomAppBar(
-              surfaceTintColor: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        OutlinedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Cancel',
-                                style: TextStyle(fontSize: 20))),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        FilledButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const PatientPage(),
-                                ),
-                              );
-                            },
-                            child: const Text('Submit',
-                                style: TextStyle(fontSize: 20))),
-                      ],
-                    ),
-                  ),
-                ],
-              )),
-        ));
-  }
-}
+// class _NewPatientPageState extends State<NewPatientPage> {
+//   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//         title: 'New Patient',
+//         theme: ThemeData(
+//           colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+//           useMaterial3: true,
+//         ),
+//         home: Scaffold(
+//           appBar: AppBar(
+//             title: const Text('New Patient'),
+//             centerTitle: true,
+//             leading: BackButton(onPressed: () {
+//               Navigator.pop(context);
+//             }),
+//           ),
+//           body: Padding(
+//             padding: const EdgeInsets.all(16.0),
+//             child: Center(
+//               child: Column(children: [
+//                 Form(
+//                     child: Column(
+//                   key: _formKey,
+//                   children: [
+//                     Padding(
+//                       padding: const EdgeInsets.only(bottom: 5.0),
+//                       child: TextFormField(
+//                           decoration: const InputDecoration(
+//                         border: OutlineInputBorder(),
+//                         label: Text('Name'),
+//                       )),
+//                     ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(bottom: 5.0),
+//                       child: TextFormField(
+//                           decoration: const InputDecoration(
+//                         border: OutlineInputBorder(),
+//                         label: Text('Gender'),
+//                       )),
+//                     ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(bottom: 5.0),
+//                       child: InputDatePickerFormField(
+//                           firstDate: DateTime(1900), lastDate: DateTime(2023)),
+//                     ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(bottom: 5.0),
+//                       child: Row(
+//                         children: [
+//                           Expanded(
+//                             flex: 1,
+//                             child: TextFormField(
+//                                 keyboardType: TextInputType.number,
+//                                 inputFormatters: [
+//                                   FilteringTextInputFormatter.digitsOnly
+//                                 ], // Only numbers can be entered
+//                                 decoration: const InputDecoration(
+//                                   border: OutlineInputBorder(),
+//                                   label: Text('Height (ft)'),
+//                                 )),
+//                           ),
+//                           Expanded(
+//                             flex: 1,
+//                             child: TextFormField(
+//                                 keyboardType: TextInputType.number,
+//                                 inputFormatters: [
+//                                   FilteringTextInputFormatter.digitsOnly
+//                                 ], // Only numbers can be entered
+//                                 decoration: const InputDecoration(
+//                                   border: OutlineInputBorder(),
+//                                   label: Text('Height (in)'),
+//                                 )),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(bottom: 5.0),
+//                       child: TextFormField(
+//                           keyboardType: TextInputType.number,
+//                           inputFormatters: [
+//                             FilteringTextInputFormatter.digitsOnly
+//                           ], // Only numbers can be entered
+//                           decoration: const InputDecoration(
+//                             border: OutlineInputBorder(),
+//                             label: Text('Weight (lbs)'),
+//                           )),
+//                     ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(bottom: 5.0),
+//                       child: TextFormField(
+//                           decoration: const InputDecoration(
+//                         border: OutlineInputBorder(),
+//                         label: Text('Sport'),
+//                       )),
+//                     ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(bottom: 5.0),
+//                       child: TextFormField(
+//                           decoration: const InputDecoration(
+//                         border: OutlineInputBorder(),
+//                         label: Text('Third Party ID'),
+//                       )),
+//                     ),
+//                   ],
+//                 )),
+//               ]),
+//             ),
+//           ),
+//           bottomNavigationBar: BottomAppBar(
+//               surfaceTintColor: Colors.white,
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   Expanded(
+//                     child: Column(
+//                       children: [
+//                         OutlinedButton(
+//                             onPressed: () {
+//                               Navigator.pop(context);
+//                             },
+//                             child: const Text('Cancel',
+//                                 style: TextStyle(fontSize: 20))),
+//                       ],
+//                     ),
+//                   ),
+//                   Expanded(
+//                     child: Column(
+//                       children: [
+//                         FilledButton(
+//                             onPressed: () {
+//                               Navigator.push(
+//                                 context,
+//                                 MaterialPageRoute(
+//                                   builder: (context) => const PatientPage(),
+//                                 ),
+//                               );
+//                             },
+//                             child: const Text('Submit',
+//                                 style: TextStyle(fontSize: 20))),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               )),
+//         ));
+//   }
+// }
 
-class PatientPage extends StatelessWidget {
-  const PatientPage({super.key});
+// class PatientPage extends StatelessWidget {
+//   const PatientPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Patient',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Patient'),
-          centerTitle: true,
-          leading: BackButton(onPressed: () {
-            Navigator.pop(context);
-          }),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: Icon(
-                        Icons.account_circle_outlined,
-                        color: Colors.black,
-                        size: 100.0,
-                      ),
-                    ),
-                    Expanded(
-                      flex: 7,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Abby Smith'),
-                          Text('DOB: 10/26/1995'),
-                          Text('Sport: Soccer'),
-                          Text('3rd Party ID: 1234567')
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Ht: 5\' 7"',
-                          textAlign: TextAlign.center,
-                        )),
-                    Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Wt: 165 lbs',
-                          textAlign: TextAlign.center,
-                        )),
-                    Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Gender: F',
-                          textAlign: TextAlign.center,
-                        )),
-                  ],
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text('Incidents',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Colors.black,
-                ),
-                Expanded(
-                  child: ListView(
-                    children: ListTile.divideTiles(
-                      context: context,
-                      tiles: [
-                        ListTile(
-                          title: const Text('Soccer - 05/03/2023'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Other - 08/16/2022'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Soccer - 06/15/2021'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Soccer - 04/29/2021'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Soccer - 04/12/2021'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Other - 12/20/2020'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Soccer - 11/14/2020'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Soccer - 10/12/2020'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Basketball - 9/12/2020'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        bottomNavigationBar: BottomAppBar(
-            surfaceTintColor: Colors.white,
-            shadowColor: Colors.black,
-            child: Row(
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    FilledButton(
-                        onPressed: () {},
-                        child: const Text('Create New Incident')),
-                  ],
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      TextButton(
-                          onPressed: () {}, child: const Text('Export Data')),
-                    ],
-                  ),
-                ),
-              ],
-            )),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Patient',
+//       theme: ThemeData(
+//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+//         useMaterial3: true,
+//       ),
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: const Text('Patient'),
+//           centerTitle: true,
+//           leading: BackButton(onPressed: () {
+//             Navigator.pop(context);
+//           }),
+//         ),
+//         body: Center(
+//           child: Padding(
+//             padding: const EdgeInsets.all(16.0),
+//             child: Column(
+//               children: [
+//                 const Row(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   crossAxisAlignment: CrossAxisAlignment.center,
+//                   children: [
+//                     Expanded(
+//                       flex: 5,
+//                       child: Icon(
+//                         Icons.account_circle_outlined,
+//                         color: Colors.black,
+//                         size: 100.0,
+//                       ),
+//                     ),
+//                     Expanded(
+//                       flex: 7,
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Text('Abby Smith'),
+//                           Text('DOB: 10/26/1995'),
+//                           Text('Sport: Soccer'),
+//                           Text('3rd Party ID: 1234567')
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 const Row(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   crossAxisAlignment: CrossAxisAlignment.center,
+//                   children: [
+//                     Expanded(
+//                         flex: 1,
+//                         child: Text(
+//                           'Ht: 5\' 7"',
+//                           textAlign: TextAlign.center,
+//                         )),
+//                     Expanded(
+//                         flex: 1,
+//                         child: Text(
+//                           'Wt: 165 lbs',
+//                           textAlign: TextAlign.center,
+//                         )),
+//                     Expanded(
+//                         flex: 1,
+//                         child: Text(
+//                           'Gender: F',
+//                           textAlign: TextAlign.center,
+//                         )),
+//                   ],
+//                 ),
+//                 const Padding(
+//                   padding: EdgeInsets.only(top: 8.0),
+//                   child: Row(
+//                     children: [
+//                       Expanded(
+//                         child: Text('Incidents',
+//                             style: TextStyle(
+//                                 fontSize: 20, fontWeight: FontWeight.bold)),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//                 const Divider(
+//                   height: 1,
+//                   thickness: 1,
+//                   color: Colors.black,
+//                 ),
+//                 Expanded(
+//                   child: ListView(
+//                     children: ListTile.divideTiles(
+//                       context: context,
+//                       tiles: [
+//                         ListTile(
+//                           title: const Text('Soccer - 05/03/2023'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ListTile(
+//                           title: const Text('Other - 08/16/2022'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ListTile(
+//                           title: const Text('Soccer - 06/15/2021'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ListTile(
+//                           title: const Text('Soccer - 04/29/2021'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ListTile(
+//                           title: const Text('Soccer - 04/12/2021'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ListTile(
+//                           title: const Text('Other - 12/20/2020'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ListTile(
+//                           title: const Text('Soccer - 11/14/2020'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ListTile(
+//                           title: const Text('Soccer - 10/12/2020'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                         ListTile(
+//                           title: const Text('Basketball - 9/12/2020'),
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => const IncidentPage(),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                       ],
+//                     ).toList(),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         bottomNavigationBar: BottomAppBar(
+//             surfaceTintColor: Colors.white,
+//             shadowColor: Colors.black,
+//             child: Row(
+//               children: [
+//                 Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   crossAxisAlignment: CrossAxisAlignment.center,
+//                   children: [
+//                     FilledButton(
+//                         onPressed: () {},
+//                         child: const Text('Create New Incident')),
+//                   ],
+//                 ),
+//                 Expanded(
+//                   child: Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     crossAxisAlignment: CrossAxisAlignment.end,
+//                     children: [
+//                       TextButton(
+//                           onPressed: () {}, child: const Text('Export Data')),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             )),
+//       ),
+//     );
+//   }
+// }
 
-class IncidentPage extends StatelessWidget {
-  const IncidentPage({super.key});
+// class IncidentPage extends StatelessWidget {
+//   const IncidentPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Incident',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Incident'),
-          centerTitle: true,
-          leading: BackButton(onPressed: () {
-            Navigator.pop(context);
-          }),
-        ),
-        body: Center(
-          child: ElevatedButton(
-            child: const Text('Run Test'),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const StartTestPage(title: 'Reactive Test'),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Incident',
+//       theme: ThemeData(
+//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+//         useMaterial3: true,
+//       ),
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: const Text('Incident'),
+//           centerTitle: true,
+//           leading: BackButton(onPressed: () {
+//             Navigator.pop(context);
+//           }),
+//         ),
+//         body: Center(
+//           child: ElevatedButton(
+//             child: const Text('Run Test'),
+//             onPressed: () {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) =>
+//                       const StartTestPage(title: 'Reactive Test'),
+//                 ),
+//               );
+//             },
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // class RunTestPage extends StatefulWidget {
 //   const RunTestPage({super.key, required this.title});
@@ -899,396 +898,396 @@ class IncidentPage extends StatelessWidget {
 //   }
 // }
 
-class StartTestPage extends StatefulWidget {
-  const StartTestPage({super.key, required this.title});
+// class StartTestPage extends StatefulWidget {
+//   const StartTestPage({super.key, required this.title});
 
-  final String title;
+//   final String title;
 
-  @override
-  State<StartTestPage> createState() => _StartTestPageState();
-}
+//   @override
+//   State<StartTestPage> createState() => _StartTestPageState();
+// }
 
-class _StartTestPageState extends State<StartTestPage> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        title: widget.title,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-            centerTitle: true,
-            leading: BackButton(onPressed: () {
-              Navigator.pop(context);
-            }),
-          ),
-          body: const Center(
-              child: Padding(
-                  padding: EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 16.0),
-                        child: Text(
-                          'Directions',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('1. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Attach phone to belt',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('2. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Position phone over participant\'s lumbar spine',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('3. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Lean participant until you hear the chime',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('4. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Hold participant steady and release after 2-5 seconds',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('5. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Press the end test button once the participant has regained their balance',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ))),
-          bottomNavigationBar: BottomAppBar(
-              surfaceTintColor: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FilledButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const EndTestPage(title: 'Reactive Test'),
-                          ),
-                        );
-                      },
-                      child: const Text('Start Test',
-                          style: TextStyle(fontSize: 20))),
-                ],
-              )),
-        ));
-  }
-}
+// class _StartTestPageState extends State<StartTestPage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//         title: widget.title,
+//         theme: ThemeData(
+//           colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+//           useMaterial3: true,
+//         ),
+//         home: Scaffold(
+//           appBar: AppBar(
+//             title: Text(widget.title),
+//             centerTitle: true,
+//             leading: BackButton(onPressed: () {
+//               Navigator.pop(context);
+//             }),
+//           ),
+//           body: const Center(
+//               child: Padding(
+//                   padding: EdgeInsets.all(24.0),
+//                   child: Column(
+//                     children: [
+//                       Padding(
+//                         padding: EdgeInsets.only(bottom: 16.0),
+//                         child: Text(
+//                           'Directions',
+//                           style: TextStyle(fontSize: 20),
+//                         ),
+//                       ),
+//                       Expanded(
+//                         flex: 2,
+//                         child: Column(
+//                           crossAxisAlignment: CrossAxisAlignment.start,
+//                           children: [
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('1. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Attach phone to belt',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('2. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Position phone over participant\'s lumbar spine',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('3. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Lean participant until you hear the chime',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('4. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Hold participant steady and release after 2-5 seconds',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('5. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Press the end test button once the participant has regained their balance',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ],
+//                   ))),
+//           bottomNavigationBar: BottomAppBar(
+//               surfaceTintColor: Colors.white,
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   FilledButton(
+//                       onPressed: () {
+//                         Navigator.push(
+//                           context,
+//                           MaterialPageRoute(
+//                             builder: (context) =>
+//                                 const EndTestPage(title: 'Reactive Test'),
+//                           ),
+//                         );
+//                       },
+//                       child: const Text('Start Test',
+//                           style: TextStyle(fontSize: 20))),
+//                 ],
+//               )),
+//         ));
+//   }
+// }
 
-class EndTestPage extends StatefulWidget {
-  const EndTestPage({super.key, required this.title});
+// class EndTestPage extends StatefulWidget {
+//   const EndTestPage({super.key, required this.title});
 
-  final String title;
+//   final String title;
 
-  @override
-  State<EndTestPage> createState() => _EndTestPageState();
-}
+//   @override
+//   State<EndTestPage> createState() => _EndTestPageState();
+// }
 
-class _EndTestPageState extends State<EndTestPage> {
-  // List<double>? _accelerometerValues;
-  List<double>? _userAccelerometerValues;
-  // List<double>? _gyroscopeValues;
+// class _EndTestPageState extends State<EndTestPage> {
+//   // List<double>? _accelerometerValues;
+//   List<double>? _userAccelerometerValues;
+//   // List<double>? _gyroscopeValues;
 
-  final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+//   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
 
-  final List<AccelerometerData> _accelerometerData = [];
-  final List<GyroscopeData> _gyroscopeData = [];
-  @override
-  Widget build(BuildContext context) {
-    // final accelerometer =
-    //     _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
-    // final gyroscope =
-    //     _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
-    final userAccelerometer = _userAccelerometerValues
-        ?.map((double v) => v.toStringAsFixed(1))
-        .toList();
-    _streamSubscriptions
-        .add(accelerometerEvents.listen((AccelerometerEvent event) {
-      _accelerometerData.add(AccelerometerData(
-          DateTime.now(), <double>[event.x, event.y, event.z]));
-    }));
-    // start a stream that saves gyroscopeData
-    _streamSubscriptions.add(gyroscopeEvents.listen((GyroscopeEvent event) {
-      _gyroscopeData.add(
-          GyroscopeData(DateTime.now(), <double>[event.x, event.y, event.z]));
-    }));
-    return MaterialApp(
-        title: widget.title,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-            centerTitle: true,
-            leading: BackButton(onPressed: () {
-              Navigator.pop(context);
-            }),
-          ),
-          body: const Center(
-              child: Padding(
-                  padding: EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 16.0),
-                        child: Text(
-                          'Directions',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('1. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Attach phone to belt',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('2. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Position phone over participant\'s lumbar spine',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('3. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Lean participant until you hear the chime',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('4. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Hold participant steady and release after 2-5 seconds',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('5. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Press the end test button once the participant has regained their balance',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ))),
-          bottomNavigationBar: BottomAppBar(
-              surfaceTintColor: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FilledButton(
-                      onPressed: () {
-                        _accelerometerData.clear();
-                        _gyroscopeData.clear();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                TestResultsPage(accelData: userAccelerometer),
-                          ),
-                        );
-                      },
-                      child: const Text('End Test',
-                          style: TextStyle(fontSize: 20))),
-                ],
-              )),
-        ));
-  }
+//   final List<AccelerometerData> _accelerometerData = [];
+//   final List<GyroscopeData> _gyroscopeData = [];
+//   @override
+//   Widget build(BuildContext context) {
+//     // final accelerometer =
+//     //     _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+//     // final gyroscope =
+//     //     _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
+//     final userAccelerometer = _userAccelerometerValues
+//         ?.map((double v) => v.toStringAsFixed(1))
+//         .toList();
+//     _streamSubscriptions
+//         .add(accelerometerEvents.listen((AccelerometerEvent event) {
+//       _accelerometerData.add(AccelerometerData(
+//           DateTime.now(), <double>[event.x, event.y, event.z]));
+//     }));
+//     // start a stream that saves gyroscopeData
+//     _streamSubscriptions.add(gyroscopeEvents.listen((GyroscopeEvent event) {
+//       _gyroscopeData.add(
+//           GyroscopeData(DateTime.now(), <double>[event.x, event.y, event.z]));
+//     }));
+//     return MaterialApp(
+//         title: widget.title,
+//         theme: ThemeData(
+//           colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+//           useMaterial3: true,
+//         ),
+//         home: Scaffold(
+//           appBar: AppBar(
+//             title: Text(widget.title),
+//             centerTitle: true,
+//             leading: BackButton(onPressed: () {
+//               Navigator.pop(context);
+//             }),
+//           ),
+//           body: const Center(
+//               child: Padding(
+//                   padding: EdgeInsets.all(24.0),
+//                   child: Column(
+//                     children: [
+//                       Padding(
+//                         padding: EdgeInsets.only(bottom: 16.0),
+//                         child: Text(
+//                           'Directions',
+//                           style: TextStyle(fontSize: 20),
+//                         ),
+//                       ),
+//                       Expanded(
+//                         flex: 2,
+//                         child: Column(
+//                           crossAxisAlignment: CrossAxisAlignment.start,
+//                           children: [
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('1. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Attach phone to belt',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('2. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Position phone over participant\'s lumbar spine',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('3. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Lean participant until you hear the chime',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('4. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Hold participant steady and release after 2-5 seconds',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                             Padding(
+//                               padding: EdgeInsets.only(bottom: 8.0),
+//                               child: Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text('5. ', style: TextStyle(fontSize: 20)),
+//                                   Expanded(
+//                                     child: Text(
+//                                       'Press the end test button once the participant has regained their balance',
+//                                       style: TextStyle(fontSize: 20),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ],
+//                   ))),
+//           bottomNavigationBar: BottomAppBar(
+//               surfaceTintColor: Colors.white,
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   FilledButton(
+//                       onPressed: () {
+//                         _accelerometerData.clear();
+//                         _gyroscopeData.clear();
+//                         Navigator.push(
+//                           context,
+//                           MaterialPageRoute(
+//                             builder: (context) =>
+//                                 TestResultsPage(accelData: userAccelerometer),
+//                           ),
+//                         );
+//                       },
+//                       child: const Text('End Test',
+//                           style: TextStyle(fontSize: 20))),
+//                 ],
+//               )),
+//         ));
+//   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    for (final subscription in _streamSubscriptions) {
-      subscription.cancel();
-    }
-  }
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     for (final subscription in _streamSubscriptions) {
+//       subscription.cancel();
+//     }
+//   }
 
-  @override
-  void initState() {
-    super.initState();
+//   @override
+//   void initState() {
+//     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
+//     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
 
-    // _streamSubscriptions.add(
-    //   accelerometerEvents.listen(
-    //     (AccelerometerEvent event) {
-    //       setState(() {
-    //         _accelerometerValues = <double>[event.x, event.y, event.z];
-    //       });
-    //     },
-    //   ),
-    // );
-    // _streamSubscriptions.add(
-    //   gyroscopeEvents.listen(
-    //     (GyroscopeEvent event) {
-    //       setState(() {
-    //         _gyroscopeValues = <double>[event.x, event.y, event.z];
-    //       });
-    //     },
-    //   ),
-    // );
-    _streamSubscriptions.add(
-      userAccelerometerEvents.listen(
-        (UserAccelerometerEvent event) {
-          setState(() {
-            _userAccelerometerValues = <double>[event.x, event.y, event.z];
-          });
-        },
-      ),
-    );
-  }
-}
+//     // _streamSubscriptions.add(
+//     //   accelerometerEvents.listen(
+//     //     (AccelerometerEvent event) {
+//     //       setState(() {
+//     //         _accelerometerValues = <double>[event.x, event.y, event.z];
+//     //       });
+//     //     },
+//     //   ),
+//     // );
+//     // _streamSubscriptions.add(
+//     //   gyroscopeEvents.listen(
+//     //     (GyroscopeEvent event) {
+//     //       setState(() {
+//     //         _gyroscopeValues = <double>[event.x, event.y, event.z];
+//     //       });
+//     //     },
+//     //   ),
+//     // );
+//     _streamSubscriptions.add(
+//       userAccelerometerEvents.listen(
+//         (UserAccelerometerEvent event) {
+//           setState(() {
+//             _userAccelerometerValues = <double>[event.x, event.y, event.z];
+//           });
+//         },
+//       ),
+//     );
+//   }
+// }
 
-class TestResultsPage extends StatefulWidget {
-  const TestResultsPage({super.key, required this.accelData});
+// class TestResultsPage extends StatefulWidget {
+//   const TestResultsPage({super.key, required this.accelData});
 
-  final List<String>? accelData;
+//   final List<String>? accelData;
 
-  @override
-  State<TestResultsPage> createState() => _TestResultsPageState();
-}
+//   @override
+//   State<TestResultsPage> createState() => _TestResultsPageState();
+// }
 
-class _TestResultsPageState extends State<TestResultsPage> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Test Results',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-            appBar: AppBar(
-              title: const Text('Test Results'),
-              centerTitle: true,
-              leading: BackButton(onPressed: () {
-                Navigator.pop(context);
-              }),
-            ),
-            body: Center(
-              child: Text("Results: ${widget.accelData}"),
-            )));
-  }
-}
+// class _TestResultsPageState extends State<TestResultsPage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//         title: 'Test Results',
+//         theme: ThemeData(
+//           colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+//           useMaterial3: true,
+//         ),
+//         home: Scaffold(
+//             appBar: AppBar(
+//               title: const Text('Test Results'),
+//               centerTitle: true,
+//               leading: BackButton(onPressed: () {
+//                 Navigator.pop(context);
+//               }),
+//             ),
+//             body: Center(
+//               child: Text("Results: ${widget.accelData}"),
+//             )));
+//   }
+// }

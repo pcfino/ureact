@@ -1,14 +1,7 @@
-import 'dart:convert';
-import 'package:capstone_project/accelerometer_data.dart';
-import 'package:capstone_project/gyroscope_data.dart';
 import 'package:capstone_project/patient_model.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/new_patient_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart';
-import 'dart:async';
-import 'package:sensors_plus/sensors_plus.dart';
 
 void main() {
   runApp(

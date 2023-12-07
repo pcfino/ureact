@@ -98,7 +98,7 @@ class PatientPage extends StatelessWidget {
                       context: context,
                       tiles: [
                         ListTile(
-                          title: const Text('Soccer' + ' - ' + '05/03/2023'),
+                          title: const Text('Soccer - 05/03/2023'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -109,7 +109,7 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Other' + ' - ' + '08/16/2022'),
+                          title: const Text('Other - 08/16/2022'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -120,7 +120,7 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer' + ' - ' + '06/15/2021'),
+                          title: const Text('Soccer - 06/15/2021'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -131,7 +131,7 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer' + ' - ' + '04/29/2021'),
+                          title: const Text('Soccer - 04/29/2021'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -142,7 +142,7 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer' + ' - ' + '04/12/2021'),
+                          title: const Text('Soccer - 04/12/2021'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -153,7 +153,7 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Other' + ' - ' + '12/20/2020'),
+                          title: const Text('Other - 12/20/2020'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -164,7 +164,7 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer' + ' - ' + '11/14/2020'),
+                          title: const Text('Soccer - 11/14/2020'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -175,7 +175,7 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer' + ' - ' + '10/12/2020'),
+                          title: const Text('Soccer - 10/12/2020'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -186,7 +186,7 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Basketball' + ' - ' + '9/12/2020'),
+                          title: const Text('Basketball - 9/12/2020'),
                           onTap: () {
                             Navigator.push(
                               context,

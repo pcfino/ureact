@@ -43,9 +43,9 @@ Future sendData(int newNum) async {
 }
 
 class _EndTestPageState extends State<EndTestPage> {
-  List<double>? _accelerometerValues;
+  // List<double>? _accelerometerValues;
   List<double>? _userAccelerometerValues;
-  List<double>? _gyroscopeValues;
+  // List<double>? _gyroscopeValues;
 
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
 
@@ -67,10 +67,10 @@ class _EndTestPageState extends State<EndTestPage> {
 
   @override
   Widget build(BuildContext context) {
-    final accelerometer =
-        _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
-    final gyroscope =
-        _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    // final accelerometer =
+    //     _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    // final gyroscope =
+    //     _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
     final userAccelerometer = _userAccelerometerValues
         ?.map((double v) => v.toStringAsFixed(1))
         .toList();
@@ -237,24 +237,24 @@ class _EndTestPageState extends State<EndTestPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
 
-    _streamSubscriptions.add(
-      accelerometerEvents.listen(
-        (AccelerometerEvent event) {
-          setState(() {
-            _accelerometerValues = <double>[event.x, event.y, event.z];
-          });
-        },
-      ),
-    );
-    _streamSubscriptions.add(
-      gyroscopeEvents.listen(
-        (GyroscopeEvent event) {
-          setState(() {
-            _gyroscopeValues = <double>[event.x, event.y, event.z];
-          });
-        },
-      ),
-    );
+    // _streamSubscriptions.add(
+    //   accelerometerEvents.listen(
+    //     (AccelerometerEvent event) {
+    //       setState(() {
+    //         _accelerometerValues = <double>[event.x, event.y, event.z];
+    //       });
+    //     },
+    //   ),
+    // );
+    // _streamSubscriptions.add(
+    //   gyroscopeEvents.listen(
+    //     (GyroscopeEvent event) {
+    //       setState(() {
+    //         _gyroscopeValues = <double>[event.x, event.y, event.z];
+    //       });
+    //     },
+    //   ),
+    // );
     _streamSubscriptions.add(
       userAccelerometerEvents.listen(
         (UserAccelerometerEvent event) {

@@ -9,7 +9,7 @@ class IncidentPage extends StatefulWidget {
 }
 
 class _IncidentPage extends State<IncidentPage> {
-  TextEditingController _date = TextEditingController();
+  final TextEditingController _date = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,7 @@ class _IncidentPage extends State<IncidentPage> {
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                     child: const Text(
                       'Tests',
                       style: TextStyle(
@@ -112,7 +112,7 @@ class _IncidentPage extends State<IncidentPage> {
                   ),
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: 15,
                     itemBuilder: (BuildContext context, int index) {
                       return Card(

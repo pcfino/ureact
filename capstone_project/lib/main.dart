@@ -7,41 +7,8 @@ import 'package:capstone_project/new_patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
-
 import 'dart:async';
-
 import 'package:sensors_plus/sensors_plus.dart';
-
-// *******************************************************************************************
-// START
-// ignore: non_constant_identifier_names
-String IOS_URL = 'http://127.0.0.1:8000/';
-// ignore: non_constant_identifier_names
-String ANDROID_URL = 'http://10.0.2.2:5000/';
-// ignore: non_constant_identifier_names
-String VERSION_URL = IOS_URL;
-
-// these methods send/issue get and post requests to the python server
-Future getData(url) async {
-  var url2 = Uri.parse(url);
-  Response response = await get(url2);
-  return response.body;
-}
-
-Future sendData(int newNum) async {
-  final response = await post(
-    // ignore: prefer_interpolation_to_compose_strings
-    Uri.parse(VERSION_URL + 'postData'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode({'counter': newNum}),
-  );
-
-  return response.body;
-}
-// END
-// *******************************************************************************************
 
 void main() {
   runApp(

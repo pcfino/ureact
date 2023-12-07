@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/test_results_page.dart';
-
 import 'package:sensors_plus/sensors_plus.dart';
 import 'accelerometer_data.dart';
 import 'gyroscope_data.dart';
 import 'dart:async';
+import 'package:http/http.dart';
 
 class EndTestPage extends StatefulWidget {
   const EndTestPage({super.key, required this.title});
@@ -13,6 +14,32 @@ class EndTestPage extends StatefulWidget {
 
   @override
   State<EndTestPage> createState() => _EndTestPageState();
+}
+
+// ignore: non_constant_identifier_names
+String IOS_URL = 'http://127.0.0.1:5000/';
+// ignore: non_constant_identifier_names
+String ANDROID_URL = 'http://10.0.2.2:5000/';
+// ignore: non_constant_identifier_names
+String VERSION_URL = ANDROID_URL;
+// these methods send/issue get and post requests to the python server
+Future getData(url) async {
+  // ignore: non_constant_identifier_names
+  var TTS = Uri.parse(url);
+  Response response = await get(TTS);
+  return response.body;
+}
+
+Future sendData(int newNum) async {
+  final response = await post(
+    // ignore: prefer_interpolation_to_compose_strings
+    Uri.parse(VERSION_URL + 'mysql/setResults'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode({'TTS': newNum}),
+  );
+  return response.body;
 }
 
 class _EndTestPageState extends State<EndTestPage> {
@@ -24,6 +51,20 @@ class _EndTestPageState extends State<EndTestPage> {
 
   final List<AccelerometerData> _accelerometerData = [];
   final List<GyroscopeData> _gyroscopeData = [];
+
+  var timeToStab = "";
+  //var increment = 2;
+  Future getTTS() async {
+    //increment++;
+    //await sendData(increment);
+    // ignore: prefer_interpolation_to_compose_strings
+    var data = await getData(VERSION_URL + 'mysql/getResults');
+    var decodedData = jsonDecode(data);
+    setState(() {
+      timeToStab = decodedData['TTS'].toString();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final accelerometer =
@@ -160,14 +201,18 @@ class _EndTestPageState extends State<EndTestPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   FilledButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        await getTTS();
                         _accelerometerData.clear();
                         _gyroscopeData.clear();
+                        // ignore: use_build_context_synchronously
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                TestResultsPage(accelData: userAccelerometer),
+                            builder: (context) => TestResultsPage(
+                              accelData: userAccelerometer,
+                              timeToStab: timeToStab,
+                            ),
                           ),
                         );
                       },

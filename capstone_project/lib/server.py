@@ -1,36 +1,48 @@
 import numpy as np
 from scipy import signal
 from flask import Flask, jsonify, request
+from mysql import connector
 
 app = Flask(__name__)
 
-json_file = {"counter": 0}
+json_file = {"TTS": 0}
+#@app.route('/postData', methods=['POST'])
+#def receive_post_data():
+#    if request.method == 'POST':
+#        data_from_post = request.json.get('counter')
+#        json_file['counter'] = data_from_post
+#        return jsonify(json_file)
 
-@app.route('/')
-def firstLoad():
-    json_file['counter'] = 0
-    return jsonify(json_file)
+@app.route('/mysql/getResults')
+def getMysql():
+    mydb = connector.connect(
+    host="capstone-db.c1zwthlggx60.us-east-1.rds.amazonaws.com",
+    user="admin",
+    password="Concuss2023"
+    )
+    mycursor = mydb.cursor()
+    mycursor.execute("use capstone") 
+    mycursor.execute("SELECT * FROM TestResults")
+    myresult = mycursor.fetchone()[0]
+    return jsonify({'TTS': str(myresult)})
 
-@app.route('/postData', methods=['POST'])
-def receive_post_data():
+@app.route('/mysql/setResults', methods=['POST'])
+def setMysql():
     if request.method == 'POST':
-        data_from_post = request.json.get('counter')
-        json_file['counter'] = data_from_post
+        data_from_post = request.json.get('TTS')    
+        mydb = connector.connect(
+        host="capstone-db.c1zwthlggx60.us-east-1.rds.amazonaws.com",
+        user="admin",
+        password="Concuss2023"
+        )
+        mycursor = mydb.cursor()
+        mycursor.execute("use capstone") 
+        sql = "INSERT INTO TestResults VALUES(%s)"
+        val = [(data_from_post)]
+        mycursor.execute(sql, val)
+        mydb.commit()
+        json_file['TTS'] = data_from_post
         return jsonify(json_file)
-    
-@app.route('/current')
-def curr():
-    return jsonify(json_file)
-
-@app.route('/incre')
-def increment():
-    json_file['counter'] += 1
-    return jsonify(json_file)
-
-@app.route('/zero')
-def zero():
-    json_file['counter'] = 0
-    return jsonify(json_file)
 
 @app.route('/timeToStability', methods=['POST'])
 def timeToStability():

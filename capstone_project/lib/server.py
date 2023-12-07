@@ -53,9 +53,7 @@ def timeToStability():
     accNorm = np.linalg.norm(dataAcc, axis=0)
     rotNorm = np.linalg.norm(dataRot, axis=0)
 
-
     b, a = signal.butter(2, 10 / (fs / 2))
-    
 
     #Foot Movement: 9.81*1.07; % based on El-Gohary Threshold for foot movement
     qaF = signal.filtfilt(b, a, accNorm) < 9.81*1.07
@@ -64,21 +62,37 @@ def timeToStability():
     qf = np.logical_and(qaF, qrf)
 
     #find t0
-    peaks, _ = signal.find_peaks(np.flip(accNorm)[fs * 3:], height=5)
+    peaks, _ = signal.find_peaks(np.flip(accNorm[fs * 3:]), height=14.6)
 
-    movementF = fs * 3 + peaks[-1]
-    release = np.argmax(qf[movementF:]) #reverse of qf? reverse done in movementF?
-    release = movementF+release
+    movementF = peaks[-1]
+    flipQf = qf[::-1]
+
+    # find the index of release point
+    release = 0
+    for i, j in enumerate(flipQf[movementF:]):
+        if (j == 1):
+            release = i
+            break
+
+    # adding 2 accounts for index differences between matlab and python
+    release = movementF+release + 2
     t0 = len(accNorm)-release
 
-    #find TTS
-    movementReg = len(accNorm)-movementF
-    EndTTS = np.argmax(qf[movementReg:])
-    EndTTS = EndTTS+movementReg
+    #find TTS with adjustment for indexing differences
+    movementReg = len(accNorm) - (movementF + 2)
+
+    # find the index of release point
+    EndTTS = 0
+    for i, j in enumerate(qf[movementReg:]):
+        if (j == 1):
+            EndTTS = i
+            break
+
+    EndTTS = EndTTS+movementReg + 2
 
     TTS = (EndTTS - t0)/fs
 
-    return jsonify({'t0': str(t0), 'EndTTS': str(EndTTS), 'TTS': str(TTS)})
+    return jsonify(t0 = int(t0), EndTTS = int(EndTTS), TTS = TTS)
 
 # Run the developement server
 if __name__ == '__main__':

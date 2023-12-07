@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/test_results_page.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -21,9 +22,14 @@ String IOS_URL = 'http://127.0.0.1:5000/';
 // ignore: non_constant_identifier_names
 String ANDROID_URL = 'http://10.0.2.2:5000/';
 // ignore: non_constant_identifier_names
-String VERSION_URL = ANDROID_URL;
+String VERSION_URL = '';
 // these methods send/issue get and post requests to the python server
 Future getData(url) async {
+  if (Platform.isAndroid) {
+    VERSION_URL = ANDROID_URL;
+  } else if (Platform.isIOS) {
+    VERSION_URL = IOS_URL;
+  }
   // ignore: non_constant_identifier_names
   var TTS = Uri.parse(url);
   Response response = await get(TTS);
@@ -31,6 +37,11 @@ Future getData(url) async {
 }
 
 Future sendData(int newNum) async {
+  if (Platform.isAndroid) {
+    VERSION_URL = ANDROID_URL;
+  } else if (Platform.isIOS) {
+    VERSION_URL = IOS_URL;
+  }
   final response = await post(
     // ignore: prefer_interpolation_to_compose_strings
     Uri.parse(VERSION_URL + 'mysql/setResults'),

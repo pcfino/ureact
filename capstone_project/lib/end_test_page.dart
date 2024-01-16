@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/test_results_page.dart';
-import 'package:sensors_plus/sensors_plus.dart';
-import 'accelerometer_data.dart';
-import 'gyroscope_data.dart';
+import 'sensor_recorder.dart';
 import 'dart:async';
-import 'package:http/http.dart';
+import 'api_util.dart' as api_util;
 
 class EndTestPage extends StatefulWidget {
   const EndTestPage({super.key, required this.title});
@@ -16,50 +14,22 @@ class EndTestPage extends StatefulWidget {
   State<EndTestPage> createState() => _EndTestPageState();
 }
 
-// ignore: non_constant_identifier_names
-String IOS_URL = 'http://127.0.0.1:5000/';
-// ignore: non_constant_identifier_names
-String ANDROID_URL = 'http://10.0.2.2:5000/';
-// ignore: non_constant_identifier_names
-String VERSION_URL = ANDROID_URL;
-// these methods send/issue get and post requests to the python server
-Future getData(url) async {
-  // ignore: non_constant_identifier_names
-  var TTS = Uri.parse(url);
-  Response response = await get(TTS);
-  return response.body;
-}
-
-Future sendData(int newNum) async {
-  final response = await post(
-    // ignore: prefer_interpolation_to_compose_strings
-    Uri.parse(VERSION_URL + 'mysql/setResults'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode({'TTS': newNum}),
-  );
-  return response.body;
-}
-
 class _EndTestPageState extends State<EndTestPage> {
-  // List<double>? _accelerometerValues;
-  List<double>? _userAccelerometerValues;
-  // List<double>? _gyroscopeValues;
+  late String timeToStab;
+  late SensorRecorder sensorRecorder;
 
-  final _streamSubscriptions = <StreamSubscription<dynamic>>[];
-
-  final List<AccelerometerData> _accelerometerData = [];
-  final List<GyroscopeData> _gyroscopeData = [];
-
-  var timeToStab = "";
-  //var increment = 2;
   Future getTTS() async {
-    //increment++;
-    //await sendData(increment);
-    // ignore: prefer_interpolation_to_compose_strings
-    var data = await getData(VERSION_URL + 'mysql/getResults');
-    var decodedData = jsonDecode(data);
+    var sensorData = sensorRecorder.endRecording();
+
+    var responseBody = await api_util.post('/timeToStability', {
+      'dataAcc': sensorData.formattedAccData(),
+      'dataRot': sensorData.formattedGyrData(),
+      'timeStamps': sensorData.timeStamps,
+      'fs': sensorData.fs
+    });
+
+    var decodedData = jsonDecode(responseBody);
+
     setState(() {
       timeToStab = decodedData['TTS'].toString();
     });
@@ -67,23 +37,6 @@ class _EndTestPageState extends State<EndTestPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final accelerometer =
-    //     _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
-    // final gyroscope =
-    //     _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
-    final userAccelerometer = _userAccelerometerValues
-        ?.map((double v) => v.toStringAsFixed(1))
-        .toList();
-    _streamSubscriptions
-        .add(accelerometerEvents.listen((AccelerometerEvent event) {
-      _accelerometerData.add(AccelerometerData(
-          DateTime.now(), <double>[event.x, event.y, event.z]));
-    }));
-    // start a stream that saves gyroscopeData
-    _streamSubscriptions.add(gyroscopeEvents.listen((GyroscopeEvent event) {
-      _gyroscopeData.add(
-          GyroscopeData(DateTime.now(), <double>[event.x, event.y, event.z]));
-    }));
     return MaterialApp(
         title: widget.title,
         theme: ThemeData(
@@ -202,19 +155,14 @@ class _EndTestPageState extends State<EndTestPage> {
                 children: [
                   FilledButton(
                       onPressed: () async {
-                        await getTTS();
-                        _accelerometerData.clear();
-                        _gyroscopeData.clear();
-                        // ignore: use_build_context_synchronously
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TestResultsPage(
-                              accelData: userAccelerometer,
-                              timeToStab: timeToStab,
-                            ),
-                          ),
-                        );
+                        getTTS().whenComplete(() => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TestResultsPage(
+                                  timeToStab: timeToStab,
+                                ),
+                              ),
+                            ));
                       },
                       child: const Text('End Test',
                           style: TextStyle(fontSize: 20))),
@@ -224,45 +172,16 @@ class _EndTestPageState extends State<EndTestPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    for (final subscription in _streamSubscriptions) {
-      subscription.cancel();
-    }
+  void didUpdateWidget(oldWidget) {
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
   void initState() {
     super.initState();
+    timeToStab = "";
+    sensorRecorder = SensorRecorder();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
-
-    // _streamSubscriptions.add(
-    //   accelerometerEvents.listen(
-    //     (AccelerometerEvent event) {
-    //       setState(() {
-    //         _accelerometerValues = <double>[event.x, event.y, event.z];
-    //       });
-    //     },
-    //   ),
-    // );
-    // _streamSubscriptions.add(
-    //   gyroscopeEvents.listen(
-    //     (GyroscopeEvent event) {
-    //       setState(() {
-    //         _gyroscopeValues = <double>[event.x, event.y, event.z];
-    //       });
-    //     },
-    //   ),
-    // );
-    _streamSubscriptions.add(
-      userAccelerometerEvents.listen(
-        (UserAccelerometerEvent event) {
-          setState(() {
-            _userAccelerometerValues = <double>[event.x, event.y, event.z];
-          });
-        },
-      ),
-    );
   }
 }

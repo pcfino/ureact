@@ -90,7 +90,7 @@ class PatientPage extends StatelessWidget {
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Colors.black,
+                  color: Colors.grey,
                 ),
                 Expanded(
                   child: ListView(
@@ -98,7 +98,8 @@ class PatientPage extends StatelessWidget {
                       context: context,
                       tiles: [
                         ListTile(
-                          title: const Text('Soccer - 05/03/2023'),
+                          title: const Text('Return To Play'),
+                          subtitle: const Text('May 3, 2023'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -109,7 +110,8 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Other - 08/16/2022'),
+                          title: const Text('Concussion'),
+                          subtitle: const Text('Feb 16, 2023'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -120,7 +122,8 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer - 06/15/2021'),
+                          title: const Text('Check Up'),
+                          subtitle: const Text('Dec 13, 2022'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -131,7 +134,8 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer - 04/29/2021'),
+                          title: const Text('Check Up'),
+                          subtitle: const Text('Aug 14, 2022'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -142,7 +146,8 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer - 04/12/2021'),
+                          title: const Text('Return To Play'),
+                          subtitle: const Text('May 20, 2022'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -153,7 +158,8 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Other - 12/20/2020'),
+                          title: const Text('Concussion'),
+                          subtitle: const Text('Feb 25, 2022'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -164,29 +170,8 @@ class PatientPage extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          title: const Text('Soccer - 11/14/2020'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Soccer - 10/12/2020'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('Basketball - 9/12/2020'),
+                          title: const Text('Check Up'),
+                          subtitle: const Text('Jan 10, 2022'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -204,30 +189,25 @@ class PatientPage extends StatelessWidget {
             ),
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const IncidentPage(),
+              ),
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
         bottomNavigationBar: BottomAppBar(
             surfaceTintColor: Colors.white,
-            shadowColor: Colors.black,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    FilledButton(
-                        onPressed: () {},
-                        child: const Text('Create New Incident')),
-                  ],
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      TextButton(
-                          onPressed: () {}, child: const Text('Export Data')),
-                    ],
-                  ),
-                ),
+                TextButton(onPressed: () {}, child: const Text('Export Data')),
               ],
             )),
       ),

@@ -1,6 +1,7 @@
 import 'package:capstone_project/patient_model.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/new_patient_page.dart';
+import 'package:capstone_project/settings_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -69,7 +70,7 @@ class _MyApp extends State<MyApp> {
     return MaterialApp(
       title: 'Patients',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       home: Scaffold(
@@ -83,7 +84,12 @@ class _MyApp extends State<MyApp> {
                 color: Colors.black,
               ),
               onPressed: () {
-                // do something
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),
+                  ),
+                );
               },
             )
           ],
@@ -154,8 +160,6 @@ class _MyApp extends State<MyApp> {
           ]),
         ),
         floatingActionButton: FloatingActionButton(
-          // backgroundColor: const Color(0xff03dac6),
-          // foregroundColor: Colors.black,
           onPressed: () {
             Navigator.push(
               context,

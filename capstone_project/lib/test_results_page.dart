@@ -2,10 +2,8 @@ import 'package:capstone_project/main.dart';
 import 'package:flutter/material.dart';
 
 class TestResultsPage extends StatefulWidget {
-  const TestResultsPage(
-      {super.key, required this.accelData, required this.timeToStab});
+  const TestResultsPage({super.key, required this.timeToStab});
 
-  final List<String>? accelData;
   final String timeToStab;
 
   @override
@@ -48,7 +46,6 @@ class _TestResultsPageState extends State<TestResultsPage> {
             body: Center(
               child: Column(
                 children: [
-                  Text("Results: ${widget.accelData}"),
                   Text("Time to Stability: ${widget.timeToStab}"),
                 ],
               ),

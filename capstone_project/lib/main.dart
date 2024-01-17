@@ -164,7 +164,7 @@ class _MyApp extends State<MyApp> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const NewPatientPage(),
+                builder: (context) => const PatientPage(),
               ),
             );
           },

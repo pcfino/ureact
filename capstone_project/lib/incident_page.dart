@@ -28,6 +28,9 @@ class _IncidentPage extends State<IncidentPage> {
           leading: BackButton(onPressed: () {
             Navigator.pop(context);
           }),
+          actions: <Widget>[
+            TextButton(onPressed: () {}, child: const Text('Save'))
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),
@@ -43,7 +46,7 @@ class _IncidentPage extends State<IncidentPage> {
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                     ),
-                    labelText: "Name",
+                    labelText: "Type",
                     contentPadding: EdgeInsets.all(11),
                   ),
                   controller: TextEditingController(

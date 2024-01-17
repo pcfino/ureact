@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_project/incident_page.dart';
 
-class PatientPage extends StatelessWidget {
+class PatientPage extends StatefulWidget {
   const PatientPage({super.key});
 
   @override
+  State<PatientPage> createState() => _PatientPage();
+}
+
+class _PatientPage extends State<PatientPage> {
+  final TextEditingController _date = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
+    _date.text = "10/26/1995";
     return MaterialApp(
       title: 'Patient',
       theme: ThemeData(
@@ -19,60 +27,146 @@ class PatientPage extends StatelessWidget {
           leading: BackButton(onPressed: () {
             Navigator.pop(context);
           }),
+          actions: <Widget>[
+            TextButton(onPressed: () {}, child: const Text('Save'))
+          ],
         ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      labelText: "Name",
+                      contentPadding: EdgeInsets.all(11),
+                    ),
+                    controller: TextEditingController(
+                      text: "Abby Smith",
+                    ),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Row(
                   children: [
                     Expanded(
-                      flex: 5,
-                      child: Icon(
-                        Icons.account_circle_outlined,
-                        color: Colors.black,
-                        size: 100.0,
+                      flex: 1,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          labelText: "DOB",
+                          contentPadding: EdgeInsets.all(11),
+                        ),
+                        controller: _date,
+                        onTap: () async {
+                          DateTime? selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now(),
+                          );
+                          if (selectedDate != null) {
+                            setState(() {
+                              _date.text =
+                                  "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                            });
+                          }
+                        },
                       ),
                     ),
                     Expanded(
-                      flex: 7,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Abby Smith'),
-                          Text('DOB: 10/26/1995'),
-                          Text('Sport: Soccer'),
-                          Text('3rd Party ID: 1234567')
-                        ],
+                      flex: 1,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          labelText: "Sport",
+                          contentPadding: EdgeInsets.all(11),
+                        ),
+                        controller: TextEditingController(
+                          text: "Soccer",
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Row(
                   children: [
                     Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Ht: 5\' 7"',
-                          textAlign: TextAlign.center,
-                        )),
+                      flex: 1,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          labelText: "Height",
+                          contentPadding: EdgeInsets.all(11),
+                        ),
+                        controller: TextEditingController(
+                          text: "5' 7\"",
+                        ),
+                      ),
+                    ),
                     Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Wt: 165 lbs',
-                          textAlign: TextAlign.center,
-                        )),
+                      flex: 1,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          labelText: "Weight",
+                          contentPadding: EdgeInsets.all(11),
+                        ),
+                        controller: TextEditingController(
+                          text: "165 lbs",
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
                     Expanded(
-                        flex: 1,
-                        child: Text(
-                          'Gender: F',
-                          textAlign: TextAlign.center,
-                        )),
+                      flex: 1,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          labelText: "Gender",
+                          contentPadding: EdgeInsets.all(11),
+                        ),
+                        controller: TextEditingController(
+                          text: "F",
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          labelText: "3rd Party ID",
+                          contentPadding: EdgeInsets.all(11),
+                        ),
+                        controller: TextEditingController(
+                          text: "1234567",
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const Padding(

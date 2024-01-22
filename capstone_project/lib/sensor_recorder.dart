@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'dart:math';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 class AccelerometerData {
   late final List<double> x;
@@ -56,6 +58,13 @@ class SensorRecorder {
 
   SensorRecorder() {
     // _streamSubscriptions = <StreamSubscription>[];
+    bool ready = false;
+    while(!ready){
+      var accEvent = accelerometerEventStream().first;
+      ready = angleMeet(accEvent, false, true, false, false);
+    }
+
+    Timer(const Duration(seconds: 5), () => FlutterRingtonePlayer.stop());
     _killTimer = false;
 
     const samplePeriod = 20; // ms
@@ -107,5 +116,55 @@ class SensorRecorder {
     //   subscription.cancel();
     // }
     return _results;
+  }
+
+  bool angleMeet(cord, bool front, bool back, bool left, bool right){
+    double minAngle = 0;
+    double maxAngle = 0;
+    double radAngle = 0;
+    double x = cord[0];
+    double y = cord[1];
+    double z = cord[2];
+    if(back){
+      minAngle = 90 - 6;
+      maxAngle = 90 - 8;
+      radAngle = acos(z/sqrt((x*x)+(y*y)+(z*z)));
+    }
+    if(front){
+      minAngle = 45 + 8; 
+      maxAngle = 45 + 10; 
+      radAngle = acos(z/sqrt((x*x)+(y*y)+(z*z)));
+    }
+    if(left){
+      minAngle = 8;
+      maxAngle = 12;
+      radAngle = atan(x/sqrt((y*y)+(z*z)));
+    }
+    if(right){
+      minAngle = -12;
+      maxAngle = -8;
+      radAngle = atan(x/sqrt((y*y)+(z*z)));
+    }
+
+    minAngle = minAngle * pi/180;
+    maxAngle = maxAngle * pi/180;
+
+
+    if(radAngle >= minAngle && radAngle <= maxAngle) {
+      FlutterRingtonePlayer.play(
+        android: AndroidSounds.notification,
+        ios: IosSounds.glass,
+        looping: false, // Android only - API >= 28
+        volume: 0.8, // Android only - API >= 28
+        asAlarm: false, // Android only - all APIs
+      );
+      return true;
+    }
+    //SFlutterRingtonePlayer.stop();
+    /*acceler
+    ometerEvents.listen((AccelerometerEvent event) {
+      angleMeet(event.x, event.y, event.z, front, back, side);
+    });*/
+    return false;
   }
 }

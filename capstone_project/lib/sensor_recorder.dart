@@ -58,6 +58,15 @@ class SensorRecorder {
   late bool _killTimer;
   late StreamSubscription<AccelerometerEvent> _stream;
 
+  double _gyroX = 0.0; 
+  double _gyroY = 0.0; 
+  double _gyroZ = 0.0; 
+
+  
+  double _accX = 0.0; 
+  double _accY = 0.0; 
+  double _accZ = 0.0; 
+
   SensorRecorder() {
     // _streamSubscriptions = <StreamSubscription>[];
 
@@ -91,6 +100,17 @@ class SensorRecorder {
 
     //   debugPrint('gyrData:  $x  $y  $z');
     // }));
+
+
+    gyroscopeEventStream().listen((event) {         
+      _gyroX = event.x; 
+      _gyroY = event.y; 
+      _gyroZ = event.z; });
+
+    accelerometerEventStream().listen((event) {         
+      _accX = event.x; 
+      _accY = event.y; 
+      _accZ = event.z; });
   }
 
   SensorRecorderResults endRecording() {
@@ -98,7 +118,7 @@ class SensorRecorder {
     // for (final subscription in _streamSubscriptions) {
     //   subscription.cancel();
     // }
-    debugPrint(_results.gyrData.x.toString());
+    debugPrint((_results.gyrData.x.length.toString()));
     return _results;
   }
 
@@ -118,15 +138,13 @@ class SensorRecorder {
           timer.cancel();
         }
 
-        var accEvent = await accelerometerEventStream().first;
-        _results.accData.x.add(accEvent.x);
-        _results.accData.y.add(accEvent.y);
-        _results.accData.z.add(accEvent.z);
+        _results.accData.x.add(_accX);
+        _results.accData.y.add(_accY);
+        _results.accData.z.add(_accZ);
 
-        var gyrEvent = await gyroscopeEventStream().first;
-        _results.gyrData.x.add(gyrEvent.x);
-        _results.gyrData.y.add(gyrEvent.y);
-        _results.gyrData.z.add(gyrEvent.z);
+        _results.gyrData.x.add(_gyroX);
+        _results.gyrData.y.add(_gyroY);
+        _results.gyrData.z.add(_gyroZ);
 
         _results.timeStamps.add(DateTime.now().millisecondsSinceEpoch);
       });

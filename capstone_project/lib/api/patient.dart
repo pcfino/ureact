@@ -16,7 +16,7 @@ Future create(Object patientInfo) async {
       '{"pID": 1, "firstName": "John", "lastName": "Doe", "dOB": "1998-04-18", "height": 70, "weight": 215, "sport": "football", "gender": "M", "thirdPartyID": "62936"}');
 }
 
-Future update(Object patientInfo) async {
+Future update(int patientId, Object patientInfo) async {
   return await jsonDecode(
       '{"pID": 1, "firstName": "John", "lastName": "Doe", "dOB": "1998-04-18", "height": 70, "weight": 215, "sport": "football", "gender": "M", "thirdPartyID": "62936"}');
 }

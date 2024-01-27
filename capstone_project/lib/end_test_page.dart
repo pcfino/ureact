@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:capstone_project/test_results_page.dart';
 import 'sensor_recorder.dart';
 import 'dart:async';
-import 'api_util.dart' as api_util;
+import 'api/api_util.dart' as api_util;
 
 class EndTestPage extends StatefulWidget {
   const EndTestPage({super.key, required this.title});

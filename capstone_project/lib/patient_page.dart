@@ -43,7 +43,7 @@ class _PatientPage extends State<PatientPage> {
                       border: OutlineInputBorder(
                         borderSide: BorderSide.none,
                       ),
-                      labelText: "Name",
+                      labelText: "Name *",
                       contentPadding: EdgeInsets.all(11),
                     ),
                     controller: TextEditingController(
@@ -64,7 +64,7 @@ class _PatientPage extends State<PatientPage> {
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          labelText: "DOB",
+                          labelText: "DOB *",
                           contentPadding: EdgeInsets.all(11),
                         ),
                         controller: _date,

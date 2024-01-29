@@ -1,6 +1,5 @@
 import 'package:capstone_project/patient_model.dart';
 import 'package:capstone_project/patient_page.dart';
-import 'package:capstone_project/new_patient_page.dart';
 import 'package:capstone_project/settings_page.dart';
 import 'package:flutter/material.dart';
 

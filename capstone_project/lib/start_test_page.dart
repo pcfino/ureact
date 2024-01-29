@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_project/end_test_page.dart';
+import 'package:capstone_project/tests_page.dart';
 
 class StartTestPage extends StatefulWidget {
-  const StartTestPage({super.key, required this.title});
+  const StartTestPage(
+      {super.key, required this.title, required this.direction});
 
   final String title;
+  final String direction;
 
   @override
   State<StartTestPage> createState() => _StartTestPageState();
@@ -26,123 +29,132 @@ class _StartTestPageState extends State<StartTestPage> {
             leading: BackButton(onPressed: () {
               Navigator.pop(context);
             }),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TestsPage(
+                            reactive: false, dynamic: false, static: false),
+                      ),
+                    );
+                  },
+                  child: const Text('Cancel'))
+            ],
           ),
-          body: const Center(
-              child: Padding(
-                  padding: EdgeInsets.all(24.0),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(
+                  child: Text(
+                    'Directions',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: const Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Colors.grey,
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: const Text(
+                    '1. Attach phone to belt',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: const Text(
+                    '2. Position phone over participant\'s lumbar spine',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: const Text(
+                    '3. Lean participant until you hear the chime',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: const Text(
+                    '4. Hold participant steady and release after 2-5 seconds',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: const Text(
+                    '5. Press the end test button once the participant has regained their balance',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: const Text(
+                    '6. Repeat for each direction',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 100, 0, 5),
                   child: Column(
                     children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 16.0),
+                      Center(
                         child: Text(
-                          'Directions',
-                          style: TextStyle(fontSize: 20),
+                          'Lean ${widget.direction}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('1. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Attach phone to belt',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                      Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Container(
+                              margin: const EdgeInsets.all(
+                                  30), // Modify this till it fills the color properly
+                              color: Colors.black54, // Color
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('2. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Position phone over participant\'s lumbar spine',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.play_circle_fill_rounded,
+                              color: Color.fromRGBO(255, 220, 212, 1),
+                              size: 75,
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('3. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Lean participant until you hear the chime',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EndTestPage(
+                                    title: 'Reactive Test',
+                                    direction: widget.direction,
                                   ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('4. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Hold participant steady and release after 2-5 seconds',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('5. ', style: TextStyle(fontSize: 20)),
-                                  Expanded(
-                                    child: Text(
-                                      'Press the end test button once the participant has regained their balance',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
-                  ))),
-          bottomNavigationBar: BottomAppBar(
-              surfaceTintColor: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FilledButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const EndTestPage(title: 'Reactive Test'),
-                          ),
-                        );
-                      },
-                      child: const Text('Start Test',
-                          style: TextStyle(fontSize: 20))),
-                ],
-              )),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ));
   }
 }

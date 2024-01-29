@@ -3,7 +3,16 @@ from scipy import signal
 from flask import Flask, jsonify, request
 from mysql import connector
 
+import socket
+# pip install numpy
+# pip install scipy
+# pip install flask
+# pip install mysql-connector-python
+# pip install waitress
+
 app = Flask(__name__)
+
+print("Server has started: ")
 
 json_file = {"TTS": 0}
 #@app.route('/postData', methods=['POST'])
@@ -16,13 +25,13 @@ json_file = {"TTS": 0}
 @app.route('/mysql/getResults')
 def getMysql():
     mydb = connector.connect(
-    host="capstone-db.c1zwthlggx60.us-east-1.rds.amazonaws.com",
+    host="kinesiology-db.c9yuqs8kqmi6.us-west-1.rds.amazonaws.com",
     user="admin",
-    password="Concuss2023"
+    password="Kines2024"
     )
     mycursor = mydb.cursor()
-    mycursor.execute("use capstone") 
-    mycursor.execute("SELECT * FROM TestResults")
+    mycursor.execute("use Kinesiology-App") 
+    mycursor.execute("SELECT * FROM test_table")
     myresult = mycursor.fetchone()[0]
     return jsonify({'TTS': str(myresult)})
 
@@ -31,13 +40,13 @@ def setMysql():
     if request.method == 'POST':
         data_from_post = request.json.get('TTS')    
         mydb = connector.connect(
-        host="capstone-db.c1zwthlggx60.us-east-1.rds.amazonaws.com",
+        host="kinesiology-db.c9yuqs8kqmi6.us-west-1.rds.amazonaws.com",
         user="admin",
-        password="Concuss2023"
+        password="Kines2024"
         )
         mycursor = mydb.cursor()
-        mycursor.execute("use capstone") 
-        sql = "INSERT INTO TestResults VALUES(%s)"
+        mycursor.execute("use Kinesiology-App") 
+        sql = "INSERT INTO test_table VALUES(%s)"
         val = [(data_from_post)]
         mycursor.execute(sql, val)
         mydb.commit()
@@ -46,6 +55,7 @@ def setMysql():
 
 @app.route('/timeToStability', methods=['POST'])
 def timeToStability():
+    print("I am here")
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
@@ -95,16 +105,15 @@ def timeToStability():
     return jsonify(t0 = int(t0), EndTTS = int(EndTTS), TTS = TTS)
 
 # Run the developement server
-if __name__ == '__main__':
-    app.run()
+# if __name__ == '__main__':
+#     app.run()
 
 # This is to run as a WSGI server, which essentially means
 # no default logging or hot reload. comment out the  development server code
 # above then uncomment the code below.
 # You will need to install waitress with this command
 # python -m pip install waitress
-"""
+
 if __name__ == "__main__":
     from waitress import serve
-    serve(app, host="127.0.0.1", port=5000)
-"""
+    serve(app, host="0.0.0.0", port=8000)

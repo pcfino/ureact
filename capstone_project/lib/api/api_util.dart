@@ -30,3 +30,16 @@ Future post(String url, Object body) async {
       await http.post(uri, headers: headers, body: jsonEncode(body));
   return response.body;
 }
+
+Future put(String url, Object body) async {
+  var uri = Uri.parse(_getBaseUrl() + url);
+  http.Response response =
+      await http.put(uri, headers: headers, body: jsonEncode(body));
+  return response.body;
+}
+
+Future delete(String url) async {
+  var uri = Uri.parse(_getBaseUrl() + url);
+  http.Response response = await http.delete(uri, headers: headers);
+  return response.body;
+}

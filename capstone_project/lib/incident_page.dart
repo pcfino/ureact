@@ -45,6 +45,15 @@ class _IncidentPage extends State<IncidentPage> {
             Navigator.pop(context);
           }),
           actions: <Widget>[
+            if (editMode)
+              IconButton(
+                icon: const Icon(
+                  Icons.delete_outline,
+                ),
+                onPressed: () {
+                  // delete
+                },
+              ),
             TextButton(
               onPressed: () {
                 setState(() {

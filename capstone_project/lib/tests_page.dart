@@ -35,9 +35,6 @@ class _TestsPage extends State<TestsPage> {
           leading: BackButton(onPressed: () {
             Navigator.pop(context);
           }),
-          actions: <Widget>[
-            TextButton(onPressed: () {}, child: const Text('Save'))
-          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

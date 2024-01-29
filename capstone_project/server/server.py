@@ -1,20 +1,41 @@
+import json
+import datetime
 import numpy as np
 from scipy import signal
 from flask import Flask, jsonify, request
 from mysql import connector
-
-import socket
+from waitress import serve
 # pip install numpy
 # pip install scipy
 # pip install flask
 # pip install mysql-connector-python
 # pip install waitress
+# pip install aws-secretsmanager-caching
+# pip install boto3
+
+# needed to set up a secret key for my user
+# needed to run aws configure
+import botocore 
+import botocore.session 
+from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
+
+client = botocore.session.get_session().create_client('secretsmanager')
+cache_config = SecretCacheConfig()
+cache = SecretCache( config = cache_config, client = client)
+secret = cache.get_secret_string('prod/kines')
+CONFID = json.loads(secret)
+# database connection
+mydb = connector.connect(
+host=CONFID['host'],
+user=CONFID['username'],
+password=CONFID['password']
+)
 
 app = Flask(__name__)
 
 print("Server has started: ")
 
-json_file = {"TTS": 0}
+#json_file = {"TTS": 0}
 #@app.route('/postData', methods=['POST'])
 #def receive_post_data():
 #    if request.method == 'POST':
@@ -22,40 +43,32 @@ json_file = {"TTS": 0}
 #        json_file['counter'] = data_from_post
 #        return jsonify(json_file)
 
-@app.route('/mysql/getResults')
-def getMysql():
-    mydb = connector.connect(
-    host="kinesiology-db.c9yuqs8kqmi6.us-west-1.rds.amazonaws.com",
-    user="admin",
-    password="Kines2024"
-    )
+@app.route('/mysql/getAllPatients')
+def getAllPatients():
     mycursor = mydb.cursor()
-    mycursor.execute("use Kinesiology-App") 
-    mycursor.execute("SELECT * FROM test_table")
-    myresult = mycursor.fetchone()[0]
-    return jsonify({'TTS': str(myresult)})
+    mycursor.execute("USE Kinesiology_App") 
+    mycursor.execute("SELECT * FROM Patient")
+    myresult = mycursor.fetchall()
+    for x in myresult:
+        print(x)
+    return jsonify({'TTS': str(myresult)}) # NEED TO TEST THIS LINE --------------------------------------------------------------------
 
-@app.route('/mysql/setResults', methods=['POST'])
-def setMysql():
+@app.route('/mysql/createNewPatient', methods=['POST'])
+def createNewPatient():
     if request.method == 'POST':
-        data_from_post = request.json.get('TTS')    
-        mydb = connector.connect(
-        host="kinesiology-db.c9yuqs8kqmi6.us-west-1.rds.amazonaws.com",
-        user="admin",
-        password="Kines2024"
-        )
+        data_from_post = request.json.get('TTS') # NEED TO TEST THIS LINE --------------------------------------------------------------
         mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology-App") 
-        sql = "INSERT INTO test_table VALUES(%s)"
-        val = [(data_from_post)]
+        mycursor.execute("use Kinesiology_App") 
+        sql = "INSERT INTO Patient (pFirstName, pLastName, dOB, height, weight, sport, gender) VALUES(%s, %s, %s, %s, %s, %s, %s)"
+        val = [(data_from_post)] # NEED TO TEST THIS LINE ------------------------------------------------------------------------------
+        # val = ('Tony', 'Stark', datetime.date(1970,6,17), 70, 203, 'Soccer', 'Male')
         mycursor.execute(sql, val)
         mydb.commit()
-        json_file['TTS'] = data_from_post
-        return jsonify(json_file)
+        json_file['TTS'] = data_from_post # NEED TO TEST THIS LINE ---------------------------------------------------------------------
+        return jsonify(json_file) # NEED TO TEST THIS LINE -----------------------------------------------------------------------------
 
 @app.route('/timeToStability', methods=['POST'])
 def timeToStability():
-    print("I am here")
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
@@ -115,5 +128,5 @@ def timeToStability():
 # python -m pip install waitress
 
 if __name__ == "__main__":
-    from waitress import serve
     serve(app, host="0.0.0.0", port=8000)
+

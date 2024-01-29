@@ -13,6 +13,9 @@ class IncidentPage extends StatefulWidget {
 class _IncidentPage extends State<IncidentPage> {
   final TextEditingController _date = TextEditingController();
 
+  bool editMode = false;
+  String mode = 'Edit';
+
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(
@@ -27,6 +30,7 @@ class _IncidentPage extends State<IncidentPage> {
   Widget build(BuildContext context) {
     _date.text = "2023/5/3";
     String selectedValue = "Return To Play";
+
     return MaterialApp(
       title: 'Incident',
       theme: ThemeData(
@@ -41,7 +45,29 @@ class _IncidentPage extends State<IncidentPage> {
             Navigator.pop(context);
           }),
           actions: <Widget>[
-            TextButton(onPressed: () {}, child: const Text('Save'))
+            if (editMode)
+              IconButton(
+                icon: const Icon(
+                  Icons.delete_outline,
+                ),
+                onPressed: () {
+                  // delete
+                },
+              ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  if (editMode) {
+                    editMode = false;
+                    mode = 'Edit';
+                  } else if (!editMode) {
+                    editMode = true;
+                    mode = 'Save';
+                  }
+                });
+              },
+              child: Text(mode),
+            )
           ],
         ),
         body: Padding(
@@ -54,13 +80,16 @@ class _IncidentPage extends State<IncidentPage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                 child: DropdownButtonFormField(
+                  disabledHint: Text(selectedValue),
                   value: selectedValue,
                   items: dropdownItems,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedValue = value!;
-                    });
-                  },
+                  onChanged: editMode
+                      ? (String? value) {
+                          setState(() {
+                            selectedValue = value!;
+                          });
+                        }
+                      : null,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -74,26 +103,11 @@ class _IncidentPage extends State<IncidentPage> {
                     contentPadding: EdgeInsets.all(11),
                   ),
                 ),
-                // child: TextField(
-                //   decoration: const InputDecoration(
-                //     border: OutlineInputBorder(
-                //       borderSide: BorderSide.none,
-                //     ),
-                //     labelText: "Type",
-                //     contentPadding: EdgeInsets.all(11),
-                //   ),
-                //   controller: TextEditingController(
-                //     text: "Return To Play",
-                //   ),
-                //   style: const TextStyle(
-                //     fontSize: 20,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                 child: TextField(
+                  readOnly: !editMode,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
@@ -103,17 +117,19 @@ class _IncidentPage extends State<IncidentPage> {
                   ),
                   controller: _date,
                   onTap: () async {
-                    DateTime? selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now(),
-                    );
-                    if (selectedDate != null) {
-                      setState(() {
-                        _date.text =
-                            "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
-                      });
+                    if (editMode) {
+                      DateTime? selectedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now(),
+                      );
+                      if (selectedDate != null) {
+                        setState(() {
+                          _date.text =
+                              "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                        });
+                      }
                     }
                   },
                 ),
@@ -121,6 +137,7 @@ class _IncidentPage extends State<IncidentPage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                 child: TextField(
+                  readOnly: !editMode,
                   maxLines: null,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),

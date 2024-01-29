@@ -11,6 +11,9 @@ class PatientPage extends StatefulWidget {
 class _PatientPage extends State<PatientPage> {
   final TextEditingController _date = TextEditingController();
 
+  bool editMode = false;
+  String mode = 'Edit';
+
   @override
   Widget build(BuildContext context) {
     _date.text = "10/26/1995";
@@ -28,7 +31,29 @@ class _PatientPage extends State<PatientPage> {
             Navigator.pop(context);
           }),
           actions: <Widget>[
-            TextButton(onPressed: () {}, child: const Text('Save'))
+            if (editMode)
+              IconButton(
+                icon: const Icon(
+                  Icons.delete_outline,
+                ),
+                onPressed: () {
+                  // delete
+                },
+              ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  if (editMode) {
+                    editMode = false;
+                    mode = 'Edit';
+                  } else if (!editMode) {
+                    editMode = true;
+                    mode = 'Save';
+                  }
+                });
+              },
+              child: Text(mode),
+            ),
           ],
         ),
         body: Center(
@@ -36,30 +61,80 @@ class _PatientPage extends State<PatientPage> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                if (!editMode)
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    child: TextField(
+                      readOnly: !editMode,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        labelText: "Name *",
+                        contentPadding: EdgeInsets.all(11),
                       ),
-                      labelText: "Name *",
-                      contentPadding: EdgeInsets.all(11),
-                    ),
-                    controller: TextEditingController(
-                      text: "Abby Smith",
-                    ),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      controller: TextEditingController(
+                        text: "Abby Smith",
+                      ),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
+                if (editMode)
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              labelText: "First *",
+                              contentPadding: EdgeInsets.all(11),
+                            ),
+                            controller: TextEditingController(
+                              text: "Abby",
+                            ),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            readOnly: !editMode,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              labelText: "Last *",
+                              contentPadding: EdgeInsets.all(11),
+                            ),
+                            controller: TextEditingController(
+                              text: "Smith",
+                            ),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 Row(
                   children: [
                     Expanded(
                       flex: 1,
                       child: TextField(
+                        readOnly: !editMode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
@@ -69,17 +144,19 @@ class _PatientPage extends State<PatientPage> {
                         ),
                         controller: _date,
                         onTap: () async {
-                          DateTime? selectedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime.now(),
-                          );
-                          if (selectedDate != null) {
-                            setState(() {
-                              _date.text =
-                                  "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
-                            });
+                          if (editMode) {
+                            DateTime? selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime.now(),
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                _date.text =
+                                    "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                              });
+                            }
                           }
                         },
                       ),
@@ -87,6 +164,7 @@ class _PatientPage extends State<PatientPage> {
                     Expanded(
                       flex: 1,
                       child: TextField(
+                        readOnly: !editMode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
@@ -106,6 +184,7 @@ class _PatientPage extends State<PatientPage> {
                     Expanded(
                       flex: 1,
                       child: TextField(
+                        readOnly: !editMode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
@@ -121,6 +200,7 @@ class _PatientPage extends State<PatientPage> {
                     Expanded(
                       flex: 1,
                       child: TextField(
+                        readOnly: !editMode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
@@ -140,6 +220,7 @@ class _PatientPage extends State<PatientPage> {
                     Expanded(
                       flex: 1,
                       child: TextField(
+                        readOnly: !editMode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
@@ -155,6 +236,7 @@ class _PatientPage extends State<PatientPage> {
                     Expanded(
                       flex: 1,
                       child: TextField(
+                        readOnly: !editMode,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,

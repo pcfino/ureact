@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_project/start_test_page.dart';
 import 'package:capstone_project/test_results_page.dart';
+import 'package:capstone_project/tests_page.dart';
 
 class IncidentPage extends StatefulWidget {
   const IncidentPage({super.key});
@@ -12,9 +13,20 @@ class IncidentPage extends StatefulWidget {
 class _IncidentPage extends State<IncidentPage> {
   final TextEditingController _date = TextEditingController();
 
+  List<DropdownMenuItem<String>> get dropdownItems {
+    List<DropdownMenuItem<String>> menuItems = [
+      const DropdownMenuItem(
+          value: "Return To Play", child: Text("Return To Play")),
+      const DropdownMenuItem(value: "Concussion", child: Text("Concussion")),
+      const DropdownMenuItem(value: "Check Up", child: Text("Check Up")),
+    ];
+    return menuItems;
+  }
+
   @override
   Widget build(BuildContext context) {
     _date.text = "2023/5/3";
+    String selectedValue = "Return To Play";
     return MaterialApp(
       title: 'Incident',
       theme: ThemeData(
@@ -41,22 +53,43 @@ class _IncidentPage extends State<IncidentPage> {
             children: [
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                child: TextField(
+                child: DropdownButtonFormField(
+                  value: selectedValue,
+                  items: dropdownItems,
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedValue = value!;
+                    });
+                  },
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                     ),
-                    labelText: "Type",
+                    labelText: "Type *",
                     contentPadding: EdgeInsets.all(11),
                   ),
-                  controller: TextEditingController(
-                    text: "Return To Play",
-                  ),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
                 ),
+                // child: TextField(
+                //   decoration: const InputDecoration(
+                //     border: OutlineInputBorder(
+                //       borderSide: BorderSide.none,
+                //     ),
+                //     labelText: "Type",
+                //     contentPadding: EdgeInsets.all(11),
+                //   ),
+                //   controller: TextEditingController(
+                //     text: "Return To Play",
+                //   ),
+                //   style: const TextStyle(
+                //     fontSize: 20,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
               ),
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
@@ -65,7 +98,7 @@ class _IncidentPage extends State<IncidentPage> {
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                     ),
-                    labelText: "Date",
+                    labelText: "Date *",
                     contentPadding: EdgeInsets.all(11),
                   ),
                   controller: _date,
@@ -125,10 +158,8 @@ class _IncidentPage extends State<IncidentPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const TestResultsPage(
-                                //accelData: ['0'],
-                                timeToStab: '0',
-                              ),
+                              builder: (context) => const TestsPage(
+                                  reactive: true, dynamic: true, static: true),
                             ),
                           );
                         },
@@ -139,10 +170,8 @@ class _IncidentPage extends State<IncidentPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const TestResultsPage(
-                                //accelData: ['0'],
-                                timeToStab: '0',
-                              ),
+                              builder: (context) => const TestsPage(
+                                  reactive: true, dynamic: true, static: true),
                             ),
                           );
                         },
@@ -153,10 +182,8 @@ class _IncidentPage extends State<IncidentPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const TestResultsPage(
-                                //accelData: ['0'],
-                                timeToStab: '0',
-                              ),
+                              builder: (context) => const TestsPage(
+                                  reactive: true, dynamic: true, static: true),
                             ),
                           );
                         },
@@ -173,8 +200,8 @@ class _IncidentPage extends State<IncidentPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    const StartTestPage(title: 'Reactive Test'),
+                builder: (context) => const TestsPage(
+                    reactive: false, dynamic: false, static: false),
               ),
             );
           },

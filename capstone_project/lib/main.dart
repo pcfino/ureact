@@ -1,6 +1,9 @@
-import 'package:capstone_project/patient_model.dart';
+import 'dart:convert';
+
+import 'package:capstone_project/patient.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/settings_page.dart';
+import 'package:capstone_project/api/patient_api.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,47 +17,41 @@ void main() {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  //final jsonPatientList = getAll() as Map<String, dynamic>;
+
   @override
   State<MyApp> createState() => _MyApp();
 }
 
 class _MyApp extends State<MyApp> {
-  static List<PatientModel> patientList = [
-    PatientModel("Abby", "Smith"),
-    PatientModel("Alex", "Johnson"),
-    PatientModel("Alfred", "Hitchcock"),
-    PatientModel("Amy", "Winehouse"),
-    PatientModel("Arnold", "Schwarzenegger"),
-    PatientModel("Brant", "Kuithe"),
-    PatientModel("Bob", "Thebuilder"),
-    PatientModel("Bobby", "Newport"),
-    PatientModel("Brett", "Favre"),
-    PatientModel("Bill", "Gates"),
-    PatientModel("Cam", "Hoefer"),
-    PatientModel("Charlie", "Crockett"),
-    PatientModel("Carson", "Wells"),
-    PatientModel("Chris", "Jones"),
-    PatientModel("Carson", "Palmer"),
-    PatientModel("Josh", "Allen"),
-    PatientModel("JJ", "Abrams"),
-    PatientModel("Ron", "Burgundy"),
-  ];
+  List<Patient> patientList = List<Patient>.empty();
 
-  List<PatientModel> displayPatientList = List.from(patientList);
+  void getPatients() async {
+    try {
+      List<dynamic> jsonPatientList = await getAll() as List;
+      patientList = List<Patient>.from(
+          jsonPatientList.map((model) => Patient.fromJson(model)));
+    } catch (e) {
+      print("Error fetching patients: $e");
+    }
+  }
+
+  List<Patient> displayPatientList = List<Patient>.empty();
   void alphabetize() {
-    displayPatientList.sort((a, b) => a.lastName!.compareTo(b.lastName!));
+    displayPatientList = List.from(patientList);
+    displayPatientList.sort((a, b) => a.lastName.compareTo(b.lastName));
   }
 
   void updateList(String value) {
     setState(() {
       displayPatientList = patientList
           .where((element) =>
-              element.lastName!.toLowerCase().contains(value.toLowerCase()) ||
-              element.firstName!.toLowerCase().contains(value.toLowerCase()) ||
-              ("${element.firstName!} ${element.lastName!}")
+              element.lastName.toLowerCase().contains(value.toLowerCase()) ||
+              element.firstName.toLowerCase().contains(value.toLowerCase()) ||
+              ("${element.firstName} ${element.lastName}")
                   .toLowerCase()
                   .contains(value.toLowerCase()) ||
-              ("${element.lastName!}, ${element.firstName!}")
+              ("${element.lastName}, ${element.firstName}")
                   .toLowerCase()
                   .contains(value.toLowerCase()))
           .toList();
@@ -65,6 +62,7 @@ class _MyApp extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    getPatients();
     alphabetize();
     return MaterialApp(
       title: 'Patients',
@@ -137,7 +135,7 @@ class _MyApp extends State<MyApp> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${displayPatientList[index].lastName!}, ${displayPatientList[index].firstName!}",
+                                "${displayPatientList[index].lastName}, ${displayPatientList[index].firstName}",
                               ),
                             ],
                           ),

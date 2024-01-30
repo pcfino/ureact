@@ -8,7 +8,8 @@ import 'dart:convert';
 /// @return Json object with the incident information
 Future get(int incidentId) async {
   return await jsonDecode(
-      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "tests": [{"tID": 1, "tDate": "2023-09-20", "tName": "Day of"}, {"tID": 2, "tDate": "2023-09-21", "tName": "Day after"}]}');
+      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury"}');
+  // '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "tests": [{"tID": 1, "tDate": "2023-09-20", "tName": "Day of"}, {"tID": 2, "tDate": "2023-09-21", "tName": "Day after"}]}');
 }
 
 /// Makes request to create a incident

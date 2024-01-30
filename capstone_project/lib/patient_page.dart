@@ -280,7 +280,9 @@ class _PatientPage extends State<PatientPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
+                                builder: (context) => const IncidentPage(
+                                  iID: 1,
+                                ),
                               ),
                             );
                           },
@@ -292,7 +294,9 @@ class _PatientPage extends State<PatientPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
+                                builder: (context) => const IncidentPage(
+                                  iID: 1,
+                                ),
                               ),
                             );
                           },
@@ -304,7 +308,9 @@ class _PatientPage extends State<PatientPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
+                                builder: (context) => const IncidentPage(
+                                  iID: 1,
+                                ),
                               ),
                             );
                           },
@@ -316,7 +322,9 @@ class _PatientPage extends State<PatientPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
+                                builder: (context) => const IncidentPage(
+                                  iID: 1,
+                                ),
                               ),
                             );
                           },
@@ -328,7 +336,9 @@ class _PatientPage extends State<PatientPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
+                                builder: (context) => const IncidentPage(
+                                  iID: 1,
+                                ),
                               ),
                             );
                           },
@@ -340,7 +350,9 @@ class _PatientPage extends State<PatientPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
+                                builder: (context) => const IncidentPage(
+                                  iID: 1,
+                                ),
                               ),
                             );
                           },
@@ -352,7 +364,9 @@ class _PatientPage extends State<PatientPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const IncidentPage(),
+                                builder: (context) => const IncidentPage(
+                                  iID: 1,
+                                ),
                               ),
                             );
                           },
@@ -370,7 +384,9 @@ class _PatientPage extends State<PatientPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const IncidentPage(),
+                builder: (context) => const IncidentPage(
+                  iID: 1,
+                ),
               ),
             );
           },

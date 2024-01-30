@@ -67,6 +67,8 @@ class SensorRecorder {
   double _accY = 0.0; 
   double _accZ = 0.0; 
 
+  bool _ready = false;
+
   SensorRecorder() {
     // _streamSubscriptions = <StreamSubscription>[];
 
@@ -76,9 +78,9 @@ class SensorRecorder {
         ready = angleMeet(accEvent, false, true, false, false);
       };
     }*/
-    _stream = accelerometerEventStream().listen((AccelerometerEvent event) {
-                  angleMeet(<double>[event.x, event.y, event.z], false, true, false, false);
-    });
+    //_stream = accelerometerEventStream().listen((AccelerometerEvent event) {
+                  //angleMeet(<double>[event.x, event.y, event.z], false, true, false, false);
+    //});
 
 
     // _accStream =
@@ -111,6 +113,14 @@ class SensorRecorder {
       _accX = event.x; 
       _accY = event.y; 
       _accZ = event.z; });
+
+    const samplePeriod = 20; // ms
+    Timer.periodic(const Duration(milliseconds: samplePeriod), (timer) async {
+      if(_ready){
+        timer.cancel();
+      }
+      angleMeet([_accX, _accY, _accZ], false, true, false, false);
+    });
   }
 
   SensorRecorderResults endRecording() {
@@ -123,7 +133,7 @@ class SensorRecorder {
   }
 
   void startRecording() {
-      _stream.cancel();
+      //_stream.cancel();
       const samplePeriod = 20; // ms
       const sampleDuration = Duration(milliseconds: samplePeriod);
       Timer(const Duration(seconds: 3), () => FlutterRingtonePlayer.stop());
@@ -190,13 +200,9 @@ class SensorRecorder {
         volume: 0.8, // Android only - API >= 28
         asAlarm: false, // Android only - all APIs
       );
-      //_killTimer = true;
       startRecording();
+      _ready = true;
     }
-    //SFlutterRingtonePlayer.stop();
-    /*acceler
-    ometerEvents.listen((AccelerometerEvent event) {
-      angleMeet(event.x, event.y, event.z, front, back, side);
-    });*/
+    //angleMeet([_accX, _accY, _accZ], front, back, left, right);
   }
 }

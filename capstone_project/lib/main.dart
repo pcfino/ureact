@@ -25,18 +25,28 @@ class MyApp extends StatefulWidget {
 
 class _MyApp extends State<MyApp> {
   List<Patient> patientList = List<Patient>.empty();
+  List<Patient> displayPatientList = List<Patient>.empty();
 
-  void getPatients() async {
+  @override
+  void initState() {
+    super.initState();
+    //getPatients();
+  }
+
+  getPatients() async {
     try {
       List<dynamic> jsonPatientList = await getAll() as List;
       patientList = List<Patient>.from(
           jsonPatientList.map((model) => Patient.fromJson(model)));
+      setState(() {
+        alphabetize();
+      });
+      //return patientList;
     } catch (e) {
       print("Error fetching patients: $e");
     }
   }
 
-  List<Patient> displayPatientList = List<Patient>.empty();
   void alphabetize() {
     displayPatientList = List.from(patientList);
     displayPatientList.sort((a, b) => a.lastName.compareTo(b.lastName));
@@ -62,8 +72,8 @@ class _MyApp extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // maybe we don't want to call every time
     getPatients();
-    alphabetize();
     return MaterialApp(
       title: 'Patients',
       theme: ThemeData(

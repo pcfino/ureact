@@ -155,7 +155,8 @@ class _MyApp extends State<MyApp> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PatientPage(),
+                            builder: (context) =>
+                                PatientPage(pID: displayPatientList[index].pID),
                           ),
                         );
                       },
@@ -171,7 +172,7 @@ class _MyApp extends State<MyApp> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const PatientPage(),
+                builder: (context) => const PatientPage(pID: -1),
               ),
             );
           },

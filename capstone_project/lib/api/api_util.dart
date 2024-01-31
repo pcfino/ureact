@@ -38,8 +38,9 @@ Future put(String url, Object body) async {
   return response.body;
 }
 
-Future delete(String url) async {
+Future delete(String url, Object body) async {
   var uri = Uri.parse(_getBaseUrl() + url);
-  http.Response response = await http.delete(uri, headers: headers);
+  http.Response response =
+      await http.delete(uri, headers: headers, body: jsonEncode(body));
   return response.body;
 }

@@ -1,12 +1,12 @@
-import 'api_util.dart';
+import 'api_util.dart' as api;
 import 'dart:convert';
 
 /// Makes request to get all patients
 ///
 /// @return Json object with the patients info
 Future getAll() async {
-  return await jsonDecode(
-      '[{"pID": 1, "firstName": "John", "lastName": "Doe"}, {"pID": 2, "firstName": "Jane", "lastName": "Smith"}, {"pID": 3, "firstName": "Austin", "lastName": "Hill"}]');
+  var results = await api.get('/mysql/getAllPatients');
+  return jsonDecode(results);
 }
 
 /// Makes request to get a patient and relevent information
@@ -15,8 +15,8 @@ Future getAll() async {
 ///
 /// @return Json object with the patient information
 Future get(int patientId) async {
-  return await jsonDecode(
-      '{"pID": 1, "firstName": "John", "lastName": "Doe", "dOB": "1998-04-18", "height": 70, "weight": 215, "sport": "football", "gender": "M", "thirdPartyID": "62936", "patients": [{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20"}, {"iID": 2, "iName": "Knee Fracture", "iDate": "2023-12-20"}]}');
+  var results = await api.get('/mysql/getOnePatient?ID=$patientId');
+  return await jsonDecode(results);
 }
 
 /// Makes request to create a patient
@@ -26,9 +26,9 @@ Future get(int patientId) async {
 /// {firstName: String, lastName: String, dOB: String form YYYY-MM-DD, height: int, weight: int, sport: String, gender: String, thirdPartyID: String}
 ///
 /// @return Json object with the created patient
-Future create(Object patientInfo) async {
-  return await jsonDecode(
-      '{"pID": 1, "firstName": "John", "lastName": "Doe", "dOB": "1998-04-18", "height": 70, "weight": 215, "sport": "football", "gender": "M", "thirdPartyID": "62936"}');
+Future create(Map patientInfo) async {
+  var results = await api.post('/mysql/createNewPatient', patientInfo);
+  return await jsonDecode(results);
 }
 
 /// Makes request to update a patient
@@ -39,9 +39,10 @@ Future create(Object patientInfo) async {
 /// {firstName: String, lastName: String, dOB: String form YYYY-MM-DD, height: int, weight: int, sport: String, gender: String, thirdPartyID: String}
 ///
 /// @return Json object with the created patient
-Future update(int patientId, Object patientInfo) async {
-  return await jsonDecode(
-      '{"pID": 1, "firstName": "John", "lastName": "Doe", "dOB": "1998-04-18", "height": 70, "weight": 215, "sport": "football", "gender": "M", "thirdPartyID": "62936"}');
+Future update(int patientId, Map patientInfo) async {
+  patientInfo['pID'] = patientId;
+  var results = await api.put('/mysql/updatePatient', patientInfo);
+  return await jsonDecode(results);
 }
 
 /// Makes request to delete a patient and relevent information
@@ -50,6 +51,7 @@ Future update(int patientId, Object patientInfo) async {
 ///
 /// @return boolean if deletion was successful
 Future delete(int patientId) async {
-  // was the deletion successful
-  return true;
+  var results = await api.delete('/mysql/deletePatient', {'pID': patientId});
+  var decodedResults = jsonDecode(results);
+  return decodedResults['Status'];
 }

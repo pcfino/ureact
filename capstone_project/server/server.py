@@ -312,7 +312,7 @@ def deleteIncident():
 
 @app.route('/mysql/getTest', methods=['GET'])
 def getTest():
-    #{"tID": 1, "tName": "Day of", "tDate": "2023-09-20", "tNotes": "this is some notes about the test", "baseline": 0, "iID": 1, "dynamic": {}, "static": {}, "reactive": {"rID": 1, "fTime": 1.234, "bTime": 0.873, "lTime": 0.876, "rTime": 0.945, "mTime": 0.912, "tID": 1}}
+    #{"tID": 1, "tName": "Day of", "tDate": "2023-09-20", "tNotes": "this is some notes about the test", "iID": 1, "dynamic": {}, "static": {}, "reactive": {"rID": 1, "fTime": 1.234, "bTime": 0.873, "lTime": 0.876, "rTime": 0.945, "mTime": 0.912, "tID": 1}}
     if request.method == 'GET':
         data = request.args.get('ID')
         mycursor = mydb.cursor()
@@ -327,7 +327,7 @@ def getTest():
         # Get the Incident we are looking for
         test = OrderedDict()
         for x in myresult:
-            test = OrderedDict({"tID": x[0], "tName": x[1], "tDate": x[2], "tNotes": x[3], "baseline": x[4], "iID": x[5], "dynamic": {}, "static": {}, "reactive": {}})
+            test = OrderedDict({"tID": x[0], "tName": x[1], "tDate": x[2], "tNotes": x[3], "iID": x[4], "dynamic": {}, "static": {}, "reactive": {}})
 
         # Get the Tests that that patient has
         sql = "SELECT * FROM ReactiveTest WHERE tID=%s"
@@ -343,17 +343,17 @@ def getTest():
 # RIGHT NOW, YOU MUST INPUT ALL VALUES, talk to kines about if they want this, or deal with it on front end
 @app.route('/mysql/createTest', methods=['POST'])
 def createTest():
-    #'{"tID": 1, "tName": "Day of", "tDate": "2023-09-20", "tNotes": "this is some notes about the test", "baseline": 0, "iID": 1, "dynamic": {}, "static": {}, "reactive": {}
+    #'{"tID": 1, "tName": "Day of", "tDate": "2023-09-20", "tNotes": "this is some notes about the test", "iID": 1, "dynamic": {}, "static": {}, "reactive": {}
     if request.method == 'POST':
         data = request.json
         mycursor = mydb.cursor()
         mycursor.execute("use Kinesiology_App") 
-        sql = "INSERT INTO Test (tName, tDate, tNotes, baseline, iID) VALUES(%s, %s, %s, %s, %s)"
-        val = (data['tName'], data['tDate'], data['tNotes'], data['baseline'], data['iID'])
+        sql = "INSERT INTO Test (tName, tDate, tNotes, iID) VALUES(%s, %s, %s, %s)"
+        val = (data['tName'], data['tDate'], data['tNotes'], data['iID'])
         mycursor.execute(sql, val)
         mydb.commit()
         tID = mycursor.lastrowid
-        returnTest = {"tName": tID, "tName": data['tName'], "tDate": data['tDate'], "tNotes": data['tNotes'], "baseline": data['baseline'], "iID": data['iID'], "dynamic": {}, "static": {}, "reactive": {}}
+        returnTest = {"tID": tID, "tName": data['tName'], "tDate": data['tDate'], "tNotes": data['tNotes'], "iID": data['iID'], "dynamic": {}, "static": {}, "reactive": {}}
         return jsonify(returnTest)
 
 @app.route('/mysql/createReactiveTest', methods=['POST'])

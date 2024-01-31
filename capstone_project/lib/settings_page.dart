@@ -4,7 +4,7 @@ class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  _SettingsPage createState() => _SettingsPage();
+  State<SettingsPage> createState() => _SettingsPage();
 }
 
 class _SettingsPage extends State<SettingsPage> {
@@ -28,7 +28,7 @@ class _SettingsPage extends State<SettingsPage> {
         ),
         body: Center(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 const Row(

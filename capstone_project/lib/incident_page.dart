@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:capstone_project/start_test_page.dart';
-import 'package:capstone_project/test_results_page.dart';
+// import 'package:capstone_project/start_test_page.dart';
+// import 'package:capstone_project/test_results_page.dart';
 import 'package:capstone_project/tests_page.dart';
-import 'package:capstone_project/incident.dart';
+import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
 
 class IncidentPage extends StatefulWidget {
@@ -65,7 +65,8 @@ class _IncidentPage extends State<IncidentPage> {
                     Icons.delete_outline,
                   ),
                   onPressed: () {
-                    // delete
+                    delete(incident.iID);
+                    Navigator.pop(context);
                   },
                 ),
               TextButton(
@@ -190,55 +191,93 @@ class _IncidentPage extends State<IncidentPage> {
                   color: Colors.grey,
                 ),
                 Expanded(
-                  child: ListView(
-                    children: ListTile.divideTiles(
-                      context: context,
-                      tiles: [
-                        ListTile(
-                          title: const Text('May 5, 2023'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const TestsPage(
-                                    reactive: true,
-                                    dynamic: true,
-                                    static: true),
-                              ),
-                            );
-                          },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(8.0),
+                    itemCount: incident.tests.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        child: Card(
+                          margin: const EdgeInsets.all(0),
+                          elevation: 0,
+                          color: Colors.white10,
+                          shape: const Border(
+                            bottom: BorderSide(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  incident.tests[index].tDate,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        ListTile(
-                          title: const Text('May 3, 2023'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const TestsPage(
-                                    reactive: true,
-                                    dynamic: true,
-                                    static: true),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: const Text('April 30, 2023'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const TestsPage(
-                                    reactive: true,
-                                    dynamic: true,
-                                    static: true),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ).toList(),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TestsPage(
+                                  reactive: true, dynamic: true, static: true),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
+                  // child: ListView(
+                  //   children: ListTile.divideTiles(
+                  //     context: context,
+                  //     tiles: [
+                  //       ListTile(
+                  //         title: const Text('May 5, 2023'),
+                  //         onTap: () {
+                  //           Navigator.push(
+                  //             context,
+                  //             MaterialPageRoute(
+                  //               builder: (context) => const TestsPage(
+                  //                   reactive: true,
+                  //                   dynamic: true,
+                  //                   static: true),
+                  //             ),
+                  //           );
+                  //         },
+                  //       ),
+                  //       ListTile(
+                  //         title: const Text('May 3, 2023'),
+                  //         onTap: () {
+                  //           Navigator.push(
+                  //             context,
+                  //             MaterialPageRoute(
+                  //               builder: (context) => const TestsPage(
+                  //                   reactive: true,
+                  //                   dynamic: true,
+                  //                   static: true),
+                  //             ),
+                  //           );
+                  //         },
+                  //       ),
+                  //       ListTile(
+                  //         title: const Text('April 30, 2023'),
+                  //         onTap: () {
+                  //           Navigator.push(
+                  //             context,
+                  //             MaterialPageRoute(
+                  //               builder: (context) => const TestsPage(
+                  //                   reactive: true,
+                  //                   dynamic: true,
+                  //                   static: true),
+                  //             ),
+                  //           );
+                  //         },
+                  //       ),
+                  //     ],
+                  //   ).toList(),
+                  // ),
                 ),
               ],
             ),
@@ -406,55 +445,96 @@ class _IncidentPage extends State<IncidentPage> {
                           color: Colors.grey,
                         ),
                         Expanded(
-                          child: ListView(
-                            children: ListTile.divideTiles(
-                              context: context,
-                              tiles: [
-                                ListTile(
-                                  title: const Text('May 5, 2023'),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const TestsPage(
-                                            reactive: true,
-                                            dynamic: true,
-                                            static: true),
-                                      ),
-                                    );
-                                  },
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(8.0),
+                            itemCount: incident.tests.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                child: Card(
+                                  margin: const EdgeInsets.all(0),
+                                  elevation: 0,
+                                  color: Colors.white10,
+                                  shape: const Border(
+                                    bottom: BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          incident.tests[index].tDate,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                ListTile(
-                                  title: const Text('May 3, 2023'),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const TestsPage(
-                                            reactive: true,
-                                            dynamic: true,
-                                            static: true),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                ListTile(
-                                  title: const Text('April 30, 2023'),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const TestsPage(
-                                            reactive: true,
-                                            dynamic: true,
-                                            static: true),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ).toList(),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const TestsPage(
+                                          reactive: true,
+                                          dynamic: true,
+                                          static: true),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           ),
+                          // child: ListView(
+                          //   children: ListTile.divideTiles(
+                          //     context: context,
+                          //     tiles: [
+                          //       ListTile(
+                          //         title: const Text('May 5, 2023'),
+                          //         onTap: () {
+                          //           Navigator.push(
+                          //             context,
+                          //             MaterialPageRoute(
+                          //               builder: (context) => const TestsPage(
+                          //                   reactive: true,
+                          //                   dynamic: true,
+                          //                   static: true),
+                          //             ),
+                          //           );
+                          //         },
+                          //       ),
+                          //       ListTile(
+                          //         title: const Text('May 3, 2023'),
+                          //         onTap: () {
+                          //           Navigator.push(
+                          //             context,
+                          //             MaterialPageRoute(
+                          //               builder: (context) => const TestsPage(
+                          //                   reactive: true,
+                          //                   dynamic: true,
+                          //                   static: true),
+                          //             ),
+                          //           );
+                          //         },
+                          //       ),
+                          //       ListTile(
+                          //         title: const Text('April 30, 2023'),
+                          //         onTap: () {
+                          //           Navigator.push(
+                          //             context,
+                          //             MaterialPageRoute(
+                          //               builder: (context) => const TestsPage(
+                          //                   reactive: true,
+                          //                   dynamic: true,
+                          //                   static: true),
+                          //             ),
+                          //           );
+                          //         },
+                          //       ),
+                          //     ],
+                          //   ).toList(),
+                          // ),
                         ),
                       ],
                     ),

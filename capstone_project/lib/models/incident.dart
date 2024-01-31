@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:capstone_project/models/test.dart';
 
 /// This allows the `User` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
@@ -9,14 +10,7 @@ part 'incident.g.dart';
 /// JSON serialization logic to be generated.
 @JsonSerializable()
 class Incident {
-  Incident(
-    this.iID,
-    this.iName,
-    this.iDate,
-    this.iNotes,
-    this.pID,
-    /*this.tests*/
-  );
+  Incident(this.iID, this.iName, this.iDate, this.iNotes, this.pID, this.tests);
 
   @JsonKey(required: true)
   int iID;
@@ -31,7 +25,7 @@ class Incident {
   int pID;
 
   String? iNotes;
-  // List<Test> tests;
+  List<Test> tests;
 
   /// A necessary factory constructor for creating a new Incident instance
   /// from a map. Pass the map to the generated `_$IncidentFromJson()` constructor.

@@ -1,6 +1,6 @@
-import 'dart:convert';
+// import 'dart:convert';
 
-import 'package:capstone_project/patient.dart';
+import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/settings_page.dart';
 import 'package:capstone_project/api/patient_api.dart';

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 import 'package:capstone_project/start_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/test_results_page.dart';
@@ -60,8 +60,7 @@ class _EndTestPageState extends State<EndTestPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TestsPage(
-                            reactive: false, dynamic: false, static: false),
+                        builder: (context) => const TestsPage(tID: -1),
                       ),
                     );
                   },

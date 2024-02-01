@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:capstone_project/start_test_page.dart';
-import 'package:capstone_project/test_results_page.dart';
 import 'package:capstone_project/tests_page.dart';
+import 'package:capstone_project/models/incident.dart';
+import 'package:capstone_project/api/incident_api.dart';
 
 class IncidentPage extends StatefulWidget {
-  const IncidentPage({super.key});
+  const IncidentPage({super.key, this.iID = -1});
+  final int iID;
 
   @override
   State<IncidentPage> createState() => _IncidentPage();
 }
 
 class _IncidentPage extends State<IncidentPage> {
+  late Incident incident;
   final TextEditingController _date = TextEditingController();
 
   bool editMode = false;
@@ -26,11 +28,29 @@ class _IncidentPage extends State<IncidentPage> {
     return menuItems;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    _date.text = "2023/5/3";
-    String selectedValue = "Return To Play";
+  Future<dynamic> getIncident(int iID) async {
+    try {
+      dynamic jsonIncident = await get(iID);
+      incident = Incident.fromJson(jsonIncident);
+      return incident;
+    } catch (e) {
+      print("Error fetching incidents: $e");
+    }
+  }
 
+  Future<dynamic> updateIncident() async {
+    try {
+      dynamic jsonIncident = await update(incident.iID,
+          {incident.iName, incident.iDate, incident.iNotes, incident.pID});
+      incident = Incident.fromJson(jsonIncident);
+      return incident;
+    } catch (e) {
+      print("Error updating incident: $e");
+    }
+  }
+
+  Widget incidentPageContent(
+      BuildContext context, Incident incident, String selectedValue) {
     return MaterialApp(
       title: 'Incident',
       theme: ThemeData(
@@ -51,20 +71,28 @@ class _IncidentPage extends State<IncidentPage> {
                   Icons.delete_outline,
                 ),
                 onPressed: () {
-                  // delete
+                  delete(incident.iID);
+                  Navigator.pop(context);
                 },
               ),
             TextButton(
-              onPressed: () {
-                setState(() {
-                  if (editMode) {
-                    editMode = false;
-                    mode = 'Edit';
-                  } else if (!editMode) {
+              onPressed: () async {
+                if (editMode) {
+                  Incident? updIncident = await updateIncident();
+
+                  if (updIncident != null && context.mounted) {
+                    incident = updIncident;
+                    setState(() {
+                      editMode = false;
+                      mode = 'Edit';
+                    });
+                  }
+                } else if (!editMode) {
+                  setState(() {
                     editMode = true;
                     mode = 'Save';
-                  }
-                });
+                  });
+                }
               },
               child: Text(mode),
             )
@@ -87,6 +115,9 @@ class _IncidentPage extends State<IncidentPage> {
                       ? (String? value) {
                           setState(() {
                             selectedValue = value!;
+                            if (editMode) {
+                              incident.iName = selectedValue;
+                            }
                           });
                         }
                       : null,
@@ -128,6 +159,10 @@ class _IncidentPage extends State<IncidentPage> {
                         setState(() {
                           _date.text =
                               "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                          if (editMode) {
+                            incident.iDate =
+                                "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                          }
                         });
                       }
                     }
@@ -143,10 +178,12 @@ class _IncidentPage extends State<IncidentPage> {
                     border: OutlineInputBorder(),
                     labelText: "Notes",
                   ),
-                  controller: TextEditingController(
-                    text:
-                        "Abby was hit in the head by another player while playing a soccer game and experienced a concussion.",
-                  ),
+                  controller: TextEditingController(text: incident.iNotes),
+                  onSubmitted: (value) {
+                    if (editMode) {
+                      incident.iNotes = value;
+                    }
+                  },
                 ),
               ),
               Container(
@@ -165,48 +202,43 @@ class _IncidentPage extends State<IncidentPage> {
                 color: Colors.grey,
               ),
               Expanded(
-                child: ListView(
-                  children: ListTile.divideTiles(
-                    context: context,
-                    tiles: [
-                      ListTile(
-                        title: const Text('May 5, 2023'),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TestsPage(
-                                  reactive: true, dynamic: true, static: true),
-                            ),
-                          );
-                        },
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: incident.tests!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      child: Card(
+                        margin: const EdgeInsets.all(0),
+                        elevation: 0,
+                        color: Colors.white10,
+                        shape: const Border(
+                          bottom: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                incident.tests![index].tDate,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      ListTile(
-                        title: const Text('May 3, 2023'),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TestsPage(
-                                  reactive: true, dynamic: true, static: true),
-                            ),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('April 30, 2023'),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TestsPage(
-                                  reactive: true, dynamic: true, static: true),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ).toList(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                TestsPage(tID: incident.tests![index].tID),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ],
@@ -217,8 +249,7 @@ class _IncidentPage extends State<IncidentPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const TestsPage(
-                    reactive: false, dynamic: false, static: false),
+                builder: (context) => const TestsPage(tID: -1),
               ),
             );
           },
@@ -227,5 +258,31 @@ class _IncidentPage extends State<IncidentPage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (editMode) {
+      _date.text = incident.iDate;
+      String selectedValue = incident.iName;
+
+      return incidentPageContent(context, incident, selectedValue);
+    } else {
+      return FutureBuilder(
+          future: getIncident(widget.iID),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator(); // or any other loading indicator
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              Incident incident = snapshot.data!;
+              _date.text = incident.iDate;
+              String selectedValue = incident.iName;
+
+              return incidentPageContent(context, incident, selectedValue);
+            }
+          });
+    }
   }
 }

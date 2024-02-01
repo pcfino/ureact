@@ -232,8 +232,8 @@ class _IncidentPage extends State<IncidentPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const TestsPage(
-                                reactive: true, dynamic: true, static: true),
+                            builder: (context) =>
+                                TestsPage(tID: incident.tests![index].tID),
                           ),
                         );
                       },
@@ -249,8 +249,7 @@ class _IncidentPage extends State<IncidentPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const TestsPage(
-                    reactive: false, dynamic: false, static: false),
+                builder: (context) => const TestsPage(tID: -1),
               ),
             );
           },

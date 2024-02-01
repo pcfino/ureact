@@ -36,7 +36,8 @@ class _StartTestPageState extends State<StartTestPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const TestsPage(
-                            reactive: false, dynamic: false, static: false),
+                          tID: -1,
+                        ),
                       ),
                     );
                   },

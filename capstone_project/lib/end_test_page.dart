@@ -60,8 +60,7 @@ class _EndTestPageState extends State<EndTestPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TestsPage(
-                            reactive: false, dynamic: false, static: false),
+                        builder: (context) => const TestsPage(tID: -1),
                       ),
                     );
                   },

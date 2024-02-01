@@ -34,7 +34,8 @@ class _TestResultsPageState extends State<TestResultsPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const TestsPage(
-                            reactive: true, dynamic: false, static: false),
+                          tID: -1,
+                        ),
                       ),
                     );
                   },

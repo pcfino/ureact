@@ -16,28 +16,18 @@ class CreatePatientPage extends StatefulWidget {
 class _CreatePatientPage extends State<CreatePatientPage> {
   Future<dynamic> createPatient() async {
     try {
-      Patient newPatient = Patient(
-          -1,
-          firstName.text,
-          lastName.text,
-          dOB.text,
-          height.text == "" ? 0 : int.parse(height.text),
-          weight.text == "" ? 0 : int.parse(weight.text),
-          sport.text,
-          gender.text,
-          thirdPartyID.text,
-          List.empty());
-
-      var jsonPatient = await create(newPatient);
-      Patient patient = Patient.fromJson(jsonPatient);
-      setState(() {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PatientPage(pID: patient.pID),
-          ),
-        );
+      dynamic jsonPatient = await create({
+        firstName.text,
+        lastName.text,
+        dOB.text,
+        height.text == "" ? 0 : int.parse(height.text),
+        weight.text == "" ? 0 : int.parse(weight.text),
+        sport.text,
+        gender.text,
+        thirdPartyID.text
       });
+      Patient patient = Patient.fromJson(jsonPatient);
+      return patient;
     } catch (e) {
       print("Error fetching patients: $e");
     }
@@ -69,10 +59,17 @@ class _CreatePatientPage extends State<CreatePatientPage> {
           }),
           actions: <Widget>[
             TextButton(
-              onPressed: () {
-                setState(() {
-                  createPatient();
-                });
+              onPressed: () async {
+                Patient? createdPatient = await createPatient();
+                if (createdPatient != null && context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          PatientPage(pID: createdPatient.pID),
+                    ),
+                  );
+                }
               },
               child: Text('Save'),
             ),

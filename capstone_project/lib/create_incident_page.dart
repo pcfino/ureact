@@ -30,10 +30,10 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
   Future<dynamic> createIncident() async {
     try {
       dynamic jsonIncident = await create({
-        selectedValue,
-        _date.text,
-        _notes.text,
-        widget.pID,
+        "iName": selectedValue,
+        "iDate": _date.text,
+        "iNotes": _notes.text,
+        "pID": widget.pID,
       });
       incident = Incident.fromJson(jsonIncident);
       return incident;

@@ -19,7 +19,6 @@ class _PatientPage extends State<PatientPage> {
   Future<dynamic> getPatient(int pID) async {
     try {
       var jsonPatient = await get(pID);
-      print(jsonPatient);
       Patient patient = Patient.fromJson(jsonPatient);
       return patient;
     } catch (e) {

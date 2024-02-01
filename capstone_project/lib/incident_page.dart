@@ -41,8 +41,12 @@ class _IncidentPage extends State<IncidentPage> {
 
   Future<dynamic> updateIncident() async {
     try {
-      dynamic jsonIncident = await update(incident.iID,
-          {incident.iName, incident.iDate, incident.iNotes, incident.pID});
+      dynamic jsonIncident = await update(incident.iID, {
+        "iName": incident.iName,
+        "iDate": incident.iDate,
+        "iNotes": incident.iNotes,
+        "pID": incident.pID
+      });
       incident = Incident.fromJson(jsonIncident);
       return incident;
     } catch (e) {

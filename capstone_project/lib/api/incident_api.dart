@@ -20,7 +20,7 @@ Future get(int incidentId) async {
 /// @return Json object with the created incident
 Future create(Object incidentInfo) async {
   return await jsonDecode(
-      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "pID": 1}');
+      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury (create)", "pID": 1}');
 }
 
 /// Makes request to update a incident

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:capstone_project/create_incident_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/patient.dart';
@@ -327,9 +328,8 @@ class _PatientPage extends State<PatientPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => IncidentPage(
-                                        isNewIncident: false,
-                                        iID: incidents[index].iID),
+                                    builder: (context) =>
+                                        IncidentPage(iID: incidents[index].iID),
                                   ),
                                 );
                               },
@@ -346,8 +346,7 @@ class _PatientPage extends State<PatientPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          const IncidentPage(isNewIncident: true, iID: 1),
+                      builder: (context) => CreateIncidentPage(pID: widget.pID),
                     ),
                   );
                 },

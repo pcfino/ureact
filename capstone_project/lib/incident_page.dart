@@ -6,8 +6,7 @@ import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
 
 class IncidentPage extends StatefulWidget {
-  const IncidentPage({super.key, required this.isNewIncident, this.iID = -1});
-  final bool isNewIncident;
+  const IncidentPage({super.key, this.iID = -1});
   final int iID;
 
   @override

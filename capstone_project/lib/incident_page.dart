@@ -6,7 +6,8 @@ import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
 
 class IncidentPage extends StatefulWidget {
-  const IncidentPage({super.key, required this.iID});
+  const IncidentPage({super.key, required this.isNewIncident, this.iID = -1});
+  final bool isNewIncident;
   final int iID;
 
   @override
@@ -40,264 +41,225 @@ class _IncidentPage extends State<IncidentPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (editMode) {
-      _date.text = incident.iDate;
-      String selectedValue = incident.iName;
-      return MaterialApp(
-        title: 'Incident',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Incident'),
-            centerTitle: true,
-            leading: BackButton(onPressed: () {
-              Navigator.pop(context);
-            }),
-            actions: <Widget>[
-              if (editMode)
-                IconButton(
-                  icon: const Icon(
-                    Icons.delete_outline,
-                  ),
-                  onPressed: () {
-                    delete(incident.iID);
-                    Navigator.pop(context);
-                  },
+  Widget incidentPageContent(
+      BuildContext context, Incident incident, String selectedValue) {
+    return MaterialApp(
+      title: 'Incident',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Incident'),
+          centerTitle: true,
+          leading: BackButton(onPressed: () {
+            Navigator.pop(context);
+          }),
+          actions: <Widget>[
+            if (editMode)
+              IconButton(
+                icon: const Icon(
+                  Icons.delete_outline,
                 ),
-              TextButton(
                 onPressed: () {
-                  setState(() {
-                    if (editMode) {
-                      editMode = false;
-                      mode = 'Edit';
-                    } else if (!editMode) {
-                      editMode = true;
-                      mode = 'Save';
-                    }
-
+                  delete(incident.iID);
+                  Navigator.pop(context);
+                },
+              ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  if (editMode) {
                     update(incident.iID, {
                       incident.iName,
                       incident.iDate,
                       incident.iNotes,
                       incident.pID
                     });
-                  });
-                },
-                child: Text(mode),
-              )
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: DropdownButtonFormField(
-                    disabledHint: Text(selectedValue),
-                    value: selectedValue,
-                    items: dropdownItems,
-                    onChanged: editMode
-                        ? (String? value) {
-                            setState(() {
-                              selectedValue = value!;
-                              incident.iName = selectedValue;
-                            });
-                          }
-                        : null,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      labelText: "Type *",
-                      contentPadding: EdgeInsets.all(11),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                  child: TextField(
-                    readOnly: !editMode,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      labelText: "Date *",
-                      contentPadding: EdgeInsets.all(11),
-                    ),
-                    controller: _date,
-                    onTap: () async {
-                      if (editMode) {
-                        DateTime? selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime.now(),
-                        );
-                        if (selectedDate != null) {
+
+                    editMode = false;
+                    mode = 'Edit';
+                  } else if (!editMode) {
+                    editMode = true;
+                    mode = 'Save';
+                  }
+                });
+              },
+              child: Text(mode),
+            )
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                child: DropdownButtonFormField(
+                  disabledHint: Text(selectedValue),
+                  value: selectedValue,
+                  items: dropdownItems,
+                  onChanged: editMode
+                      ? (String? value) {
                           setState(() {
-                            _date.text =
-                                "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
-                            incident.iDate = selectedDate.toString();
+                            selectedValue = value!;
+                            if (editMode) {
+                              incident.iName = selectedValue;
+                            }
                           });
                         }
-                      }
-                    },
+                      : null,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                  child: TextField(
-                    readOnly: !editMode,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Notes",
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
                     ),
-                    controller: TextEditingController(text: incident.iNotes
-                        // "Abby was hit in the head by another player while playing a soccer game and experienced a concussion.",
-                        ),
-                    onSubmitted: (value) {
-                      incident.iNotes = value;
-                    },
+                    labelText: "Type *",
+                    contentPadding: EdgeInsets.all(11),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    'Tests',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              ),
+              Container(
+                margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                child: TextField(
+                  readOnly: !editMode,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
                     ),
+                    labelText: "Date *",
+                    contentPadding: EdgeInsets.all(11),
                   ),
-                ),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Colors.grey,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(8.0),
-                    itemCount: incident.tests!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        child: Card(
-                          margin: const EdgeInsets.all(0),
-                          elevation: 0,
-                          color: Colors.white10,
-                          shape: const Border(
-                            bottom: BorderSide(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  incident.tests![index].tDate,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TestsPage(
-                                  reactive: true, dynamic: true, static: true),
-                            ),
-                          );
-                        },
+                  controller: _date,
+                  onTap: () async {
+                    if (editMode) {
+                      DateTime? selectedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now(),
                       );
-                    },
+                      if (selectedDate != null) {
+                        setState(() {
+                          _date.text =
+                              "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                          if (editMode) {
+                            incident.iDate =
+                                "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                          }
+                        });
+                      }
+                    }
+                  },
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                child: TextField(
+                  readOnly: !editMode,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Notes",
                   ),
-                  // child: ListView(
-                  //   children: ListTile.divideTiles(
-                  //     context: context,
-                  //     tiles: [
-                  //       ListTile(
-                  //         title: const Text('May 5, 2023'),
-                  //         onTap: () {
-                  //           Navigator.push(
-                  //             context,
-                  //             MaterialPageRoute(
-                  //               builder: (context) => const TestsPage(
-                  //                   reactive: true,
-                  //                   dynamic: true,
-                  //                   static: true),
-                  //             ),
-                  //           );
-                  //         },
-                  //       ),
-                  //       ListTile(
-                  //         title: const Text('May 3, 2023'),
-                  //         onTap: () {
-                  //           Navigator.push(
-                  //             context,
-                  //             MaterialPageRoute(
-                  //               builder: (context) => const TestsPage(
-                  //                   reactive: true,
-                  //                   dynamic: true,
-                  //                   static: true),
-                  //             ),
-                  //           );
-                  //         },
-                  //       ),
-                  //       ListTile(
-                  //         title: const Text('April 30, 2023'),
-                  //         onTap: () {
-                  //           Navigator.push(
-                  //             context,
-                  //             MaterialPageRoute(
-                  //               builder: (context) => const TestsPage(
-                  //                   reactive: true,
-                  //                   dynamic: true,
-                  //                   static: true),
-                  //             ),
-                  //           );
-                  //         },
-                  //       ),
-                  //     ],
-                  //   ).toList(),
-                  // ),
+                  controller: TextEditingController(text: incident.iNotes),
+                  onSubmitted: (value) {
+                    if (editMode) {
+                      incident.iNotes = value;
+                    }
+                  },
                 ),
-              ],
-            ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const TestsPage(
-                      reactive: false, dynamic: false, static: false),
+              ),
+              Container(
+                margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                child: const Text(
+                  'Tests',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              );
-            },
-            child: const Icon(Icons.add),
+              ),
+              const Divider(
+                height: 1,
+                thickness: 1,
+                color: Colors.grey,
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: incident.tests!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      child: Card(
+                        margin: const EdgeInsets.all(0),
+                        elevation: 0,
+                        color: Colors.white10,
+                        shape: const Border(
+                          bottom: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                incident.tests![index].tDate,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TestsPage(
+                                reactive: true, dynamic: true, static: true),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.endContained,
         ),
-      );
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TestsPage(
+                    reactive: false, dynamic: false, static: false),
+              ),
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (editMode) {
+      _date.text = incident.iDate;
+      String selectedValue = incident.iName;
+
+      return incidentPageContent(context, incident, selectedValue);
     } else {
       return FutureBuilder(
           future: getIncident(widget.iID),
@@ -311,447 +273,9 @@ class _IncidentPage extends State<IncidentPage> {
               _date.text = incident.iDate;
               String selectedValue = incident.iName;
 
-              return MaterialApp(
-                title: 'Incident',
-                theme: ThemeData(
-                  colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-                  useMaterial3: true,
-                ),
-                home: Scaffold(
-                  appBar: AppBar(
-                    title: const Text('Incident'),
-                    centerTitle: true,
-                    leading: BackButton(onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                    actions: <Widget>[
-                      if (editMode)
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete_outline,
-                          ),
-                          onPressed: () {
-                            // delete
-                          },
-                        ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            if (editMode) {
-                              editMode = false;
-                              mode = 'Edit';
-                            } else if (!editMode) {
-                              editMode = true;
-                              mode = 'Save';
-                            }
-                          });
-                        },
-                        child: Text(mode),
-                      )
-                    ],
-                  ),
-                  body: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                          child: DropdownButtonFormField(
-                            disabledHint: Text(selectedValue),
-                            value: selectedValue,
-                            items: dropdownItems,
-                            onChanged: editMode
-                                ? (String? value) {
-                                    setState(() {
-                                      selectedValue = value!;
-                                    });
-                                  }
-                                : null,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              labelText: "Type *",
-                              contentPadding: EdgeInsets.all(11),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                          child: TextField(
-                            readOnly: !editMode,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              labelText: "Date *",
-                              contentPadding: EdgeInsets.all(11),
-                            ),
-                            controller: _date,
-                            onTap: () async {
-                              if (editMode) {
-                                DateTime? selectedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime.now(),
-                                );
-                                if (selectedDate != null) {
-                                  setState(() {
-                                    _date.text =
-                                        "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
-                                  });
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                          child: TextField(
-                            readOnly: !editMode,
-                            maxLines: null,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: "Notes",
-                            ),
-                            controller: TextEditingController(
-                                text: incident.iNotes
-                                // "Abby was hit in the head by another player while playing a soccer game and experienced a concussion.",
-                                ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                          child: const Text(
-                            'Tests',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(8.0),
-                            itemCount: incident.tests!.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                child: Card(
-                                  margin: const EdgeInsets.all(0),
-                                  elevation: 0,
-                                  color: Colors.white10,
-                                  shape: const Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          incident.tests![index].tDate,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const TestsPage(
-                                          reactive: true,
-                                          dynamic: true,
-                                          static: true),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          // child: ListView(
-                          //   children: ListTile.divideTiles(
-                          //     context: context,
-                          //     tiles: [
-                          //       ListTile(
-                          //         title: const Text('May 5, 2023'),
-                          //         onTap: () {
-                          //           Navigator.push(
-                          //             context,
-                          //             MaterialPageRoute(
-                          //               builder: (context) => const TestsPage(
-                          //                   reactive: true,
-                          //                   dynamic: true,
-                          //                   static: true),
-                          //             ),
-                          //           );
-                          //         },
-                          //       ),
-                          //       ListTile(
-                          //         title: const Text('May 3, 2023'),
-                          //         onTap: () {
-                          //           Navigator.push(
-                          //             context,
-                          //             MaterialPageRoute(
-                          //               builder: (context) => const TestsPage(
-                          //                   reactive: true,
-                          //                   dynamic: true,
-                          //                   static: true),
-                          //             ),
-                          //           );
-                          //         },
-                          //       ),
-                          //       ListTile(
-                          //         title: const Text('April 30, 2023'),
-                          //         onTap: () {
-                          //           Navigator.push(
-                          //             context,
-                          //             MaterialPageRoute(
-                          //               builder: (context) => const TestsPage(
-                          //                   reactive: true,
-                          //                   dynamic: true,
-                          //                   static: true),
-                          //             ),
-                          //           );
-                          //         },
-                          //       ),
-                          //     ],
-                          //   ).toList(),
-                          // ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const TestsPage(
-                              reactive: false, dynamic: false, static: false),
-                        ),
-                      );
-                    },
-                    child: const Icon(Icons.add),
-                  ),
-                  floatingActionButtonLocation:
-                      FloatingActionButtonLocation.endContained,
-                ),
-              );
+              return incidentPageContent(context, incident, selectedValue);
             }
           });
     }
-    // return MaterialApp(
-    //   title: 'Incident',
-    //   theme: ThemeData(
-    //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-    //     useMaterial3: true,
-    //   ),
-    //   home: Scaffold(
-    //     appBar: AppBar(
-    //       title: const Text('Incident'),
-    //       centerTitle: true,
-    //       leading: BackButton(onPressed: () {
-    //         Navigator.pop(context);
-    //       }),
-    //       actions: <Widget>[
-    //         if (editMode)
-    //           IconButton(
-    //             icon: const Icon(
-    //               Icons.delete_outline,
-    //             ),
-    //             onPressed: () {
-    //               // delete
-    //             },
-    //           ),
-    //         TextButton(
-    //           onPressed: () {
-    //             setState(() {
-    //               if (editMode) {
-    //                 editMode = false;
-    //                 mode = 'Edit';
-    //               } else if (!editMode) {
-    //                 editMode = true;
-    //                 mode = 'Save';
-    //               }
-    //             });
-    //           },
-    //           child: Text(mode),
-    //         )
-    //       ],
-    //     ),
-    //     body: Padding(
-    //       padding: const EdgeInsets.all(16),
-    //       child: Column(
-    //         mainAxisSize: MainAxisSize.min,
-    //         mainAxisAlignment: MainAxisAlignment.start,
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           Container(
-    //             margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-    //             child: DropdownButtonFormField(
-    //               disabledHint: Text(selectedValue),
-    //               value: selectedValue,
-    //               items: dropdownItems,
-    //               onChanged: editMode
-    //                   ? (String? value) {
-    //                       setState(() {
-    //                         selectedValue = value!;
-    //                       });
-    //                     }
-    //                   : null,
-    //               style: const TextStyle(
-    //                 fontSize: 20,
-    //                 fontWeight: FontWeight.bold,
-    //                 color: Colors.black,
-    //               ),
-    //               decoration: const InputDecoration(
-    //                 border: OutlineInputBorder(
-    //                   borderSide: BorderSide.none,
-    //                 ),
-    //                 labelText: "Type *",
-    //                 contentPadding: EdgeInsets.all(11),
-    //               ),
-    //             ),
-    //           ),
-    //           Container(
-    //             margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-    //             child: TextField(
-    //               readOnly: !editMode,
-    //               decoration: const InputDecoration(
-    //                 border: OutlineInputBorder(
-    //                   borderSide: BorderSide.none,
-    //                 ),
-    //                 labelText: "Date *",
-    //                 contentPadding: EdgeInsets.all(11),
-    //               ),
-    //               controller: _date,
-    //               onTap: () async {
-    //                 if (editMode) {
-    //                   DateTime? selectedDate = await showDatePicker(
-    //                     context: context,
-    //                     initialDate: DateTime.now(),
-    //                     firstDate: DateTime(2000),
-    //                     lastDate: DateTime.now(),
-    //                   );
-    //                   if (selectedDate != null) {
-    //                     setState(() {
-    //                       _date.text =
-    //                           "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
-    //                     });
-    //                   }
-    //                 }
-    //               },
-    //             ),
-    //           ),
-    //           Container(
-    //             margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-    //             child: TextField(
-    //               readOnly: !editMode,
-    //               maxLines: null,
-    //               decoration: const InputDecoration(
-    //                 border: OutlineInputBorder(),
-    //                 labelText: "Notes",
-    //               ),
-    //               controller: TextEditingController(text: incident.iNotes
-    //                   // "Abby was hit in the head by another player while playing a soccer game and experienced a concussion.",
-    //                   ),
-    //             ),
-    //           ),
-    //           Container(
-    //             margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-    //             child: const Text(
-    //               'Tests',
-    //               style: TextStyle(
-    //                 fontSize: 20,
-    //                 fontWeight: FontWeight.bold,
-    //               ),
-    //             ),
-    //           ),
-    //           const Divider(
-    //             height: 1,
-    //             thickness: 1,
-    //             color: Colors.grey,
-    //           ),
-    //           Expanded(
-    //             child: ListView(
-    //               children: ListTile.divideTiles(
-    //                 context: context,
-    //                 tiles: [
-    //                   ListTile(
-    //                     title: const Text('May 5, 2023'),
-    //                     onTap: () {
-    //                       Navigator.push(
-    //                         context,
-    //                         MaterialPageRoute(
-    //                           builder: (context) => const TestsPage(
-    //                               reactive: true, dynamic: true, static: true),
-    //                         ),
-    //                       );
-    //                     },
-    //                   ),
-    //                   ListTile(
-    //                     title: const Text('May 3, 2023'),
-    //                     onTap: () {
-    //                       Navigator.push(
-    //                         context,
-    //                         MaterialPageRoute(
-    //                           builder: (context) => const TestsPage(
-    //                               reactive: true, dynamic: true, static: true),
-    //                         ),
-    //                       );
-    //                     },
-    //                   ),
-    //                   ListTile(
-    //                     title: const Text('April 30, 2023'),
-    //                     onTap: () {
-    //                       Navigator.push(
-    //                         context,
-    //                         MaterialPageRoute(
-    //                           builder: (context) => const TestsPage(
-    //                               reactive: true, dynamic: true, static: true),
-    //                         ),
-    //                       );
-    //                     },
-    //                   ),
-    //                 ],
-    //               ).toList(),
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //     floatingActionButton: FloatingActionButton(
-    //       onPressed: () {
-    //         Navigator.push(
-    //           context,
-    //           MaterialPageRoute(
-    //             builder: (context) => const TestsPage(
-    //                 reactive: false, dynamic: false, static: false),
-    //           ),
-    //         );
-    //       },
-    //       child: const Icon(Icons.add),
-    //     ),
-    //     floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
-    //   ),
-    // );
   }
 }

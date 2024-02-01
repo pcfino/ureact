@@ -90,7 +90,7 @@ def getOnePatient():
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
         for x in myresult:
-            patient['incidents'].append(OrderedDict({"iID": x[0], "iName": x[1], "iDate": x[2]}))
+            patient['incidents'].append(OrderedDict({"iID": x[0], "iName": x[1], "iDate": x[2], "pID": x[4]}))
         
         returnList.append(patient)
         return jsonify(returnList) 

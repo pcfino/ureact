@@ -298,31 +298,10 @@ class _PatientPage extends State<PatientPage> {
                       ),
                       Expanded(
                         child: ListView.builder(
-                          padding: const EdgeInsets.all(8.0),
                           itemCount: incidents.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return GestureDetector(
-                              child: Card(
-                                margin: const EdgeInsets.all(0),
-                                elevation: 0,
-                                color: Colors.white10,
-                                shape: const Border(
-                                    bottom: BorderSide(
-                                  color: Colors.grey,
-                                )),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        incidents[index].iName,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            return ListTile(
+                              title: Text(incidents[index].iName),
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -347,7 +326,7 @@ class _PatientPage extends State<PatientPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const IncidentPage(isNewIncident: true, iID: 1),
+                          const IncidentPage(isNewIncident: false, iID: 1),
                     ),
                   );
                 },

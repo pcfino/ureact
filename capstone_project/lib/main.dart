@@ -1,5 +1,6 @@
 // import 'dart:convert';
 
+import 'package:capstone_project/create_patient_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/settings_page.dart';
@@ -160,7 +161,7 @@ class _MyApp extends State<MyApp> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const PatientPage(pID: -1),
+                      builder: (context) => const CreatePatientPage(),
                     ),
                   );
                 },

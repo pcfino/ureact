@@ -1,4 +1,4 @@
-// import 'api_util.dart';
+import 'api_util.dart' as api;
 import 'dart:convert';
 
 /// Makes request to get a incident and relevent information
@@ -7,8 +7,8 @@ import 'dart:convert';
 ///
 /// @return Json object with the incident information
 Future get(int incidentId) async {
-  return await jsonDecode(
-      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "pID": 1, "tests": [{"tID": 1, "tDate": "2023-09-20", "tName": "Day of", "iID": 1}, {"tID": 2, "tDate": "2023-09-21", "tName": "Day after", "iID": 1}]}');
+  var results = await api.get('/mysql/getIncident?ID=$incidentId');
+  return await jsonDecode(results);
 }
 
 /// Makes request to create a incident
@@ -18,9 +18,9 @@ Future get(int incidentId) async {
 /// {iName: String, iDate: String form YYYY-MM-DD, iNotes: String, pID: int}
 ///
 /// @return Json object with the created incident
-Future create(Object incidentInfo) async {
-  return await jsonDecode(
-      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury (create)", "pID": 1}');
+Future create(Map incidentInfo) async {
+  var results = await api.post('/mysql/createIncident', incidentInfo);
+  return await jsonDecode(results);
 }
 
 /// Makes request to update a incident
@@ -31,9 +31,10 @@ Future create(Object incidentInfo) async {
 /// {iName: String, iDate: String form YYYY-MM-DD, iNotes: String, pID: int}
 ///
 /// @return Json object with the created incident
-Future update(int incidentId, Object incidentInfo) async {
-  return await jsonDecode(
-      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "pID": 1}');
+Future update(int incidentId, Map incidentInfo) async {
+  incidentInfo['iID'] = incidentId;
+  var results = await api.put('/mysql/updateIncident', incidentInfo);
+  return await jsonDecode(results);
 }
 
 /// Makes request to delete a incident and relevent information
@@ -42,5 +43,7 @@ Future update(int incidentId, Object incidentInfo) async {
 ///
 /// @return boolean if deletion was successful
 Future delete(int incidentId) async {
-  return true;
+  var results = await api.delete('/mysql/deleteIncident', {'iID': incidentId});
+  var decodedResults = jsonDecode(results);
+  return decodedResults['Status'];
 }

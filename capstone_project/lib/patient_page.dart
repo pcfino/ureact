@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:capstone_project/incident_page.dart';
-import 'package:capstone_project/patient.dart';
+import 'package:capstone_project/models/patient.dart';
+import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/patient_api.dart';
 
 class PatientPage extends StatefulWidget {
@@ -16,17 +16,10 @@ class PatientPage extends StatefulWidget {
 }
 
 class _PatientPage extends State<PatientPage> {
-  //late Patient patient;
-
-  @override
-  void initState() {
-    super.initState();
-    //patient = getPatient(widget.pID) as Patient;
-  }
-
   Future<dynamic> getPatient(int pID) async {
     try {
       var jsonPatient = await get(pID);
+      print(jsonPatient);
       Patient patient = Patient.fromJson(jsonPatient);
       return patient;
     } catch (e) {
@@ -42,12 +35,13 @@ class _PatientPage extends State<PatientPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: widget.pID == -1 ? null : getPatient(widget.pID),
+      future: getPatient(widget.pID),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          Patient patient = snapshot.data!;
+          Patient patient = snapshot.data! as Patient;
           int feet = patient.height! ~/ 12;
           int inches = patient.height! % 12;
+          List<Incident> incidents = patient.incidents!;
 
           return MaterialApp(
             title: 'Patient',
@@ -175,7 +169,7 @@ class _PatientPage extends State<PatientPage> {
                                 contentPadding: EdgeInsets.all(11),
                               ),
                               controller: TextEditingController(
-                                text: patient.dOB.toString(),
+                                text: patient.dOB,
                               ),
                               onTap: () async {
                                 if (editMode) {
@@ -304,103 +298,108 @@ class _PatientPage extends State<PatientPage> {
                         color: Colors.grey,
                       ),
                       Expanded(
-                        child: ListView(
-                          children: ListTile.divideTiles(
-                            context: context,
-                            tiles: [
-                              ListTile(
-                                title: const Text('Return To Play'),
-                                subtitle: const Text('May 3, 2023'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const IncidentPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: const Text('Concussion'),
-                                subtitle: const Text('Feb 16, 2023'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const IncidentPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: const Text('Check Up'),
-                                subtitle: const Text('Dec 13, 2022'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const IncidentPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: const Text('Check Up'),
-                                subtitle: const Text('Aug 14, 2022'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const IncidentPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: const Text('Return To Play'),
-                                subtitle: const Text('May 20, 2022'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const IncidentPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: const Text('Concussion'),
-                                subtitle: const Text('Feb 25, 2022'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const IncidentPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              ListTile(
-                                title: const Text('Check Up'),
-                                subtitle: const Text('Jan 10, 2022'),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const IncidentPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ).toList(),
+                        child: ListView.builder(
+                          itemCount: incidents.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                                title: Text(incidents[index].iName));
+                          },
+                          // children: ListTile.divideTiles(
+                          //   context: context,
+                          //   tiles: [
+                          //     ListTile(
+                          //       title: const Text('Return To Play'),
+                          //       subtitle: const Text('May 3, 2023'),
+                          //       onTap: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) =>
+                          //                 const IncidentPage(iID: 1),
+                          //           ),
+                          //         );
+                          //       },
+                          //     ),
+                          //     ListTile(
+                          //       title: const Text('Concussion'),
+                          //       subtitle: const Text('Feb 16, 2023'),
+                          //       onTap: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) =>
+                          //                 const IncidentPage(iID: 1),
+                          //           ),
+                          //         );
+                          //       },
+                          //     ),
+                          //     ListTile(
+                          //       title: const Text('Check Up'),
+                          //       subtitle: const Text('Dec 13, 2022'),
+                          //       onTap: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) =>
+                          //                 const IncidentPage(iID: 1),
+                          //           ),
+                          //         );
+                          //       },
+                          //     ),
+                          //     ListTile(
+                          //       title: const Text('Check Up'),
+                          //       subtitle: const Text('Aug 14, 2022'),
+                          //       onTap: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) =>
+                          //                 const IncidentPage(iID: 1),
+                          //           ),
+                          //         );
+                          //       },
+                          //     ),
+                          //     ListTile(
+                          //       title: const Text('Return To Play'),
+                          //       subtitle: const Text('May 20, 2022'),
+                          //       onTap: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) =>
+                          //                 const IncidentPage(iID: 1),
+                          //           ),
+                          //         );
+                          //       },
+                          //     ),
+                          //     ListTile(
+                          //       title: const Text('Concussion'),
+                          //       subtitle: const Text('Feb 25, 2022'),
+                          //       onTap: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) =>
+                          //                 const IncidentPage(iID: 1),
+                          //           ),
+                          //         );
+                          //       },
+                          //     ),
+                          //     ListTile(
+                          //       title: const Text('Check Up'),
+                          //       subtitle: const Text('Jan 10, 2022'),
+                          //       onTap: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) =>
+                          //                 const IncidentPage(iID: 1),
+                          //           ),
+                          //         );
+                          //       },
+                          //     ),
+                          //  ],
+                          //).toList(),
                         ),
                       ),
                     ],
@@ -412,7 +411,7 @@ class _PatientPage extends State<PatientPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const IncidentPage(),
+                      builder: (context) => const IncidentPage(iID: 1),
                     ),
                   );
                 },

@@ -21,6 +21,9 @@ Patient _$PatientFromJson(Map<String, dynamic> json) {
     json['sport'] as String?,
     json['gender'] as String?,
     json['thirdPartyID'] as String?,
+    (json['incidents'] as List<dynamic>?)
+        ?.map((e) => Incident.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
@@ -34,4 +37,5 @@ Map<String, dynamic> _$PatientToJson(Patient instance) => <String, dynamic>{
       'sport': instance.sport,
       'gender': instance.gender,
       'thirdPartyID': instance.thirdPartyID,
+      'incidents': instance.incidents,
     };

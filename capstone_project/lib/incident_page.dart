@@ -193,7 +193,7 @@ class _IncidentPage extends State<IncidentPage> {
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(8.0),
-                    itemCount: incident.tests.length,
+                    itemCount: incident.tests!.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                         child: Card(
@@ -211,7 +211,7 @@ class _IncidentPage extends State<IncidentPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  incident.tests[index].tDate,
+                                  incident.tests![index].tDate,
                                 ),
                               ],
                             ),
@@ -447,7 +447,7 @@ class _IncidentPage extends State<IncidentPage> {
                         Expanded(
                           child: ListView.builder(
                             padding: const EdgeInsets.all(8.0),
-                            itemCount: incident.tests.length,
+                            itemCount: incident.tests!.length,
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
                                 child: Card(
@@ -466,7 +466,7 @@ class _IncidentPage extends State<IncidentPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          incident.tests[index].tDate,
+                                          incident.tests![index].tDate,
                                         ),
                                       ],
                                     ),

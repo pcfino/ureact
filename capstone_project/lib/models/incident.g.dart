@@ -17,8 +17,8 @@ Incident _$IncidentFromJson(Map<String, dynamic> json) {
     json['iDate'] as String,
     json['iNotes'] as String?,
     json['pID'] as int,
-    (json['tests'] as List<dynamic>)
-        .map((e) => Test.fromJson(e as Map<String, dynamic>))
+    (json['tests'] as List<dynamic>?)
+        ?.map((e) => Test.fromJson(e as Map<String, dynamic>))
         .toList(),
   );
 }

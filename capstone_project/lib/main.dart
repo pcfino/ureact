@@ -17,54 +17,37 @@ void main() {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  //final jsonPatientList = getAll() as Map<String, dynamic>;
-
   @override
   State<MyApp> createState() => _MyApp();
 }
 
 class _MyApp extends State<MyApp> {
-  List<Patient> patientList = List<Patient>.empty();
-  List<Patient> displayPatientList = List<Patient>.empty();
-
-  @override
-  void initState() {
-    super.initState();
-    //getPatients();
-  }
-
-  getPatients() async {
+  Future<dynamic> getPatients() async {
     try {
       List<dynamic> jsonPatientList = await getAll() as List;
-      patientList = List<Patient>.from(
+      List<Patient> patientList = List<Patient>.from(
           jsonPatientList.map((model) => Patient.fromJson(model)));
-      setState(() {
-        alphabetize();
-      });
-      //return patientList;
+      patientList = List.from(patientList);
+      patientList.sort((a, b) => a.lastName.compareTo(b.lastName));
+      return patientList;
     } catch (e) {
       print("Error fetching patients: $e");
     }
   }
 
-  void alphabetize() {
-    displayPatientList = List.from(patientList);
-    displayPatientList.sort((a, b) => a.lastName.compareTo(b.lastName));
-  }
-
   void updateList(String value) {
     setState(() {
-      displayPatientList = patientList
-          .where((element) =>
-              element.lastName.toLowerCase().contains(value.toLowerCase()) ||
-              element.firstName.toLowerCase().contains(value.toLowerCase()) ||
-              ("${element.firstName} ${element.lastName}")
-                  .toLowerCase()
-                  .contains(value.toLowerCase()) ||
-              ("${element.lastName}, ${element.firstName}")
-                  .toLowerCase()
-                  .contains(value.toLowerCase()))
-          .toList();
+      // displayPatientList = patientList
+      //     .where((element) =>
+      //         element.lastName.toLowerCase().contains(value.toLowerCase()) ||
+      //         element.firstName.toLowerCase().contains(value.toLowerCase()) ||
+      //         ("${element.firstName} ${element.lastName}")
+      //             .toLowerCase()
+      //             .contains(value.toLowerCase()) ||
+      //         ("${element.lastName}, ${element.firstName}")
+      //             .toLowerCase()
+      //             .contains(value.toLowerCase()))
+      //     .toList();
     });
   }
 
@@ -72,123 +55,137 @@ class _MyApp extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // maybe we don't want to call every time
-    getPatients();
-    return MaterialApp(
-      title: 'Patients',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Patients'),
-          centerTitle: true,
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(
-                Icons.settings,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(children: [
-            TextField(
-              onChanged: (value) => updateList(value),
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                prefixIcon: const Icon(Icons.search),
-                prefixIconColor: Colors.red,
-                constraints: const BoxConstraints(
-                  maxHeight: 40,
-                ),
-                filled: true,
-                fillColor: Colors.white10,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(100.0),
-                ),
-              ),
+    return FutureBuilder(
+      future: getPatients(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.hasData) {
+          List<Patient> patients = snapshot.data!;
+          List<Patient> displayPatientList = List.from(patients);
+
+          return MaterialApp(
+            title: 'Patients',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+              useMaterial3: true,
             ),
-            Expanded(
-              child: Scrollbar(
-                thumbVisibility: true,
-                controller: scrollController,
-                child: ListView.builder(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(8.0),
-                  itemCount: displayPatientList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      child: Card(
-                        margin: const EdgeInsets.all(0),
-                        elevation: 0,
-                        color: Colors.white10,
-                        shape: const Border(
-                          bottom: BorderSide(
-                            color: Colors.grey,
-                          ),
+            home: Scaffold(
+              appBar: AppBar(
+                title: const Text('Patients'),
+                centerTitle: true,
+                actions: <Widget>[
+                  IconButton(
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsPage(),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "${displayPatientList[index].lastName}, ${displayPatientList[index].firstName}",
-                              ),
-                            ],
-                          ),
-                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
+              body: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(children: [
+                  TextField(
+                    onChanged: (value) => updateList(value),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      prefixIcon: const Icon(Icons.search),
+                      prefixIconColor: Colors.red,
+                      constraints: const BoxConstraints(
+                        maxHeight: 40,
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PatientPage(pID: displayPatientList[index].pID),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                      filled: true,
+                      fillColor: Colors.white10,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(100.0),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      controller: scrollController,
+                      child: ListView.builder(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(8.0),
+                        itemCount: displayPatientList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            child: Card(
+                              margin: const EdgeInsets.all(0),
+                              elevation: 0,
+                              color: Colors.white10,
+                              shape: const Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${displayPatientList[index].lastName}, ${displayPatientList[index].firstName}",
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PatientPage(
+                                      pID: displayPatientList[index].pID),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ]),
               ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PatientPage(pID: -1),
+                    ),
+                  );
+                },
+                child: const Icon(Icons.add),
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endContained,
+              bottomNavigationBar: BottomAppBar(
+                  surfaceTintColor: Colors.white,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextButton(
+                          onPressed: () {}, child: const Text('Export List')),
+                    ],
+                  )),
             ),
-          ]),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PatientPage(pID: -1),
-              ),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
-        bottomNavigationBar: BottomAppBar(
-            surfaceTintColor: Colors.white,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                TextButton(onPressed: () {}, child: const Text('Export List')),
-              ],
-            )),
-      ),
+          );
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator(); // or any other loading indicator
+        } else {
+          return Text('Error: ${snapshot.error}');
+        }
+      },
     );
   }
 }

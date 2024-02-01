@@ -25,7 +25,7 @@ class Incident {
   int pID;
 
   String? iNotes;
-  List<Test> tests;
+  List<Test>? tests;
 
   /// A necessary factory constructor for creating a new Incident instance
   /// from a map. Pass the map to the generated `_$IncidentFromJson()` constructor.

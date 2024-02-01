@@ -16,7 +16,7 @@ Future getAll() async {
 /// @return Json object with the patient information
 Future get(int patientId) async {
   return await jsonDecode(
-      '{"pID": 1, "firstName": "John", "lastName": "Doe", "dOB": "1998-04-18", "height": 70, "weight": 215, "sport": "football", "gender": "M", "thirdPartyID": "62936", "patients": [{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20"}, {"iID": 2, "iName": "Knee Fracture", "iDate": "2023-12-20"}]}');
+      '{"pID": 1, "firstName": "John", "lastName": "Doe", "dOB": "1998-04-18", "height": 70, "weight": 215, "sport": "football", "gender": "M", "thirdPartyID": "62936", "incidents": [{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "pID": 1}, {"iID": 2, "iName": "Knee Fracture", "iDate": "2023-12-20", "pID": 1}]}');
 }
 
 /// Makes request to create a patient

@@ -28,9 +28,9 @@ class _PatientPage extends State<PatientPage> {
     }
   }
 
-  Future<dynamic> savePatient(Patient updatePatient) async {
+  Future<dynamic> savePatient(Map<String, dynamic> updatePatient) async {
     try {
-      var jsonPatient = await update(updatePatient.pID, updatePatient);
+      var jsonPatient = await update(widget.pID, updatePatient);
       Patient patient = Patient.fromJson(jsonPatient);
       setState(() {
         Navigator.push(
@@ -125,7 +125,17 @@ class _PatientPage extends State<PatientPage> {
                         if (editMode) {
                           editMode = false;
                           mode = 'Edit';
-                          savePatient(patient);
+                          var updatePatient = {
+                            "firstName": firstName.text,
+                            "lastName": lastName.text,
+                            "dOB": dOB.text,
+                            "height": height.text,
+                            "weight": weight.text,
+                            "sport": sport.text,
+                            "gender": gender.text,
+                            "thirdPartyID": thirdPartyID.text
+                          };
+                          savePatient(updatePatient);
                         } else if (!editMode) {
                           editMode = true;
                           mode = 'Save';

@@ -17,14 +17,14 @@ class _CreatePatientPage extends State<CreatePatientPage> {
   Future<dynamic> createPatient() async {
     try {
       dynamic jsonPatient = await create({
-        firstName.text,
-        lastName.text,
-        dOB.text,
-        height.text == "" ? 0 : int.parse(height.text),
-        weight.text == "" ? 0 : int.parse(weight.text),
-        sport.text,
-        gender.text,
-        thirdPartyID.text
+        "firstName": firstName.text,
+        "lastName": lastName.text,
+        "dOB": dOB.text,
+        "height": height.text == "" ? 0 : int.parse(height.text),
+        "weight": weight.text == "" ? 0 : int.parse(weight.text),
+        "sport": sport.text,
+        "gender": gender.text,
+        "thirdPartyID": thirdPartyID.text
       });
       Patient patient = Patient.fromJson(jsonPatient);
       return patient;

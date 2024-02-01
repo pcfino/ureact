@@ -17,8 +17,13 @@ class CreateTestPage extends StatefulWidget {
 class _CreateTestPage extends State<CreateTestPage> {
   Future<dynamic> createTest() async {
     try {
-      dynamic jsonTest =
-          await create({selectedValue, date.text, notes.text, 0, widget.iID});
+      dynamic jsonTest = await create({
+        "tName": selectedValue,
+        "tDate": date.text,
+        "tNotes": notes.text,
+        "baseline": 0,
+        "tID": widget.iID
+      });
 
       Test test = Test.fromJson(jsonTest);
       return test;

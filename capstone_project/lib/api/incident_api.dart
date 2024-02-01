@@ -1,4 +1,4 @@
-import 'api_util.dart';
+// import 'api_util.dart';
 import 'dart:convert';
 
 /// Makes request to get a incident and relevent information
@@ -8,7 +8,7 @@ import 'dart:convert';
 /// @return Json object with the incident information
 Future get(int incidentId) async {
   return await jsonDecode(
-      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "tests": [{"tID": 1, "tDate": "2023-09-20", "tName": "Day of"}, {"tID": 2, "tDate": "2023-09-21", "tName": "Day after"}]}');
+      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "pID": 1, "tests": [{"tID": 1, "tDate": "2023-09-20", "tName": "Day of", "iID": 1}, {"tID": 2, "tDate": "2023-09-21", "tName": "Day after", "iID": 1}]}');
 }
 
 /// Makes request to create a incident
@@ -20,7 +20,7 @@ Future get(int incidentId) async {
 /// @return Json object with the created incident
 Future create(Object incidentInfo) async {
   return await jsonDecode(
-      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "pID": 1}');
+      '{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury (create)", "pID": 1}');
 }
 
 /// Makes request to update a incident

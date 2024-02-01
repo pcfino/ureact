@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:capstone_project/create_incident_page.dart';
+import 'package:capstone_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/patient.dart';
@@ -27,7 +28,50 @@ class _PatientPage extends State<PatientPage> {
     }
   }
 
-  final TextEditingController _date = TextEditingController();
+  Future<dynamic> savePatient(Patient updatePatient) async {
+    try {
+      var jsonPatient = await update(updatePatient.pID, updatePatient);
+      Patient patient = Patient.fromJson(jsonPatient);
+      setState(() {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PatientPage(pID: patient.pID),
+          ),
+        );
+      });
+    } catch (e) {
+      print("Error fetching patients: $e");
+    }
+  }
+
+  Future<dynamic> deletePatient(int pID) async {
+    try {
+      bool deleted = await delete(pID);
+      if (deleted) {
+        setState(() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MyApp(),
+            ),
+          );
+        });
+      }
+    } catch (e) {
+      print("Error fetching patients: $e");
+    }
+  }
+
+  final TextEditingController fullName = TextEditingController();
+  final TextEditingController firstName = TextEditingController();
+  final TextEditingController lastName = TextEditingController();
+  final TextEditingController dOB = TextEditingController();
+  final TextEditingController sport = TextEditingController();
+  final TextEditingController height = TextEditingController();
+  final TextEditingController weight = TextEditingController();
+  final TextEditingController gender = TextEditingController();
+  final TextEditingController thirdPartyID = TextEditingController();
 
   bool editMode = false;
   String mode = 'Edit';
@@ -42,6 +86,14 @@ class _PatientPage extends State<PatientPage> {
           int feet = patient.height! ~/ 12;
           int inches = patient.height! % 12;
           List<Incident> incidents = patient.incidents!;
+          fullName.text = "${patient.firstName} ${patient.lastName}";
+          firstName.text = patient.firstName;
+          lastName.text = patient.lastName;
+          dOB.text = patient.dOB!.toString();
+          weight.text = patient.weight!.toString();
+          height.text = patient.height!.toString();
+          gender.text = patient.gender!;
+          thirdPartyID.text = patient.thirdPartyID!;
 
           return MaterialApp(
             title: 'Patient',
@@ -63,7 +115,7 @@ class _PatientPage extends State<PatientPage> {
                         Icons.delete_outline,
                       ),
                       onPressed: () {
-                        // delete
+                        deletePatient(patient.pID);
                       },
                     ),
                   TextButton(
@@ -72,6 +124,7 @@ class _PatientPage extends State<PatientPage> {
                         if (editMode) {
                           editMode = false;
                           mode = 'Edit';
+                          savePatient(patient);
                         } else if (!editMode) {
                           editMode = true;
                           mode = 'Save';
@@ -99,9 +152,7 @@ class _PatientPage extends State<PatientPage> {
                               labelText: "Name *",
                               contentPadding: EdgeInsets.all(11),
                             ),
-                            controller: TextEditingController(
-                              text: "${patient.firstName} ${patient.lastName}",
-                            ),
+                            controller: fullName,
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -123,9 +174,7 @@ class _PatientPage extends State<PatientPage> {
                                     labelText: "First *",
                                     contentPadding: EdgeInsets.all(11),
                                   ),
-                                  controller: TextEditingController(
-                                    text: patient.firstName,
-                                  ),
+                                  controller: firstName,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -143,9 +192,7 @@ class _PatientPage extends State<PatientPage> {
                                     labelText: "Last *",
                                     contentPadding: EdgeInsets.all(11),
                                   ),
-                                  controller: TextEditingController(
-                                    text: patient.lastName,
-                                  ),
+                                  controller: lastName,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -168,9 +215,7 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "DOB *",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: TextEditingController(
-                                text: patient.dOB,
-                              ),
+                              controller: dOB,
                               onTap: () async {
                                 if (editMode) {
                                   DateTime? selectedDate = await showDatePicker(
@@ -181,7 +226,7 @@ class _PatientPage extends State<PatientPage> {
                                   );
                                   if (selectedDate != null) {
                                     setState(() {
-                                      _date.text =
+                                      dOB.text =
                                           "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
                                     });
                                   }
@@ -200,9 +245,7 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "Sport",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: TextEditingController(
-                                text: patient.sport,
-                              ),
+                              controller: sport,
                             ),
                           ),
                         ],
@@ -220,9 +263,7 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "Height",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: TextEditingController(
-                                text: "$feet'$inches\"",
-                              ),
+                              controller: height,
                             ),
                           ),
                           Expanded(
@@ -236,9 +277,7 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "Weight",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: TextEditingController(
-                                text: "${patient.weight} lbs",
-                              ),
+                              controller: weight,
                             ),
                           ),
                         ],
@@ -256,9 +295,7 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "Gender",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: TextEditingController(
-                                text: patient.gender,
-                              ),
+                              controller: gender,
                             ),
                           ),
                           Expanded(
@@ -272,9 +309,7 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "3rd Party ID",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: TextEditingController(
-                                text: patient.thirdPartyID,
-                              ),
+                              controller: thirdPartyID,
                             ),
                           ),
                         ],

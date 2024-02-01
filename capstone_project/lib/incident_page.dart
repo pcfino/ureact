@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:capstone_project/start_test_page.dart';
-// import 'package:capstone_project/test_results_page.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
@@ -40,6 +38,17 @@ class _IncidentPage extends State<IncidentPage> {
     }
   }
 
+  Future<dynamic> updateIncident() async {
+    try {
+      dynamic jsonIncident = await update(incident.iID,
+          {incident.iName, incident.iDate, incident.iNotes, incident.pID});
+      incident = Incident.fromJson(jsonIncident);
+      return incident;
+    } catch (e) {
+      print("Error updating incident: $e");
+    }
+  }
+
   Widget incidentPageContent(
       BuildContext context, Incident incident, String selectedValue) {
     return MaterialApp(
@@ -67,23 +76,23 @@ class _IncidentPage extends State<IncidentPage> {
                 },
               ),
             TextButton(
-              onPressed: () {
-                setState(() {
-                  if (editMode) {
-                    update(incident.iID, {
-                      incident.iName,
-                      incident.iDate,
-                      incident.iNotes,
-                      incident.pID
-                    });
+              onPressed: () async {
+                if (editMode) {
+                  Incident? updIncident = await updateIncident();
 
-                    editMode = false;
-                    mode = 'Edit';
-                  } else if (!editMode) {
+                  if (updIncident != null && context.mounted) {
+                    incident = updIncident;
+                    setState(() {
+                      editMode = false;
+                      mode = 'Edit';
+                    });
+                  }
+                } else if (!editMode) {
+                  setState(() {
                     editMode = true;
                     mode = 'Save';
-                  }
-                });
+                  });
+                }
               },
               child: Text(mode),
             )

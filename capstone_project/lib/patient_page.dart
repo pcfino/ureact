@@ -116,6 +116,7 @@ class _PatientPage extends State<PatientPage> {
                       ),
                       onPressed: () {
                         deletePatient(patient.pID);
+                        Navigator.pop(context);
                       },
                     ),
                   TextButton(

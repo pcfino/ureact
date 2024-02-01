@@ -307,9 +307,8 @@ class _PatientPage extends State<PatientPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => IncidentPage(
-                                        isNewIncident: false,
-                                        iID: incidents[index].iID),
+                                    builder: (context) =>
+                                        IncidentPage(iID: incidents[index].iID),
                                   ),
                                 );
                               },
@@ -326,8 +325,9 @@ class _PatientPage extends State<PatientPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          const IncidentPage(isNewIncident: false, iID: 1),
+                      builder: (context) => CreateIncidentPage(
+                        pID: patient.pID,
+                      ),
                     ),
                   );
                 },

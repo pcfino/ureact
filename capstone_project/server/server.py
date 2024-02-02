@@ -32,13 +32,12 @@ user=CONFID['username'],
 password=CONFID['password'],
 database=CONFID['dbName']
 )
+mycursor = mydb.cursor()
 
 app = Flask(__name__)
 app.json.sort_keys = False
 
 print("Server has started: ")
-
-mycursor = mydb.cursor()
 
 #json_file = {"TTS": 0}
 #@app.route('/postData', methods=['POST'])
@@ -47,6 +46,8 @@ mycursor = mydb.cursor()
 #        data_from_post = request.json.get('counter')
 #        json_file['counter'] = data_from_post
 #        return jsonify(json_file)
+
+
 
 # --------------------------------------------------------------- PATIENT ---------------------------------------------------------------
 

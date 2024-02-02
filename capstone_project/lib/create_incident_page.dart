@@ -20,10 +20,8 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
 
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(
-          value: "Return To Play", child: Text("Return To Play")),
+      const DropdownMenuItem(value: "Baseline", child: Text("Baseline")),
       const DropdownMenuItem(value: "Concussion", child: Text("Concussion")),
-      const DropdownMenuItem(value: "Check Up", child: Text("Check Up")),
     ];
     return menuItems;
   }

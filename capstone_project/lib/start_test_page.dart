@@ -10,7 +10,8 @@ class StartTestPage extends StatefulWidget {
       required this.forward,
       required this.left,
       required this.right,
-      required this.backward});
+      required this.backward,
+      required this.tID});
 
   final String title;
   final String direction;
@@ -19,6 +20,8 @@ class StartTestPage extends StatefulWidget {
   final String left;
   final String right;
   final String backward;
+
+  final int tID;
 
   @override
   State<StartTestPage> createState() => _StartTestPageState();
@@ -152,12 +155,14 @@ class _StartTestPageState extends State<StartTestPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => EndTestPage(
-                                      title: 'Reactive Test',
-                                      direction: widget.direction,
-                                      forward: widget.left,
-                                      left: widget.left,
-                                      right: widget.right,
-                                      backward: widget.backward),
+                                    title: 'Reactive Test',
+                                    direction: widget.direction,
+                                    forward: widget.forward,
+                                    left: widget.left,
+                                    right: widget.right,
+                                    backward: widget.backward,
+                                    tID: widget.tID,
+                                  ),
                                 ),
                               );
                             },

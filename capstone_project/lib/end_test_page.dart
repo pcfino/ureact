@@ -6,7 +6,7 @@ import 'package:capstone_project/test_results_page.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'sensor_recorder.dart';
 import 'dart:async';
-import 'api/api_util.dart' as api_util;
+import 'api/test_api.dart';
 
 class EndTestPage extends StatefulWidget {
   const EndTestPage(
@@ -16,7 +16,8 @@ class EndTestPage extends StatefulWidget {
       required this.forward,
       required this.left,
       required this.right,
-      required this.backward});
+      required this.backward,
+      required this.tID});
 
   final String title;
   final String direction;
@@ -25,6 +26,8 @@ class EndTestPage extends StatefulWidget {
   final String left;
   final String right;
   final String backward;
+
+  final int tID;
 
   @override
   State<EndTestPage> createState() => _EndTestPageState();
@@ -37,18 +40,19 @@ class _EndTestPageState extends State<EndTestPage> {
   Future getTTS() async {
     var sensorData = sensorRecorder.endRecording();
 
-    var responseBody = await api_util.post('/timeToStability', {
+    var decodedData = await runReactiveTestScript({
       'dataAcc': sensorData.formattedAccData(),
       'dataRot': sensorData.formattedGyrData(),
       'timeStamps': sensorData.timeStamps,
       'fs': sensorData.fs
     });
 
-    var decodedData = jsonDecode(responseBody);
+    //var decodedData = jsonDecode(responseBody);
 
-    setState(() {
-      timeToStab = decodedData['TTS'].toString();
-    });
+    //setState(() {
+    timeToStab = decodedData['TTS'].toString();
+    print("tts$timeToStab");
+    //});
   }
 
   @override
@@ -171,61 +175,76 @@ class _EndTestPageState extends State<EndTestPage> {
                               color: Color.fromRGBO(255, 220, 212, 1),
                               size: 75,
                             ),
-                            onPressed: () {
-                              if (widget.direction == 'Forward') {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StartTestPage(
-                                      title: 'Reactive',
-                                      direction: 'Right',
-                                      forward: timeToStab,
-                                      left: widget.left,
-                                      right: widget.right,
-                                      backward: widget.backward,
+                            onPressed: () async {
+                              await getTTS();
+                              if (context.mounted) {
+                                print("tts again is $timeToStab");
+
+                                print("in end test page");
+                                print(widget.forward);
+                                print(widget.right);
+                                print(widget.left);
+                                print(widget.backward);
+
+                                if (widget.direction == 'Forward') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StartTestPage(
+                                        title: 'Reactive',
+                                        direction: 'Right',
+                                        forward: timeToStab,
+                                        left: widget.left,
+                                        right: widget.right,
+                                        backward: widget.backward,
+                                        tID: widget.tID,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              } else if (widget.direction == 'Right') {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StartTestPage(
-                                      title: 'Reactive',
-                                      direction: 'Left',
-                                      forward: widget.forward,
-                                      left: widget.left,
-                                      right: timeToStab,
-                                      backward: widget.backward,
+                                  );
+                                } else if (widget.direction == 'Right') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StartTestPage(
+                                        title: 'Reactive',
+                                        direction: 'Left',
+                                        forward: widget.forward,
+                                        left: widget.left,
+                                        right: timeToStab,
+                                        backward: widget.backward,
+                                        tID: widget.tID,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              } else if (widget.direction == 'Left') {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StartTestPage(
-                                      title: 'Reactive',
-                                      direction: 'Backward',
-                                      forward: widget.forward,
-                                      left: timeToStab,
-                                      right: widget.right,
-                                      backward: widget.backward,
+                                  );
+                                } else if (widget.direction == 'Left') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StartTestPage(
+                                        title: 'Reactive',
+                                        direction: 'Backward',
+                                        forward: widget.forward,
+                                        left: timeToStab,
+                                        right: widget.right,
+                                        backward: widget.backward,
+                                        tID: widget.tID,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              } else if (widget.direction == 'Backward') {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TestResultsPage(
-                                      forward: widget.forward,
-                                      left: widget.left,
-                                      right: widget.right,
-                                      backward: timeToStab,
+                                  );
+                                } else if (widget.direction == 'Backward') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TestResultsPage(
+                                        forward: widget.forward,
+                                        left: widget.left,
+                                        right: widget.right,
+                                        backward: timeToStab,
+                                        tID: widget.tID,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               }
                             },
                           ),
@@ -249,13 +268,13 @@ class _EndTestPageState extends State<EndTestPage> {
   void initState() {
     super.initState();
     timeToStab = "";
-    if (widget.forward == "") {
+    if (widget.forward == "0") {
       sensorRecorder = SensorRecorder("forward");
-    } else if (widget.left == "") {
-      sensorRecorder = SensorRecorder("left");
-    } else if (widget.right == "") {
+    } else if (widget.right == "0") {
       sensorRecorder = SensorRecorder("right");
-    } else if (widget.backward == "") {
+    } else if (widget.left == "0") {
+      sensorRecorder = SensorRecorder("left");
+    } else if (widget.backward == "0") {
       sensorRecorder = SensorRecorder("backward");
     }
 

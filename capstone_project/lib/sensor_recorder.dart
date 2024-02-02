@@ -54,7 +54,7 @@ class SensorRecorder {
   // late final Stream<AccelerometerEvent> _accStream;
   // late final Stream<GyroscopeEvent> _gyrStream;
   // late final List<StreamSubscription> _streamSubscriptions;
-  late final SensorRecorderResults _results;
+  late SensorRecorderResults _results;
   late bool _killTimer;
   late StreamSubscription<AccelerometerEvent> _stream;
 
@@ -130,7 +130,7 @@ class SensorRecorder {
     // for (final subscription in _streamSubscriptions) {
     //   subscription.cancel();
     // }
-    debugPrint((_results.gyrData.x.length.toString()));
+    //debugPrint((_results.gyrData.x.length.toString()));
     return _results;
   }
 

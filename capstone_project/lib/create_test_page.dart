@@ -39,16 +39,24 @@ class _CreateTestPage extends State<CreateTestPage> {
 
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(value: "Day of", child: Text("Day of")),
+      const DropdownMenuItem(value: "Acute", child: Text("Acute")),
+      const DropdownMenuItem(value: "Post RTP", child: Text("Post RTP")),
       const DropdownMenuItem(
-          value: "Pre Return To Play", child: Text("Pre Return To Play")),
-      const DropdownMenuItem(value: "Other", child: Text("Other")),
-      const DropdownMenuItem(value: "Other 2", child: Text("Other 2")),
+          value: "Pre RTP (Asymptomatic)",
+          child: Text("Pre RTP (Asymptomatic)")),
+      const DropdownMenuItem(
+          value: "3 Month Followup", child: Text("3 Month Followup")),
+      const DropdownMenuItem(
+          value: "6 Month Followup", child: Text("6 Month Followup")),
+      const DropdownMenuItem(
+          value: "9 Month Followup", child: Text("9 Month Followup")),
+      const DropdownMenuItem(
+          value: "1 Year Followup", child: Text("1 Year Followup")),
     ];
     return menuItems;
   }
 
-  String selectedValue = "Day of";
+  String selectedValue = "Pre RTP (Asymptomatic)";
 
   @override
   Widget build(BuildContext context) {

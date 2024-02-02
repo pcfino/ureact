@@ -27,10 +27,19 @@ class _TestsPage extends State<TestsPage> {
 
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(value: "Day of", child: Text("Day of")),
-      const DropdownMenuItem(value: "Pre Return", child: Text("Pre Return")),
-      const DropdownMenuItem(value: "Other", child: Text("Other")),
-      const DropdownMenuItem(value: "Other 2", child: Text("Other 2")),
+      const DropdownMenuItem(value: "Acute", child: Text("Acute")),
+      const DropdownMenuItem(value: "Post RTP", child: Text("Post RTP")),
+      const DropdownMenuItem(
+          value: "Pre RTP (Asymptomatic)",
+          child: Text("Pre RTP (Asymptomatic)")),
+      const DropdownMenuItem(
+          value: "3 Month Followup", child: Text("3 Month Followup")),
+      const DropdownMenuItem(
+          value: "6 Month Followup", child: Text("6 Month Followup")),
+      const DropdownMenuItem(
+          value: "9 Month Followup", child: Text("9 Month Followup")),
+      const DropdownMenuItem(
+          value: "1 Year Followup", child: Text("1 Year Followup")),
     ];
     return menuItems;
   }
@@ -261,13 +270,14 @@ class _TestsPage extends State<TestsPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const StartTestPage(
+                                builder: (context) => StartTestPage(
                                   title: 'Reactive',
                                   direction: 'Forward',
-                                  forward: "",
-                                  left: "",
-                                  right: "",
-                                  backward: "",
+                                  forward: "0",
+                                  left: "0",
+                                  right: "0",
+                                  backward: "0",
+                                  tID: widget.tID,
                                 ),
                               ),
                             );
@@ -286,13 +296,14 @@ class _TestsPage extends State<TestsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const StartTestPage(
+                              builder: (context) => StartTestPage(
                                 title: 'Dynamic',
                                 direction: 'Forward',
                                 forward: "",
                                 left: "",
                                 right: "",
                                 backward: "",
+                                tID: widget.tID,
                               ),
                             ),
                           );
@@ -311,13 +322,14 @@ class _TestsPage extends State<TestsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const StartTestPage(
+                              builder: (context) => StartTestPage(
                                 title: 'Static',
                                 direction: 'Forward',
                                 forward: "",
                                 left: "",
                                 right: "",
                                 backward: "",
+                                tID: widget.tID,
                               ),
                             ),
                           );

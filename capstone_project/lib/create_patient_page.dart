@@ -29,7 +29,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
       Patient patient = Patient.fromJson(jsonPatient);
       return patient;
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error creating patient: $e");
     }
   }
 

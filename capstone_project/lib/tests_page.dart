@@ -18,7 +18,7 @@ class _TestsPage extends State<TestsPage> {
   Future<dynamic> getTest(int tID) async {
     try {
       var jsonTest = await get(tID);
-      Test test = Test.fromJson(jsonTest);
+      Test test = Test.fromJson(jsonTest[0]);
       return test;
     } catch (e) {
       print("Error fetching patients: $e");
@@ -28,8 +28,7 @@ class _TestsPage extends State<TestsPage> {
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(value: "Day of", child: Text("Day of")),
-      const DropdownMenuItem(
-          value: "Pre Return To Play", child: Text("Pre Return To Play")),
+      const DropdownMenuItem(value: "Pre Return", child: Text("Pre Return")),
       const DropdownMenuItem(value: "Other", child: Text("Other")),
       const DropdownMenuItem(value: "Other 2", child: Text("Other 2")),
     ];
@@ -40,7 +39,7 @@ class _TestsPage extends State<TestsPage> {
   String mode = 'Edit';
 
   bool reactiveTile = false;
-  String selectedValue = "Pre Return To Play";
+  String selectedValue = "Pre Return";
 
   final TextEditingController _date = TextEditingController();
   final TextEditingController notes = TextEditingController();

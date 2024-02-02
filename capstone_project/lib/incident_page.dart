@@ -15,6 +15,7 @@ class IncidentPage extends StatefulWidget {
 class _IncidentPage extends State<IncidentPage> {
   late Incident incident;
   final TextEditingController _date = TextEditingController();
+  final TextEditingController _notes = TextEditingController();
 
   bool editMode = false;
   String mode = 'Edit';
@@ -24,6 +25,8 @@ class _IncidentPage extends State<IncidentPage> {
       const DropdownMenuItem(
           value: "Return To Play", child: Text("Return To Play")),
       const DropdownMenuItem(value: "Concussion", child: Text("Concussion")),
+      const DropdownMenuItem(
+          value: "Spinal Injury", child: Text("Spinal Injury")),
       const DropdownMenuItem(value: "Check Up", child: Text("Check Up")),
     ];
     return menuItems;
@@ -32,23 +35,17 @@ class _IncidentPage extends State<IncidentPage> {
   Future<dynamic> getIncident(int iID) async {
     try {
       dynamic jsonIncident = await get(iID);
-      incident = Incident.fromJson(jsonIncident);
+      incident = Incident.fromJson(jsonIncident[0]);
       return incident;
     } catch (e) {
       print("Error fetching incidents: $e");
     }
   }
 
-  Future<dynamic> updateIncident() async {
+  Future<dynamic> updateIncident(
+      int iID, Map<String, dynamic> saveIncident) async {
     try {
-      dynamic jsonIncident = await update(incident.iID, {
-        "iName": incident.iName,
-        "iDate": incident.iDate,
-        "iNotes": incident.iNotes,
-        "pID": incident.pID
-      });
-      incident = Incident.fromJson(jsonIncident);
-      return incident;
+      await update(iID, saveIncident);
     } catch (e) {
       print("Error updating incident: $e");
     }
@@ -56,6 +53,8 @@ class _IncidentPage extends State<IncidentPage> {
 
   Widget incidentPageContent(
       BuildContext context, Incident incident, String selectedValue) {
+    _date.text = incident.iDate.toString();
+    _notes.text = incident.iNotes!;
     return MaterialApp(
       title: 'Incident',
       theme: ThemeData(
@@ -81,26 +80,29 @@ class _IncidentPage extends State<IncidentPage> {
                 },
               ),
             TextButton(
-              onPressed: () async {
-                if (editMode) {
-                  Incident? updIncident = await updateIncident();
-
-                  if (updIncident != null && context.mounted) {
-                    incident = updIncident;
-                    setState(() {
-                      editMode = false;
-                      mode = 'Edit';
-                    });
-                  }
-                } else if (!editMode) {
+              onPressed: () {
+                if (!editMode) {
                   setState(() {
-                    editMode = true;
                     mode = 'Save';
+                    editMode = true;
+                  });
+                } else if (editMode) {
+                  editMode = false;
+
+                  var saveIncident = {
+                    "iName": selectedValue,
+                    "iDate": _date.text,
+                    "iNotes": _notes.text,
+                    "pID": incident.pID
+                  };
+                  setState(() {
+                    mode = 'Edit';
+                    updateIncident(incident.iID, saveIncident);
                   });
                 }
               },
               child: Text(mode),
-            )
+            ),
           ],
         ),
         body: Padding(
@@ -163,10 +165,10 @@ class _IncidentPage extends State<IncidentPage> {
                       if (selectedDate != null) {
                         setState(() {
                           _date.text =
-                              "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                              "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
                           if (editMode) {
                             incident.iDate =
-                                "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                                "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
                           }
                         });
                       }
@@ -183,12 +185,7 @@ class _IncidentPage extends State<IncidentPage> {
                     border: OutlineInputBorder(),
                     labelText: "Notes",
                   ),
-                  controller: TextEditingController(text: incident.iNotes),
-                  onSubmitted: (value) {
-                    if (editMode) {
-                      incident.iNotes = value;
-                    }
-                  },
+                  controller: _notes,
                 ),
               ),
               Container(
@@ -281,7 +278,9 @@ class _IncidentPage extends State<IncidentPage> {
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
+              print(snapshot.data);
               Incident incident = snapshot.data!;
+              print(incident.iNotes);
               _date.text = incident.iDate;
               String selectedValue = incident.iName;
 

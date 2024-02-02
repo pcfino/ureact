@@ -28,6 +28,7 @@ class _MyApp extends State<MyApp> {
       List<dynamic> jsonPatientList = await getAll() as List;
       List<Patient> patientList = List<Patient>.from(
           jsonPatientList.map((model) => Patient.fromJson(model)));
+
       patientList = List.from(patientList);
       patientList.sort((a, b) => a.lastName.compareTo(b.lastName));
       return patientList;

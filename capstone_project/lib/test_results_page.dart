@@ -41,19 +41,12 @@ class _TestResultsPageState extends State<TestResultsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("forward${widget.forward}");
-    print("right${widget.right}");
-    print("left${widget.left}");
-    print("backward${widget.backward}");
-
     double median = (double.parse(widget.forward) +
             double.parse(widget.left) +
             double.parse(widget.right) +
             double.parse(widget.backward)) /
         4;
     String medianString = median.toString();
-
-    print(medianString);
 
     return FutureBuilder(
       future: createReactiveTest(medianString),
@@ -78,8 +71,8 @@ class _TestResultsPageState extends State<TestResultsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const TestsPage(
-                                tID: -1,
+                              builder: (context) => TestsPage(
+                                tID: widget.tID,
                               ),
                             ),
                           );
@@ -144,7 +137,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: const Text(
-                                    'Forwards',
+                                    'Forward',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),

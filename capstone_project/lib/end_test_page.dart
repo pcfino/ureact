@@ -178,14 +178,6 @@ class _EndTestPageState extends State<EndTestPage> {
                             onPressed: () async {
                               await getTTS();
                               if (context.mounted) {
-                                print("tts again is $timeToStab");
-
-                                print("in end test page");
-                                print(widget.forward);
-                                print(widget.right);
-                                print(widget.left);
-                                print(widget.backward);
-
                                 if (widget.direction == 'Forward') {
                                   Navigator.push(
                                     context,

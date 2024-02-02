@@ -1,4 +1,5 @@
 import 'package:capstone_project/incident_page.dart';
+import 'package:capstone_project/patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
@@ -55,7 +56,12 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
           title: const Text('Create Incident'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PatientPage(pID: widget.pID),
+              ),
+            );
           }),
           actions: <Widget>[
             TextButton(

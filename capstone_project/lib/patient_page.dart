@@ -8,7 +8,7 @@ import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/patient_api.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 
 class PatientPage extends StatefulWidget {
   const PatientPage({super.key, required this.pID});
@@ -109,7 +109,12 @@ class _PatientPage extends State<PatientPage> {
                 title: const Text('Patient'),
                 centerTitle: true,
                 leading: BackButton(onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyApp(),
+                    ),
+                  );
                 }),
                 actions: <Widget>[
                   if (editMode)
@@ -119,7 +124,6 @@ class _PatientPage extends State<PatientPage> {
                       ),
                       onPressed: () {
                         deletePatient(patient.pID);
-                        Navigator.pop(context);
                       },
                     ),
                   TextButton(
@@ -400,7 +404,16 @@ class _PatientPage extends State<PatientPage> {
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // or any other loading indicator
+          return const SizedBox(
+            width: 30.0,
+            height: 30.0,
+            child: Center(
+              child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                  color: Colors.red,
+                  strokeAlign: 0.0),
+            ),
+          ); // or any other loading indicator
         } else {
           return Text('Error: ${snapshot.error}');
         }

@@ -1,3 +1,4 @@
+import 'package:capstone_project/patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/create_test_page.dart';
 import 'package:capstone_project/patient_page.dart';
@@ -67,13 +68,12 @@ class _IncidentPage extends State<IncidentPage> {
           title: const Text('Incident'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => PatientPage(pID: incident.pID),
-            //   ),
-            // );
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PatientPage(pID: incident.pID),
+              ),
+            );
           }),
           actions: <Widget>[
             if (editMode)
@@ -83,7 +83,12 @@ class _IncidentPage extends State<IncidentPage> {
                 ),
                 onPressed: () {
                   delete(incident.iID);
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IncidentPage(iID: widget.iID),
+                    ),
+                  );
                 },
               ),
             TextButton(
@@ -281,7 +286,17 @@ class _IncidentPage extends State<IncidentPage> {
           future: getIncident(widget.iID),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // or any other loading indicator
+              return const SizedBox(
+                width: 30.0,
+                height: 30.0,
+                child: Center(
+                  child: CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                      color: Colors.red,
+                      strokeAlign: 0.0),
+                ),
+              );
+              ; // or any other loading indicator
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {

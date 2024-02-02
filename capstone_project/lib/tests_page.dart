@@ -78,6 +78,7 @@ class _TestsPage extends State<TestsPage> {
                       onPressed: () {
                         //delete(incident.iID);
                         Navigator.pop(context);
+                        // TODO: get incident to navigate back to a fresh copy without the test that was just deleted
                       },
                     ),
                   TextButton(

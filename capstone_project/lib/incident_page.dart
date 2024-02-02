@@ -82,7 +82,12 @@ class _IncidentPage extends State<IncidentPage> {
                 ),
                 onPressed: () {
                   delete(incident.iID);
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IncidentPage(iID: widget.iID),
+                    ),
+                  );
                 },
               ),
             TextButton(

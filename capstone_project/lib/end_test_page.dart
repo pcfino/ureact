@@ -249,7 +249,15 @@ class _EndTestPageState extends State<EndTestPage> {
   void initState() {
     super.initState();
     timeToStab = "";
-    sensorRecorder = SensorRecorder();
+    if (widget.forward == "") {
+      sensorRecorder = SensorRecorder("forward");
+    } else if (widget.left == "") {
+      sensorRecorder = SensorRecorder("left");
+    } else if (widget.right == "") {
+      sensorRecorder = SensorRecorder("right");
+    } else if (widget.backward == "") {
+      sensorRecorder = SensorRecorder("backward");
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }

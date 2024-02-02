@@ -44,6 +44,10 @@ Future createReactive(Map testInfo) async {
 ///
 /// @return Json object with the time to stibility
 Future runReactiveTestScript(Map sensorData) async {
-  var results = await api.post('/timeToStability', sensorData);
-  return await jsonDecode(results);
+  try {
+    var results = await api.post('/timeToStability', sensorData);
+    return await jsonDecode(results);
+  } catch (err) {
+    return {"TTS": 0.0};
+  }
 }

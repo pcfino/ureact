@@ -4,10 +4,21 @@ import 'package:capstone_project/tests_page.dart';
 
 class StartTestPage extends StatefulWidget {
   const StartTestPage(
-      {super.key, required this.title, required this.direction});
+      {super.key,
+      required this.title,
+      required this.direction,
+      required this.forward,
+      required this.left,
+      required this.right,
+      required this.backward});
 
   final String title;
   final String direction;
+
+  final String forward;
+  final String left;
+  final String right;
+  final String backward;
 
   @override
   State<StartTestPage> createState() => _StartTestPageState();
@@ -141,9 +152,12 @@ class _StartTestPageState extends State<StartTestPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => EndTestPage(
-                                    title: 'Reactive Test',
-                                    direction: widget.direction,
-                                  ),
+                                      title: 'Reactive Test',
+                                      direction: widget.direction,
+                                      forward: widget.left,
+                                      left: widget.left,
+                                      right: widget.right,
+                                      backward: widget.backward),
                                 ),
                               );
                             },

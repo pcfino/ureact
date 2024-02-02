@@ -9,10 +9,22 @@ import 'dart:async';
 import 'api/api_util.dart' as api_util;
 
 class EndTestPage extends StatefulWidget {
-  const EndTestPage({super.key, required this.title, required this.direction});
+  const EndTestPage(
+      {super.key,
+      required this.title,
+      required this.direction,
+      required this.forward,
+      required this.left,
+      required this.right,
+      required this.backward});
 
   final String title;
   final String direction;
+
+  final String forward;
+  final String left;
+  final String right;
+  final String backward;
 
   @override
   State<EndTestPage> createState() => _EndTestPageState();
@@ -164,9 +176,13 @@ class _EndTestPageState extends State<EndTestPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const StartTestPage(
+                                    builder: (context) => StartTestPage(
                                       title: 'Reactive',
                                       direction: 'Right',
+                                      forward: timeToStab,
+                                      left: widget.left,
+                                      right: widget.right,
+                                      backward: widget.backward,
                                     ),
                                   ),
                                 );
@@ -174,9 +190,13 @@ class _EndTestPageState extends State<EndTestPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const StartTestPage(
+                                    builder: (context) => StartTestPage(
                                       title: 'Reactive',
                                       direction: 'Left',
+                                      forward: widget.forward,
+                                      left: widget.left,
+                                      right: timeToStab,
+                                      backward: widget.backward,
                                     ),
                                   ),
                                 );
@@ -184,9 +204,13 @@ class _EndTestPageState extends State<EndTestPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const StartTestPage(
+                                    builder: (context) => StartTestPage(
                                       title: 'Reactive',
                                       direction: 'Backward',
+                                      forward: widget.forward,
+                                      left: timeToStab,
+                                      right: widget.right,
+                                      backward: widget.backward,
                                     ),
                                   ),
                                 );
@@ -195,7 +219,10 @@ class _EndTestPageState extends State<EndTestPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => TestResultsPage(
-                                      timeToStab: timeToStab,
+                                      forward: widget.forward,
+                                      left: widget.left,
+                                      right: widget.right,
+                                      backward: timeToStab,
                                     ),
                                   ),
                                 );

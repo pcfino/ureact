@@ -3,9 +3,17 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:flutter/material.dart';
 
 class TestResultsPage extends StatefulWidget {
-  const TestResultsPage({super.key, required this.timeToStab});
+  const TestResultsPage(
+      {super.key,
+      required this.forward,
+      required this.left,
+      required this.right,
+      required this.backward});
 
-  final String timeToStab;
+  final String forward;
+  final String left;
+  final String right;
+  final String backward;
 
   @override
   State<TestResultsPage> createState() => _TestResultsPageState();
@@ -14,6 +22,13 @@ class TestResultsPage extends StatefulWidget {
 class _TestResultsPageState extends State<TestResultsPage> {
   @override
   Widget build(BuildContext context) {
+    double median = (double.parse(widget.forward) +
+            double.parse(widget.left) +
+            double.parse(widget.right) +
+            double.parse(widget.backward)) /
+        4;
+    String medianString = median.toString();
+
     return MaterialApp(
         title: 'Test Results',
         theme: ThemeData(
@@ -78,9 +93,9 @@ class _TestResultsPageState extends State<TestResultsPage> {
                           ),
                           Container(
                             margin: const EdgeInsets.all(15.0),
-                            child: const Text(
-                              '0',
-                              style: TextStyle(
+                            child: Text(
+                              medianString,
+                              style: const TextStyle(
                                 fontSize: 18,
                               ),
                             ),
@@ -106,9 +121,9 @@ class _TestResultsPageState extends State<TestResultsPage> {
                           ),
                           Container(
                             margin: const EdgeInsets.all(15.0),
-                            child: const Text(
-                              '0',
-                              style: TextStyle(
+                            child: Text(
+                              widget.forward,
+                              style: const TextStyle(
                                 fontSize: 18,
                               ),
                             ),
@@ -134,9 +149,9 @@ class _TestResultsPageState extends State<TestResultsPage> {
                           ),
                           Container(
                             margin: const EdgeInsets.all(15.0),
-                            child: const Text(
-                              '0',
-                              style: TextStyle(
+                            child: Text(
+                              widget.right,
+                              style: const TextStyle(
                                 fontSize: 18,
                               ),
                             ),
@@ -162,9 +177,9 @@ class _TestResultsPageState extends State<TestResultsPage> {
                           ),
                           Container(
                             margin: const EdgeInsets.all(15.0),
-                            child: const Text(
-                              '0',
-                              style: TextStyle(
+                            child: Text(
+                              widget.left,
+                              style: const TextStyle(
                                 fontSize: 18,
                               ),
                             ),
@@ -182,9 +197,9 @@ class _TestResultsPageState extends State<TestResultsPage> {
                         children: [
                           Container(
                             margin: const EdgeInsets.all(15.0),
-                            child: const Text(
-                              'Backwards',
-                              style: TextStyle(
+                            child: Text(
+                              widget.backward,
+                              style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ),

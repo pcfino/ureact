@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_project/create_test_page.dart';
+import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
@@ -66,6 +67,12 @@ class _IncidentPage extends State<IncidentPage> {
           title: const Text('Incident'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => PatientPage(pID: incident.pID),
+            //   ),
+            // );
             Navigator.pop(context);
           }),
           actions: <Widget>[
@@ -278,9 +285,7 @@ class _IncidentPage extends State<IncidentPage> {
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              print(snapshot.data);
               Incident incident = snapshot.data!;
-              print(incident.iNotes);
               _date.text = incident.iDate;
               String selectedValue = incident.iName;
 

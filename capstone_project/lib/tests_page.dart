@@ -21,7 +21,7 @@ class _TestsPage extends State<TestsPage> {
       Test test = Test.fromJson(jsonTest[0]);
       return test;
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error getting test: $e");
     }
   }
 
@@ -263,6 +263,10 @@ class _TestsPage extends State<TestsPage> {
                                 builder: (context) => const StartTestPage(
                                   title: 'Reactive',
                                   direction: 'Forward',
+                                  forward: "",
+                                  left: "",
+                                  right: "",
+                                  backward: "",
                                 ),
                               ),
                             );
@@ -284,6 +288,10 @@ class _TestsPage extends State<TestsPage> {
                               builder: (context) => const StartTestPage(
                                 title: 'Dynamic',
                                 direction: 'Forward',
+                                forward: "",
+                                left: "",
+                                right: "",
+                                backward: "",
                               ),
                             ),
                           );
@@ -305,6 +313,10 @@ class _TestsPage extends State<TestsPage> {
                               builder: (context) => const StartTestPage(
                                 title: 'Static',
                                 direction: 'Forward',
+                                forward: "",
+                                left: "",
+                                right: "",
+                                backward: "",
                               ),
                             ),
                           );

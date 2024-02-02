@@ -17,18 +17,19 @@ class CreateTestPage extends StatefulWidget {
 class _CreateTestPage extends State<CreateTestPage> {
   Future<dynamic> createTest() async {
     try {
+      print(1);
       dynamic jsonTest = await create({
         "tName": selectedValue,
         "tDate": date.text,
         "tNotes": notes.text,
-        "baseline": 0,
-        "tID": widget.iID
+        "iID": widget.iID,
       });
+      print(jsonTest);
 
       Test test = Test.fromJson(jsonTest);
       return test;
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error creating test: $e");
     }
   }
 
@@ -131,7 +132,7 @@ class _CreateTestPage extends State<CreateTestPage> {
                       if (selectedDate != null) {
                         setState(() {
                           date.text =
-                              "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                              "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
                         });
                       }
                     },

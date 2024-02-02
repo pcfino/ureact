@@ -47,12 +47,7 @@ class _EndTestPageState extends State<EndTestPage> {
       'fs': sensorData.fs
     });
 
-    //var decodedData = jsonDecode(responseBody);
-
-    //setState(() {
     timeToStab = decodedData['TTS'].toString();
-    print("tts$timeToStab");
-    //});
   }
 
   @override

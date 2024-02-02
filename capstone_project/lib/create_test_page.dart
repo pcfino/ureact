@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/test.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/tests_page.dart';
@@ -61,7 +62,12 @@ class _CreateTestPage extends State<CreateTestPage> {
           title: const Text('Create Test'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => IncidentPage(iID: widget.iID),
+              ),
+            );
           }),
           actions: <Widget>[
             TextButton(

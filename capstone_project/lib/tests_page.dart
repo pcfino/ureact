@@ -317,7 +317,16 @@ class _TestsPage extends State<TestsPage> {
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // or any other loading indicator
+          return const SizedBox(
+            width: 30.0,
+            height: 30.0,
+            child: Center(
+              child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                  color: Colors.red,
+                  strokeAlign: 0.0),
+            ),
+          ); // or any other loading indicator
         } else {
           return Text('Error: ${snapshot.error}');
         }

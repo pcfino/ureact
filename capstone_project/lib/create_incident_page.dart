@@ -1,4 +1,5 @@
 import 'package:capstone_project/incident_page.dart';
+import 'package:capstone_project/patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
@@ -19,10 +20,8 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
 
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(
-          value: "Return To Play", child: Text("Return To Play")),
+      const DropdownMenuItem(value: "Baseline", child: Text("Baseline")),
       const DropdownMenuItem(value: "Concussion", child: Text("Concussion")),
-      const DropdownMenuItem(value: "Check Up", child: Text("Check Up")),
     ];
     return menuItems;
   }
@@ -30,10 +29,10 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
   Future<dynamic> createIncident() async {
     try {
       dynamic jsonIncident = await create({
-        selectedValue,
-        _date.text,
-        _notes.text,
-        widget.pID,
+        "iName": selectedValue,
+        "iDate": _date.text,
+        "iNotes": _notes.text,
+        "pID": widget.pID,
       });
       incident = Incident.fromJson(jsonIncident);
       return incident;
@@ -55,7 +54,12 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
           title: const Text('Create Incident'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PatientPage(pID: widget.pID),
+              ),
+            );
           }),
           actions: <Widget>[
             TextButton(

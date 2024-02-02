@@ -18,20 +18,28 @@ class _TestsPage extends State<TestsPage> {
   Future<dynamic> getTest(int tID) async {
     try {
       var jsonTest = await get(tID);
-      Test test = Test.fromJson(jsonTest);
+      Test test = Test.fromJson(jsonTest[0]);
       return test;
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error getting test: $e");
     }
   }
 
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(value: "Day of", child: Text("Day of")),
+      const DropdownMenuItem(value: "Acute", child: Text("Acute")),
+      const DropdownMenuItem(value: "Post RTP", child: Text("Post RTP")),
       const DropdownMenuItem(
-          value: "Pre Return To Play", child: Text("Pre Return To Play")),
-      const DropdownMenuItem(value: "Other", child: Text("Other")),
-      const DropdownMenuItem(value: "Other 2", child: Text("Other 2")),
+          value: "Pre RTP (Asymptomatic)",
+          child: Text("Pre RTP (Asymptomatic)")),
+      const DropdownMenuItem(
+          value: "3 Month Followup", child: Text("3 Month Followup")),
+      const DropdownMenuItem(
+          value: "6 Month Followup", child: Text("6 Month Followup")),
+      const DropdownMenuItem(
+          value: "9 Month Followup", child: Text("9 Month Followup")),
+      const DropdownMenuItem(
+          value: "1 Year Followup", child: Text("1 Year Followup")),
     ];
     return menuItems;
   }
@@ -40,7 +48,7 @@ class _TestsPage extends State<TestsPage> {
   String mode = 'Edit';
 
   bool reactiveTile = false;
-  String selectedValue = "Pre Return To Play";
+  String selectedValue = "Pre Return";
 
   final TextEditingController _date = TextEditingController();
   final TextEditingController notes = TextEditingController();
@@ -79,6 +87,7 @@ class _TestsPage extends State<TestsPage> {
                       onPressed: () {
                         //delete(incident.iID);
                         Navigator.pop(context);
+                        // TODO: get incident to navigate back to a fresh copy without the test that was just deleted
                       },
                     ),
                   TextButton(
@@ -261,9 +270,14 @@ class _TestsPage extends State<TestsPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const StartTestPage(
+                                builder: (context) => StartTestPage(
                                   title: 'Reactive',
                                   direction: 'Forward',
+                                  forward: "0",
+                                  left: "0",
+                                  right: "0",
+                                  backward: "0",
+                                  tID: widget.tID,
                                 ),
                               ),
                             );
@@ -282,9 +296,14 @@ class _TestsPage extends State<TestsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const StartTestPage(
+                              builder: (context) => StartTestPage(
                                 title: 'Dynamic',
                                 direction: 'Forward',
+                                forward: "",
+                                left: "",
+                                right: "",
+                                backward: "",
+                                tID: widget.tID,
                               ),
                             ),
                           );
@@ -303,9 +322,14 @@ class _TestsPage extends State<TestsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const StartTestPage(
+                              builder: (context) => StartTestPage(
                                 title: 'Static',
                                 direction: 'Forward',
+                                forward: "",
+                                left: "",
+                                right: "",
+                                backward: "",
+                                tID: widget.tID,
                               ),
                             ),
                           );
@@ -318,7 +342,16 @@ class _TestsPage extends State<TestsPage> {
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // or any other loading indicator
+          return const SizedBox(
+            width: 30.0,
+            height: 30.0,
+            child: Center(
+              child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                  color: Colors.red,
+                  strokeAlign: 0.0),
+            ),
+          ); // or any other loading indicator
         } else {
           return Text('Error: ${snapshot.error}');
         }

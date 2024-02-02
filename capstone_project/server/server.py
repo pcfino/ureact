@@ -26,36 +26,33 @@ cache = SecretCache( config = cache_config, client = client)
 secret = cache.get_secret_string('prod/kines')
 CONFID = json.loads(secret)
 # database connection
-mydb = connector.connect(
-host=CONFID['host'],
-user=CONFID['username'],
-password=CONFID['password']
-)
+def connectSql():
+    mydb = connector.connect(
+    host=CONFID['host'],
+    user=CONFID['username'],
+    password=CONFID['password'],
+    database=CONFID['dbName']
+    )
+    return mydb
 
 app = Flask(__name__)
-app.json.sort_keys = False
+app.json.sort_keys = False # make the order same as construction 
 
 print("Server has started: ")
-
-#json_file = {"TTS": 0}
-#@app.route('/postData', methods=['POST'])
-#def receive_post_data():
-#    if request.method == 'POST':
-#        data_from_post = request.json.get('counter')
-#        json_file['counter'] = data_from_post
-#        return jsonify(json_file)
+# ctrl-shift U - uppercase
 
 # --------------------------------------------------------------- PATIENT ---------------------------------------------------------------
 
 @app.route('/mysql/getAllPatients', methods=['GET'])
 def getAllPatients():
     if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("USE Kinesiology_App") 
+
         mycursor.execute("SELECT * FROM Patient")
         myresult = mycursor.fetchall()
-        # This is one element of the return json, may have multiple
-        #{"pID": 1, "firstName": "John", "lastName": "Doe"}
+
         returnList = []
         for x in myresult:
             returnList.append(OrderedDict({"pID": x[0], "firstName": x[1], "lastName": x[2]}))
@@ -65,61 +62,62 @@ def getAllPatients():
 def getOnePatient():
     # ?ID=1 need to add a value to key1 that is the patient pID in the url
     if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor() 
+
         data = request.args.get('ID')
-        mycursor = mydb.cursor()
-        mycursor.execute("USE Kinesiology_App") 
-        # ctrl-shift U
         sql = "SELECT * FROM Patient WHERE pID=%s"
         val = [(data)]
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
-        # This is one element of the return json, may have multiple
-        #{"pID": 1, "firstName": "John", "lastName": "Doe", "dOB": "1998-04-18", "height": 70, "weight": 215,
-        # "sport": "football", "gender": "M", "thirdPartyID": "62936", 
-        # "patients": [{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20"}, ... ]}
-        returnList = []
 
+        returnList = []
         # Get the patient we are looking for
         patient = OrderedDict()
         for x in myresult:
-            patient = OrderedDict({"pID": x[0], "firstName": x[1], "lastName": x[2], "dOB": x[3], "height": x[4], "weight": x[5], 
-                "sport": x[6], "gender": x[7], "thirdPartyID": x[8], "incidents": []})
-        
+            patient = OrderedDict({"pID": x[0], "firstName": x[1], "lastName": x[2], "dOB": str(x[3]), "height": x[4], "weight": x[5], 
+                "sport": x[6], "gender": x[7], "thirdPartyID": x[8], "incidents": []})  
+
         # Get the Incidents that that patient has
         sql = "SELECT * FROM Incident WHERE pID=%s"
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
         for x in myresult:
-            patient['incidents'].append(OrderedDict({"iID": x[0], "iName": x[1], "iDate": x[2], "pID": x[4]}))
+            patient['incidents'].append(OrderedDict({"iID": x[0], "iName": x[1], "iDate": str(x[2]), "pID": x[4]}))
         
         returnList.append(patient)
         return jsonify(returnList) 
 
-# RIGHT NOW, YOU MUST INPUT ALL VALUES, talk to kines about if they want this, or deal with it on front end
+# RIGHT NOW, YOU MUST INPUT ALL VALUES (front end is handling this)
 @app.route('/mysql/createNewPatient', methods=['POST'])
 def createNewPatient():
     if request.method == 'POST':
-        data = request.json
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology_App") 
+
+        data = request.json
         sql = "INSERT INTO Patient (pFirstName, pLastName, dOB, height, weight, sport, gender, thirdPartyID) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
         val = (data['firstName'], data['lastName'], data['dOB'], data['height'], data['weight'], data['sport'], data['gender'], data['thirdPartyID'])
-        #datetime.date(1970,6,17)
         mycursor.execute(sql, val)
         mydb.commit()
+
         pID = mycursor.lastrowid
-        returnPatient = {"pID": pID, "firstName": data['firstName'], "lastName": data['lastName'], "dOB": data['dOB'], "height": data['height'], 
+        returnPatient = {"pID": pID, "firstName": data['firstName'], "lastName": data['lastName'], "dOB": str(data['dOB']), "height": data['height'], 
             "weight": data['weight'], "sport": data['sport'], "gender": data['gender'], "thirdPartyID": data['thirdPartyID']}
         return jsonify(returnPatient)
 
 @app.route('/mysql/updatePatient', methods=['PUT'])
 def updatePatient():
     if request.method == 'PUT':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+        
         data = request.json
         sql = "UPDATE Patient SET " + updatePatientHelper(data)
         print(sql)
-        mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology_App") 
         mycursor.execute(sql)
         mydb.commit()
 
@@ -127,10 +125,11 @@ def updatePatient():
         sql = "SELECT * FROM Patient WHERE pID=%s"
         mycursor.execute(sql, pID)
         myresult = mycursor.fetchall()
+
         returnList = {}
         # Get the patient we are looking for
         for x in myresult:
-            returnList = {"pID": x[0], "firstName": x[1], "lastName": x[2], "dOB": x[3], "height": x[4], "weight": x[5], 
+            returnList = {"pID": x[0], "firstName": x[1], "lastName": x[2], "dOB": str(x[3]), "height": x[4], "weight": x[5], 
                 "sport": x[6], "gender": x[7], "thirdPartyID": x[8]}
         return jsonify(returnList)
 
@@ -182,16 +181,20 @@ def updatePatientHelper(data):
 @app.route('/mysql/deletePatient', methods=['DELETE'])
 def deletePatient():
     if request.method == 'DELETE':
-        data = request.json
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology_App") 
+        
+        data = request.json
         sql = "Delete from Patient where pID = %s"
         val = [(data["pID"])]
         mycursor.execute(sql, val) 
         mydb.commit()
+
         sql = "SELECT * FROM Patient WHERE pID=%s"
         mycursor.execute(sql,val)
         patientExist = mycursor.fetchall()
+
         if len(patientExist) == 0:
             return jsonify({"Status": True})
         else:
@@ -202,12 +205,12 @@ def deletePatient():
 # --------------------------------------------------------------- INCIDENT --------------------------------------------------------------
 @app.route('/mysql/getIncident', methods=['GET'])
 def getIncident():
-    #{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "tests": [{"tID": 1, "tDate": "2023-09-20", "tName": "Day of"}, ... ]}
     if request.method == 'GET':
-        data = request.args.get('ID')
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("USE Kinesiology_App") 
-        # ctrl-shift U
+        
+        data = request.args.get('ID')
         sql = "SELECT * FROM Incident WHERE iID=%s"
         val = [(data)]
         mycursor.execute(sql, val)
@@ -217,43 +220,46 @@ def getIncident():
         # Get the Incident we are looking for
         incident = OrderedDict()
         for x in myresult:
-            incident = OrderedDict({"iID": x[0], "iName": x[1], "iDate": x[2], "iNotes": x[3], "tests": []})
+            incident = OrderedDict({"iID": x[0], "iName": x[1], "iDate": str(x[2]), "iNotes": x[3], "pID": x[4], "tests": []})
 
         # Get the Tests that that patient has
         sql = "SELECT * FROM Test WHERE iID=%s"
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
         for x in myresult:
-            incident['tests'].append(OrderedDict({"tID": x[0], "tDate": x[2], "tName": x[1]}))
+            incident['tests'].append(OrderedDict({"tID": x[0], "tDate": str(x[2]), "tName": x[1], "iID": x[4]}))
 
         returnList.append(incident)
         return jsonify(returnList)
 
-# RIGHT NOW, YOU MUST INPUT ALL VALUES, talk to kines about if they want this, or deal with it on front end
+# RIGHT NOW, YOU MUST INPUT ALL VALUES (front end is handling this)
 @app.route('/mysql/createIncident', methods=['POST'])
 def createIncident():
-    #'{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "pID": 1}'
     if request.method == 'POST':
-        data = request.json
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology_App") 
+ 
+        data = request.json
         sql = "INSERT INTO Incident (iName, iDate, iNotes, pID) VALUES(%s, %s, %s, %s)"
         val = (data['iName'], data['iDate'], data['iNotes'], data['pID'])
         mycursor.execute(sql, val)
         mydb.commit()
+
         iID = mycursor.lastrowid
-        returnIncident = {"iID": iID, "iName": data['iName'], "iDate": data['iDate'], "iNotes": data['iNotes'], "pID": data['pID']}
+        returnIncident = {"iID": iID, "iName": data['iName'], "iDate": str(data['iDate']), "iNotes": data['iNotes'], "pID": data['pID']}
         return jsonify(returnIncident)
 
 @app.route('/mysql/updateIncident', methods=['PUT'])
 def updateIncident():
-    #'{"iID": 1, "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury", "pID": 1}'
     if request.method == 'PUT':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+ 
         data = request.json
         sql = "UPDATE Incident SET " + updateIncidentHelper(data)
-        print(sql)
-        mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology_App") 
+        print(sql) 
         mycursor.execute(sql)
         mydb.commit()
 
@@ -261,14 +267,14 @@ def updateIncident():
         sql = "SELECT * FROM Incident WHERE iID=%s"
         mycursor.execute(sql, iID)
         myresult = mycursor.fetchall()
+
         returnList = {}
-        # Get the patient we are looking for
+        # Get the incident we are looking for
         for x in myresult:
-            returnList = {"iID": x[0], "iName": x[1], "iDate": x[2], "iNotes": x[3], "pID": x[4]}
+            returnList = {"iID": x[0], "iName": x[1], "iDate": str(x[2]), "iNotes": x[3], "pID": x[4]}
         return jsonify(returnList)
 
 def updateIncidentHelper(data):
-    # "iName": "Concussion", "iDate": "2023-09-20", "iNotes": "this person suffered a head injury"
     sql = ""
     nameBool=dateBool = False
     if 'iName' in data:
@@ -278,7 +284,7 @@ def updateIncidentHelper(data):
         if nameBool == True:
             sql += ", "
         dateBool = True
-        sql += "iDate='" + data['iDate'] + "'"
+        sql += "iDate='" + str(data['iDate']) + "'"
     if 'iNotes' in data:
         if (nameBool or dateBool) == True:
             sql += ", "
@@ -291,16 +297,20 @@ def updateIncidentHelper(data):
 @app.route('/mysql/deleteIncident', methods=['DELETE'])
 def deleteIncident():
     if request.method == 'DELETE':
-        data = request.json
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology_App") 
+ 
+        data = request.json
         sql = "Delete from Incident where iID = %s"
         val = [(data["iID"])]
         mycursor.execute(sql, val) 
         mydb.commit()
+
         sql = "SELECT * FROM Incident WHERE iID=%s"
         mycursor.execute(sql,val)
         patientExist = mycursor.fetchall()
+
         if len(patientExist) == 0:
             return jsonify({"Status": True})
         else:
@@ -312,12 +322,12 @@ def deleteIncident():
 
 @app.route('/mysql/getTest', methods=['GET'])
 def getTest():
-    #{"tID": 1, "tName": "Day of", "tDate": "2023-09-20", "tNotes": "this is some notes about the test", "iID": 1, "dynamic": {}, "static": {}, "reactive": {"rID": 1, "fTime": 1.234, "bTime": 0.873, "lTime": 0.876, "rTime": 0.945, "mTime": 0.912, "tID": 1}}
     if request.method == 'GET':
-        data = request.args.get('ID')
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("USE Kinesiology_App") 
-        # ctrl-shift U
+ 
+        data = request.args.get('ID')
         sql = "SELECT * FROM Test WHERE tID=%s"
         val = [(data)]
         mycursor.execute(sql, val)
@@ -327,46 +337,51 @@ def getTest():
         # Get the Incident we are looking for
         test = OrderedDict()
         for x in myresult:
-            test = OrderedDict({"tID": x[0], "tName": x[1], "tDate": x[2], "tNotes": x[3], "iID": x[4], "dynamic": {}, "static": {}, "reactive": {}})
+            test = OrderedDict({"tID": x[0], "tName": x[1], "tDate": str(x[2]), "tNotes": x[3], "iID": x[4]}) # , "dynamic": {}, "static": {}, "reactive": {}
 
-        # Get the Tests that that patient has
+        # Get the ReactiveTests that that patient has
         sql = "SELECT * FROM ReactiveTest WHERE tID=%s"
-        # {"rID": 1, "fTime": 1.234, "bTime": 0.873, "lTime": 0.876, "rTime": 0.945, "mTime": 0.912, "tID": 1}
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
+        if myresult != []:
+            test["reactive"] = {}
         for x in myresult:
             test['reactive'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6]}
 
         returnList.append(test)
         return jsonify(returnList)
 
-# RIGHT NOW, YOU MUST INPUT ALL VALUES, talk to kines about if they want this, or deal with it on front end
+# RIGHT NOW, YOU MUST INPUT ALL VALUES (front end is handling this)
 @app.route('/mysql/createTest', methods=['POST'])
 def createTest():
-    #'{"tID": 1, "tName": "Day of", "tDate": "2023-09-20", "tNotes": "this is some notes about the test", "iID": 1, "dynamic": {}, "static": {}, "reactive": {}
     if request.method == 'POST':
-        data = request.json
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology_App") 
+ 
+        data = request.json
         sql = "INSERT INTO Test (tName, tDate, tNotes, iID) VALUES(%s, %s, %s, %s)"
         val = (data['tName'], data['tDate'], data['tNotes'], data['iID'])
         mycursor.execute(sql, val)
         mydb.commit()
+
         tID = mycursor.lastrowid
-        returnTest = {"tID": tID, "tName": data['tName'], "tDate": data['tDate'], "tNotes": data['tNotes'], "iID": data['iID'], "dynamic": {}, "static": {}, "reactive": {}}
+        returnTest = {"tID": tID, "tName": data['tName'], "tDate": str(data['tDate']), "tNotes": data['tNotes'], "iID": data['iID']} #, "dynamic": {}, "static": {}, "reactive": {}}
         return jsonify(returnTest)
 
 @app.route('/mysql/createReactiveTest', methods=['POST'])
 def createReactiveTest():
-    #'{"rID": 1, "fTime": 1.234, "bTime": 0.873, "lTime": 0.876, "rTime": 0.945, "mTime": 0.912, "tID": 1}'
     if request.method == 'POST':
-        data = request.json
+        # connection to database
+        mydb = connectSql()
         mycursor = mydb.cursor()
-        mycursor.execute("use Kinesiology_App") 
+ 
+        data = request.json
         sql = "INSERT INTO ReactiveTest (fTime, bTime, lTime, rTime, mTime, tID) VALUES(%s, %s, %s, %s, %s, %s)"
         val = (data['fTime'], data['bTime'], data['lTime'], data['rTime'], data['mTime'], data['tID'])
         mycursor.execute(sql, val)
         mydb.commit()
+        
         rID = mycursor.lastrowid
         returnRTest = {"rID": rID, "fTime": data['fTime'], "bTime": data['bTime'], "lTime": data['lTime'], "rTime": data['rTime'], "mTime": data['mTime'], "tID": data['tID']}
         return jsonify(returnRTest)

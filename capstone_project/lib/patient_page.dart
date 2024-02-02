@@ -8,6 +8,7 @@ import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/patient_api.dart';
+// import 'package:intl/intl.dart';
 
 class PatientPage extends StatefulWidget {
   const PatientPage({super.key, required this.pID});
@@ -21,27 +22,28 @@ class _PatientPage extends State<PatientPage> {
   Future<dynamic> getPatient(int pID) async {
     try {
       var jsonPatient = await get(pID);
-      Patient patient = Patient.fromJson(jsonPatient);
+      Patient patient = Patient.fromJson(jsonPatient[0]);
       return patient;
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error fetching patient: $e");
     }
   }
 
-  Future<dynamic> savePatient(Patient updatePatient) async {
+  Future<dynamic> savePatient(Map<String, dynamic> updatePatient) async {
     try {
-      var jsonPatient = await update(updatePatient.pID, updatePatient);
-      Patient patient = Patient.fromJson(jsonPatient);
-      setState(() {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PatientPage(pID: patient.pID),
-          ),
-        );
-      });
+      await update(widget.pID, updatePatient);
+      // Patient patient = Patient.fromJson(jsonPatient);
+      // return patient;
+      // setState(() {
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) => PatientPage(pID: widget.pID),
+      //     ),
+      //   );
+      // });
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error updating patient: $e");
     }
   }
 
@@ -59,7 +61,7 @@ class _PatientPage extends State<PatientPage> {
         });
       }
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error deleting patient: $e");
     }
   }
 
@@ -90,6 +92,7 @@ class _PatientPage extends State<PatientPage> {
           firstName.text = patient.firstName;
           lastName.text = patient.lastName;
           dOB.text = patient.dOB!.toString();
+          sport.text = patient.sport!;
           weight.text = patient.weight!.toString();
           height.text = patient.height!.toString();
           gender.text = patient.gender!;
@@ -106,7 +109,12 @@ class _PatientPage extends State<PatientPage> {
                 title: const Text('Patient'),
                 centerTitle: true,
                 leading: BackButton(onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyApp(),
+                    ),
+                  );
                 }),
                 actions: <Widget>[
                   if (editMode)
@@ -116,21 +124,33 @@ class _PatientPage extends State<PatientPage> {
                       ),
                       onPressed: () {
                         deletePatient(patient.pID);
-                        Navigator.pop(context);
                       },
                     ),
                   TextButton(
                     onPressed: () {
-                      setState(() {
-                        if (editMode) {
-                          editMode = false;
-                          mode = 'Edit';
-                          savePatient(patient);
-                        } else if (!editMode) {
-                          editMode = true;
+                      if (!editMode) {
+                        setState(() {
                           mode = 'Save';
-                        }
-                      });
+                          editMode = true;
+                        });
+                      } else if (editMode) {
+                        editMode = false;
+
+                        var updatePatient = {
+                          "firstName": firstName.text,
+                          "lastName": lastName.text,
+                          "dOB": dOB.text,
+                          "height": int.parse(height.text),
+                          "weight": int.parse(weight.text),
+                          "sport": sport.text,
+                          "gender": gender.text,
+                          "thirdPartyID": thirdPartyID.text
+                        };
+                        setState(() {
+                          mode = 'Edit';
+                          savePatient(updatePatient);
+                        });
+                      }
                     },
                     child: Text(mode),
                   ),
@@ -228,7 +248,7 @@ class _PatientPage extends State<PatientPage> {
                                   if (selectedDate != null) {
                                     setState(() {
                                       dOB.text =
-                                          "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                                          "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
                                     });
                                   }
                                 }
@@ -384,7 +404,16 @@ class _PatientPage extends State<PatientPage> {
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // or any other loading indicator
+          return const SizedBox(
+            width: 30.0,
+            height: 30.0,
+            child: Center(
+              child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                  color: Colors.red,
+                  strokeAlign: 0.0),
+            ),
+          ); // or any other loading indicator
         } else {
           return Text('Error: ${snapshot.error}');
         }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/test.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/tests_page.dart';
@@ -17,13 +18,19 @@ class CreateTestPage extends StatefulWidget {
 class _CreateTestPage extends State<CreateTestPage> {
   Future<dynamic> createTest() async {
     try {
-      dynamic jsonTest =
-          await create({selectedValue, date.text, notes.text, 0, widget.iID});
+      print(1);
+      dynamic jsonTest = await create({
+        "tName": selectedValue,
+        "tDate": date.text,
+        "tNotes": notes.text,
+        "iID": widget.iID,
+      });
+      print(jsonTest);
 
       Test test = Test.fromJson(jsonTest);
       return test;
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error creating test: $e");
     }
   }
 
@@ -32,16 +39,24 @@ class _CreateTestPage extends State<CreateTestPage> {
 
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(value: "Day of", child: Text("Day of")),
+      const DropdownMenuItem(value: "Acute", child: Text("Acute")),
+      const DropdownMenuItem(value: "Post RTP", child: Text("Post RTP")),
       const DropdownMenuItem(
-          value: "Pre Return To Play", child: Text("Pre Return To Play")),
-      const DropdownMenuItem(value: "Other", child: Text("Other")),
-      const DropdownMenuItem(value: "Other 2", child: Text("Other 2")),
+          value: "Pre RTP (Asymptomatic)",
+          child: Text("Pre RTP (Asymptomatic)")),
+      const DropdownMenuItem(
+          value: "3 Month Followup", child: Text("3 Month Followup")),
+      const DropdownMenuItem(
+          value: "6 Month Followup", child: Text("6 Month Followup")),
+      const DropdownMenuItem(
+          value: "9 Month Followup", child: Text("9 Month Followup")),
+      const DropdownMenuItem(
+          value: "1 Year Followup", child: Text("1 Year Followup")),
     ];
     return menuItems;
   }
 
-  String selectedValue = "Day of";
+  String selectedValue = "Pre RTP (Asymptomatic)";
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +71,12 @@ class _CreateTestPage extends State<CreateTestPage> {
           title: const Text('Create Test'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => IncidentPage(iID: widget.iID),
+              ),
+            );
           }),
           actions: <Widget>[
             TextButton(
@@ -126,7 +146,7 @@ class _CreateTestPage extends State<CreateTestPage> {
                       if (selectedDate != null) {
                         setState(() {
                           date.text =
-                              "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                              "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
                         });
                       }
                     },

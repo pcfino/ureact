@@ -1,5 +1,7 @@
+import 'package:capstone_project/patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/create_test_page.dart';
+import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
@@ -15,16 +17,15 @@ class IncidentPage extends StatefulWidget {
 class _IncidentPage extends State<IncidentPage> {
   late Incident incident;
   final TextEditingController _date = TextEditingController();
+  final TextEditingController _notes = TextEditingController();
 
   bool editMode = false;
   String mode = 'Edit';
 
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(
-          value: "Return To Play", child: Text("Return To Play")),
+      const DropdownMenuItem(value: "Baseline", child: Text("Baseline")),
       const DropdownMenuItem(value: "Concussion", child: Text("Concussion")),
-      const DropdownMenuItem(value: "Check Up", child: Text("Check Up")),
     ];
     return menuItems;
   }
@@ -32,19 +33,17 @@ class _IncidentPage extends State<IncidentPage> {
   Future<dynamic> getIncident(int iID) async {
     try {
       dynamic jsonIncident = await get(iID);
-      incident = Incident.fromJson(jsonIncident);
+      incident = Incident.fromJson(jsonIncident[0]);
       return incident;
     } catch (e) {
       print("Error fetching incidents: $e");
     }
   }
 
-  Future<dynamic> updateIncident() async {
+  Future<dynamic> updateIncident(
+      int iID, Map<String, dynamic> saveIncident) async {
     try {
-      dynamic jsonIncident = await update(incident.iID,
-          {incident.iName, incident.iDate, incident.iNotes, incident.pID});
-      incident = Incident.fromJson(jsonIncident);
-      return incident;
+      await update(iID, saveIncident);
     } catch (e) {
       print("Error updating incident: $e");
     }
@@ -52,6 +51,8 @@ class _IncidentPage extends State<IncidentPage> {
 
   Widget incidentPageContent(
       BuildContext context, Incident incident, String selectedValue) {
+    _date.text = incident.iDate.toString();
+    _notes.text = incident.iNotes!;
     return MaterialApp(
       title: 'Incident',
       theme: ThemeData(
@@ -63,7 +64,12 @@ class _IncidentPage extends State<IncidentPage> {
           title: const Text('Incident'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PatientPage(pID: incident.pID),
+              ),
+            );
           }),
           actions: <Widget>[
             if (editMode)
@@ -73,30 +79,38 @@ class _IncidentPage extends State<IncidentPage> {
                 ),
                 onPressed: () {
                   delete(incident.iID);
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IncidentPage(iID: widget.iID),
+                    ),
+                  );
                 },
               ),
             TextButton(
-              onPressed: () async {
-                if (editMode) {
-                  Incident? updIncident = await updateIncident();
-
-                  if (updIncident != null && context.mounted) {
-                    incident = updIncident;
-                    setState(() {
-                      editMode = false;
-                      mode = 'Edit';
-                    });
-                  }
-                } else if (!editMode) {
+              onPressed: () {
+                if (!editMode) {
                   setState(() {
-                    editMode = true;
                     mode = 'Save';
+                    editMode = true;
+                  });
+                } else if (editMode) {
+                  editMode = false;
+
+                  var saveIncident = {
+                    "iName": selectedValue,
+                    "iDate": _date.text,
+                    "iNotes": _notes.text,
+                    "pID": incident.pID
+                  };
+                  setState(() {
+                    mode = 'Edit';
+                    updateIncident(incident.iID, saveIncident);
                   });
                 }
               },
               child: Text(mode),
-            )
+            ),
           ],
         ),
         body: Padding(
@@ -159,10 +173,10 @@ class _IncidentPage extends State<IncidentPage> {
                       if (selectedDate != null) {
                         setState(() {
                           _date.text =
-                              "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                              "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
                           if (editMode) {
                             incident.iDate =
-                                "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                                "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
                           }
                         });
                       }
@@ -179,12 +193,7 @@ class _IncidentPage extends State<IncidentPage> {
                     border: OutlineInputBorder(),
                     labelText: "Notes",
                   ),
-                  controller: TextEditingController(text: incident.iNotes),
-                  onSubmitted: (value) {
-                    if (editMode) {
-                      incident.iNotes = value;
-                    }
-                  },
+                  controller: _notes,
                 ),
               ),
               Container(
@@ -273,7 +282,17 @@ class _IncidentPage extends State<IncidentPage> {
           future: getIncident(widget.iID),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // or any other loading indicator
+              return const SizedBox(
+                width: 30.0,
+                height: 30.0,
+                child: Center(
+                  child: CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                      color: Colors.red,
+                      strokeAlign: 0.0),
+                ),
+              );
+              ; // or any other loading indicator
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {

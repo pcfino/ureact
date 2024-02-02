@@ -54,22 +54,22 @@ class SensorRecorder {
   // late final Stream<AccelerometerEvent> _accStream;
   // late final Stream<GyroscopeEvent> _gyrStream;
   // late final List<StreamSubscription> _streamSubscriptions;
-  late final SensorRecorderResults _results;
+  late SensorRecorderResults _results;
   late bool _killTimer;
   late StreamSubscription<AccelerometerEvent> _stream;
 
-  double _gyroX = 0.0; 
-  double _gyroY = 0.0; 
-  double _gyroZ = 0.0; 
+  double _gyroX = 0.0;
+  double _gyroY = 0.0;
+  double _gyroZ = 0.0;
 
-  
-  double _accX = 0.0; 
-  double _accY = 0.0; 
-  double _accZ = 0.0; 
+  double _accX = 0.0;
+  double _accY = 0.0;
+  double _accZ = 0.0;
 
   bool _ready = false;
+  String _testDirection = '';
 
-  SensorRecorder() {
+  SensorRecorder(String testDirection) {
     // _streamSubscriptions = <StreamSubscription>[];
 
     /*while(!ready) {
@@ -79,9 +79,8 @@ class SensorRecorder {
       };
     }*/
     //_stream = accelerometerEventStream().listen((AccelerometerEvent event) {
-                  //angleMeet(<double>[event.x, event.y, event.z], false, true, false, false);
+    //angleMeet(<double>[event.x, event.y, event.z], false, true, false, false);
     //});
-
 
     // _accStream =
     //     Sensors().accelerometerEventStream(samplingPeriod: sampleDuration);
@@ -103,23 +102,26 @@ class SensorRecorder {
     //   debugPrint('gyrData:  $x  $y  $z');
     // }));
 
+    _testDirection = testDirection;
 
-    gyroscopeEventStream().listen((event) {         
-      _gyroX = event.x; 
-      _gyroY = event.y; 
-      _gyroZ = event.z; });
+    gyroscopeEventStream().listen((event) {
+      _gyroX = event.x;
+      _gyroY = event.y;
+      _gyroZ = event.z;
+    });
 
-    accelerometerEventStream().listen((event) {         
-      _accX = event.x; 
-      _accY = event.y; 
-      _accZ = event.z; });
+    accelerometerEventStream().listen((event) {
+      _accX = event.x;
+      _accY = event.y;
+      _accZ = event.z;
+    });
 
     const samplePeriod = 20; // ms
     Timer.periodic(const Duration(milliseconds: samplePeriod), (timer) async {
-      if(_ready){
+      if (_ready) {
         timer.cancel();
       }
-      angleMeet([_accX, _accY, _accZ], false, true, false, false);
+      angleMeet([_accX, _accY, _accZ]);
     });
   }
 
@@ -128,71 +130,68 @@ class SensorRecorder {
     // for (final subscription in _streamSubscriptions) {
     //   subscription.cancel();
     // }
-    debugPrint((_results.gyrData.x.length.toString()));
+    //debugPrint((_results.gyrData.x.length.toString()));
     return _results;
   }
 
   void startRecording() {
-      //_stream.cancel();
-      const samplePeriod = 20; // ms
-      const sampleDuration = Duration(milliseconds: samplePeriod);
-      Timer(const Duration(seconds: 3), () => FlutterRingtonePlayer.stop());
+    //_stream.cancel();
+    const samplePeriod = 20; // ms
+    const sampleDuration = Duration(milliseconds: samplePeriod);
+    Timer(const Duration(seconds: 3), () => FlutterRingtonePlayer.stop());
 
-      _killTimer = false;
+    _killTimer = false;
 
+    _results = SensorRecorderResults(samplePeriod);
 
-      _results = SensorRecorderResults(samplePeriod);
+    Timer.periodic(sampleDuration, (timer) async {
+      if (_killTimer) {
+        timer.cancel();
+      }
 
-      Timer.periodic(sampleDuration, (timer) async {
-        if (_killTimer) {
-          timer.cancel();
-        }
+      _results.accData.x.add(_accX);
+      _results.accData.y.add(_accY);
+      _results.accData.z.add(_accZ);
 
-        _results.accData.x.add(_accX);
-        _results.accData.y.add(_accY);
-        _results.accData.z.add(_accZ);
+      _results.gyrData.x.add(_gyroX);
+      _results.gyrData.y.add(_gyroY);
+      _results.gyrData.z.add(_gyroZ);
 
-        _results.gyrData.x.add(_gyroX);
-        _results.gyrData.y.add(_gyroY);
-        _results.gyrData.z.add(_gyroZ);
-
-        _results.timeStamps.add(DateTime.now().millisecondsSinceEpoch);
-      });
+      _results.timeStamps.add(DateTime.now().millisecondsSinceEpoch);
+    });
   }
 
-  void angleMeet(cord, bool front, bool back, bool left, bool right){
+  void angleMeet(cord) {
     double minAngle = 0;
     double maxAngle = 0;
     double radAngle = 0;
     double x = cord[0];
     double y = cord[1];
     double z = cord[2];
-    if(back){
+    if (_testDirection == 'backward') {
       minAngle = 90 - 8;
       maxAngle = 90 - 6;
-      radAngle = acos(z/sqrt((x*x)+(y*y)+(z*z)));
-    }
-    if(front){
-      minAngle = 45 + 8; 
-      maxAngle = 45 + 10; 
-      radAngle = acos(z/sqrt((x*x)+(y*y)+(z*z)));
-    }
-    if(left){
+      radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
+    } else if (_testDirection == 'forward') {
+      minAngle = 45 + 8;
+      maxAngle = 45 + 10;
+      radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
+    } else if (_testDirection == 'left') {
       minAngle = 8;
       maxAngle = 12;
-      radAngle = atan(x/sqrt((y*y)+(z*z)));
-    }
-    if(right){
+      radAngle = atan(x / sqrt((y * y) + (z * z)));
+    } else if (_testDirection == 'right') {
       minAngle = -12;
       maxAngle = -8;
-      radAngle = atan(x/sqrt((y*y)+(z*z)));
+      radAngle = atan(x / sqrt((y * y) + (z * z)));
+    } else {
+      print("$_testDirection is not a valid test direction");
     }
 
-    minAngle = minAngle * pi/180;
-    maxAngle = maxAngle * pi/180;
+    minAngle = minAngle * pi / 180;
+    maxAngle = maxAngle * pi / 180;
 
-
-    if(radAngle >= minAngle && radAngle <= maxAngle) {
+    if (radAngle >= minAngle && radAngle <= maxAngle) {
       FlutterRingtonePlayer.play(
         android: AndroidSounds.notification,
         ios: IosSounds.glass,

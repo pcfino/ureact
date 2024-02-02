@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:capstone_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/models/patient.dart';
@@ -17,19 +18,19 @@ class _CreatePatientPage extends State<CreatePatientPage> {
   Future<dynamic> createPatient() async {
     try {
       dynamic jsonPatient = await create({
-        firstName.text,
-        lastName.text,
-        dOB.text,
-        height.text == "" ? 0 : int.parse(height.text),
-        weight.text == "" ? 0 : int.parse(weight.text),
-        sport.text,
-        gender.text,
-        thirdPartyID.text
+        "firstName": firstName.text,
+        "lastName": lastName.text,
+        "dOB": dOB.text,
+        "height": height.text == "" ? 0 : int.parse(height.text),
+        "weight": weight.text == "" ? 0 : int.parse(weight.text),
+        "sport": sport.text,
+        "gender": gender.text,
+        "thirdPartyID": thirdPartyID.text
       });
       Patient patient = Patient.fromJson(jsonPatient);
       return patient;
     } catch (e) {
-      print("Error fetching patients: $e");
+      print("Error creating patient: $e");
     }
   }
 
@@ -55,7 +56,12 @@ class _CreatePatientPage extends State<CreatePatientPage> {
           title: const Text('Create Patient'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MyApp(),
+              ),
+            );
           }),
           actions: <Widget>[
             TextButton(

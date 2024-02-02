@@ -1,3 +1,4 @@
+import 'package:capstone_project/main.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -23,7 +24,12 @@ class _SettingsPage extends State<SettingsPage> {
           title: const Text('Settings'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MyApp(),
+              ),
+            );
           }),
         ),
         body: Center(

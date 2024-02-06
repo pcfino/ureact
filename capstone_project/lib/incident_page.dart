@@ -213,31 +213,11 @@ class _IncidentPage extends State<IncidentPage> {
               ),
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(8.0),
                   itemCount: incident.tests!.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      child: Card(
-                        margin: const EdgeInsets.all(0),
-                        elevation: 0,
-                        color: Colors.white10,
-                        shape: const Border(
-                          bottom: BorderSide(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                incident.tests![index].tDate,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    return ListTile(
+                      title: Text(incident.tests![index].tName),
+                      subtitle: Text(incident.tests![index].tDate),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -282,17 +262,12 @@ class _IncidentPage extends State<IncidentPage> {
           future: getIncident(widget.iID),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                width: 30.0,
-                height: 30.0,
-                child: Center(
-                  child: CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                      color: Colors.red,
-                      strokeAlign: 0.0),
+              return Scaffold(
+                appBar: AppBar(),
+                body: const Center(
+                  child: CircularProgressIndicator(),
                 ),
               );
-              ; // or any other loading indicator
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {

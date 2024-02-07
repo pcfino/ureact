@@ -20,7 +20,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
       dynamic jsonPatient = await create({
         "firstName": firstName.text,
         "lastName": lastName.text,
-        "dOB": dOB.text,
+        "dOB": _date.text,
         "height": height.text == "" ? 0 : int.parse(height.text),
         "weight": weight.text == "" ? 0 : int.parse(weight.text),
         "sport": sport.text,
@@ -36,7 +36,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
 
   final TextEditingController firstName = TextEditingController();
   final TextEditingController lastName = TextEditingController();
-  final TextEditingController dOB = TextEditingController();
+  final TextEditingController _date = TextEditingController();
   final TextEditingController sport = TextEditingController();
   final TextEditingController height = TextEditingController();
   final TextEditingController weight = TextEditingController();
@@ -131,20 +131,20 @@ class _CreatePatientPage extends State<CreatePatientPage> {
                           labelText: "DOB *",
                           contentPadding: EdgeInsets.all(11),
                         ),
-                        controller: dOB,
+                        controller: _date,
                         onTap: () async {
-                          // DateTime? selectedDate = await showDatePicker(
-                          //   context: context,
-                          //   initialDate: DateTime.now(),
-                          //   firstDate: DateTime(2000),
-                          //   lastDate: DateTime.now(),
-                          // );
-                          // if (selectedDate != null) {
-                          //   setState(() {
-                          //     _date.text =
-                          //         "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
-                          //   });
-                          // }
+                          DateTime? selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now(),
+                          );
+                          if (selectedDate != null) {
+                            setState(() {
+                              _date.text =
+                                  "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                            });
+                          }
                         },
                       ),
                     ),

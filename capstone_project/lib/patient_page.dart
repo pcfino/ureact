@@ -1,4 +1,8 @@
-import 'dart:convert';
+import 'package:capstone_project/models/test.dart';
+import 'package:csv/csv.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
 import 'package:capstone_project/create_incident_page.dart';
@@ -8,7 +12,6 @@ import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/patient_api.dart';
-// import 'package:intl/intl.dart';
 
 class PatientPage extends StatefulWidget {
   const PatientPage({super.key, required this.pID});
@@ -19,6 +22,8 @@ class PatientPage extends StatefulWidget {
 }
 
 class _PatientPage extends State<PatientPage> {
+  late final List<Incident> incidents;
+
   Future<dynamic> getPatient(int pID) async {
     try {
       var jsonPatient = await get(pID);
@@ -65,6 +70,86 @@ class _PatientPage extends State<PatientPage> {
     }
   }
 
+  Future<dynamic> getIncident(int iID) async {
+    try {
+      dynamic jsonIncident = await get(iID);
+      return Incident.fromJson(jsonIncident[0]);
+    } catch (e) {
+      print("Error fetching incidents: $e");
+    }
+  }
+
+  Future<dynamic> getTest(int tID) async {
+    try {
+      var jsonTest = await get(tID);
+      return Test.fromJson(jsonTest[0]);
+    } catch (e) {
+      print("Error getting test: $e");
+    }
+  }
+
+  Future<XFile> createCSVFile(String fileName, String fileContent) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final csvFile = File('${dir.path}/$fileName.csv');
+    await csvFile.writeAsString(fileContent);
+    final xCsvFile = XFile('${dir.path}/$fileName.csv');
+    return xCsvFile;
+  }
+
+  Future<void> exportCSV(XFile file) async {
+    Share.shareXFiles([file]);
+  }
+
+  // Future<void> getFilePicker() async {
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles();
+  //   if (result != null) {
+  //     File file = File(result.files.single.path ?? "");
+  //     await file.readAsString().then((value) => print(value));
+  //   } else {
+  //     print("User canceled selection");
+  //   }
+  // }
+
+  void exportPatientData() async {
+    // Get patient data
+    String fileName = 'patient2';
+    List<List<dynamic>> rows = [];
+    rows.add([
+      '3rd Party ID',
+      'Incident',
+      'Incident Date/Time',
+      'Condition',
+      'Reactive TTS'
+    ]);
+    for (var incident in incidents) {
+      print("ENTERED INCIDENT");
+      Incident i = await getIncident(incident.iID);
+      if (i.tests != null) {
+        for (var test in incident.tests ?? []) {
+          print("ENTERED TEST");
+          print(thirdPartyID.text);
+          print(incident.iName);
+          print(incident.iDate);
+          print(test?.reactive?.mTime);
+
+          rows.add([
+            thirdPartyID.text,
+            incident.iName,
+            incident.iDate,
+            incident.iNotes,
+            test?.reactive?.mTime
+          ]);
+        }
+      }
+    }
+
+    // Export patient data
+    String csv = const ListToCsvConverter().convert(rows);
+    String fileContent = csv;
+    XFile csvFile = await createCSVFile(fileName, fileContent);
+    await exportCSV(csvFile);
+  }
+
   final TextEditingController fullName = TextEditingController();
   final TextEditingController firstName = TextEditingController();
   final TextEditingController lastName = TextEditingController();
@@ -87,7 +172,7 @@ class _PatientPage extends State<PatientPage> {
           Patient patient = snapshot.data! as Patient;
           int feet = patient.height! ~/ 12;
           int inches = patient.height! % 12;
-          List<Incident> incidents = patient.incidents!;
+          incidents = patient.incidents!;
           fullName.text = "${patient.firstName} ${patient.lastName}";
           firstName.text = patient.firstName;
           lastName.text = patient.lastName;
@@ -399,7 +484,10 @@ class _PatientPage extends State<PatientPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       TextButton(
-                          onPressed: () {}, child: const Text('Export Data')),
+                          onPressed: () {
+                            exportPatientData();
+                          },
+                          child: const Text('Export Data')),
                     ],
                   )),
             ),

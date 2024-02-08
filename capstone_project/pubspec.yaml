@@ -40,6 +40,10 @@ dependencies:
   provider: ^6.1.1
   flutter_ringtone_player: ^3.2.0
   json_annotation: ^4.8.1
+  file_picker: ^6.1.1
+  share_plus: ^7.2.2
+  csv: ^5.1.1
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:

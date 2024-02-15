@@ -16,15 +16,15 @@ from collections import OrderedDict
 
 # needed to set up a secret key for my user
 # needed to run aws configure
-# import botocore 
-# import botocore.session 
-# from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
+import botocore 
+import botocore.session 
+from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
 
-# client = botocore.session.get_session().create_client('secretsmanager')
-# cache_config = SecretCacheConfig()
-# cache = SecretCache( config = cache_config, client = client)
-# secret = cache.get_secret_string('prod/kines')
-# CONFID = json.loads(secret)
+client = botocore.session.get_session().create_client('secretsmanager')
+cache_config = SecretCacheConfig()
+cache = SecretCache( config = cache_config, client = client)
+secret = cache.get_secret_string('prod/kines')
+CONFID = json.loads(secret)
 # database connection
 def connectSql():
     mydb = connector.connect(

@@ -7,6 +7,8 @@ import 'package:capstone_project/settings_page.dart';
 import 'package:capstone_project/api/patient_api.dart';
 import 'package:flutter/material.dart';
 
+import 'package:azlistview/azlistview.dart';
+
 void main() {
   runApp(
     const MaterialApp(
@@ -37,23 +39,22 @@ class _MyApp extends State<MyApp> {
     }
   }
 
-  void updateList(String value) {
-    setState(() {
-      // displayPatientList = patientList
-      //     .where((element) =>
-      //         element.lastName.toLowerCase().contains(value.toLowerCase()) ||
-      //         element.firstName.toLowerCase().contains(value.toLowerCase()) ||
-      //         ("${element.firstName} ${element.lastName}")
-      //             .toLowerCase()
-      //             .contains(value.toLowerCase()) ||
-      //         ("${element.lastName}, ${element.firstName}")
-      //             .toLowerCase()
-      //             .contains(value.toLowerCase()))
-      //     .toList();
-    });
+  List<Patient> updateList(List<Patient> list, String value) {
+    return list
+        .where((element) =>
+            element.lastName.toLowerCase().contains(value.toLowerCase()) ||
+            element.firstName.toLowerCase().contains(value.toLowerCase()) ||
+            ("${element.firstName} ${element.lastName}")
+                .toLowerCase()
+                .contains(value.toLowerCase()) ||
+            ("${element.lastName}, ${element.firstName}")
+                .toLowerCase()
+                .contains(value.toLowerCase()))
+        .toList();
   }
 
   final ScrollController scrollController = ScrollController();
+  final TextEditingController search = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +63,6 @@ class _MyApp extends State<MyApp> {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
           List<Patient> patients = snapshot.data!;
-          List<Patient> displayPatientList = List.from(patients);
 
           return MaterialApp(
             title: 'Patients',
@@ -94,65 +94,56 @@ class _MyApp extends State<MyApp> {
               body: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(children: [
-                  TextField(
-                    onChanged: (value) => updateList(value),
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                      prefixIcon: const Icon(Icons.search),
-                      prefixIconColor: Colors.red,
-                      constraints: const BoxConstraints(
-                        maxHeight: 40,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white10,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100.0),
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      controller: search,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        prefixIcon: const Icon(Icons.search),
+                        prefixIconColor: Colors.red,
+                        constraints: const BoxConstraints(
+                          maxHeight: 40,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white10,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(100.0),
+                        ),
                       ),
                     ),
                   ),
                   Expanded(
-                    child: Scrollbar(
-                      thumbVisibility: true,
+                    flex: 10,
+                    child: ListView.separated(
                       controller: scrollController,
-                      child: ListView.builder(
-                        controller: scrollController,
-                        padding: const EdgeInsets.all(8.0),
-                        itemCount: displayPatientList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            child: Card(
-                              margin: const EdgeInsets.all(0),
-                              elevation: 0,
-                              color: Colors.white10,
-                              shape: const Border(
-                                bottom: BorderSide(
-                                  color: Colors.grey,
-                                ),
+                      //padding: const EdgeInsets.all(8.0),
+                      itemCount: updateList(patients, search.text).length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          title: Text(
+                              "${updateList(patients, search.text)[index].lastName}, ${updateList(patients, search.text)[index].firstName}"),
+                          //subtitle: Text(incidents[index].iDate),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PatientPage(
+                                    pID:
+                                        updateList(patients, search.text)[index]
+                                            .pID),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "${displayPatientList[index].lastName}, ${displayPatientList[index].firstName}",
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PatientPage(
-                                      pID: displayPatientList[index].pID),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
+                            );
+                          },
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const Divider();
+                      },
                     ),
                   ),
                 ]),

@@ -3,39 +3,39 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:flutter/material.dart';
 
-class TestResultsPage extends StatefulWidget {
-  const TestResultsPage(
+class DynamicResultsPage extends StatefulWidget {
+  const DynamicResultsPage(
       {super.key,
-      required this.forward,
-      required this.left,
-      required this.right,
-      required this.backward,
-      required this.median,
+      required this.trialOne,
+      required this.trialTwo,
+      required this.trialThree,
+      required this.average,
       required this.tID});
 
-  final String forward;
-  final String left;
-  final String right;
-  final String backward;
-  final String median;
+  final String trialOne;
+  final String trialTwo;
+  final String trialThree;
+  final String average;
 
   final int tID;
 
   @override
-  State<TestResultsPage> createState() => _TestResultsPageState();
+  State<DynamicResultsPage> createState() => _DynamicResultsPage();
 }
 
-class _TestResultsPageState extends State<TestResultsPage> {
-  Future<dynamic> createReactiveTest() async {
+class _DynamicResultsPage extends State<DynamicResultsPage> {
+  Future<dynamic> createDynamicTest() async {
     try {
-      return await createReactive({
-        "fTime": widget.forward,
-        "rTime": widget.right,
-        "lTime": widget.left,
-        "bTime": widget.backward,
-        "mTime": widget.median,
-        "tID": widget.tID,
-      });
+      // create dynamic
+      // return await createReactive({
+      //   "fTime": widget.forward,
+      //   "rTime": widget.right,
+      //   "lTime": widget.left,
+      //   "bTime": widget.backward,
+      //   "mTime": median,
+      //   "tID": widget.tID,
+      // });
+      return 1;
     } catch (e) {
       print("Error creating reactive test: $e");
     }
@@ -44,7 +44,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: createReactiveTest(),
+      future: createDynamicTest(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return MaterialApp(
@@ -82,7 +82,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Time To Stability',
+                          const Text('Time to Complete Tandem Gait',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -112,7 +112,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: Text(
-                                    '${widget.median}s',
+                                    '${widget.average}s',
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
@@ -132,7 +132,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: const Text(
-                                    'Forward',
+                                    'Trial 1',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -141,7 +141,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: Text(
-                                    '${widget.forward}s',
+                                    '${widget.trialOne}s',
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
@@ -161,7 +161,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: const Text(
-                                    'Right',
+                                    'Trial 2',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -170,7 +170,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: Text(
-                                    '${widget.right}s',
+                                    '${widget.trialTwo}s',
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
@@ -190,7 +190,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: const Text(
-                                    'Left',
+                                    'Trial 3',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -199,36 +199,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: Text(
-                                    '${widget.left}s',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                //Text(widget.timeToStab)
-                              ],
-                            ),
-                          ),
-                          Card(
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            shadowColor: Colors.black,
-                            margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: const Text(
-                                    "Backward",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    '${widget.backward}s',
+                                    '${widget.trialThree}s',
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),

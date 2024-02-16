@@ -3,39 +3,41 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:flutter/material.dart';
 
-class TestResultsPage extends StatefulWidget {
-  const TestResultsPage(
+class StaticResultsPage extends StatefulWidget {
+  const StaticResultsPage(
       {super.key,
-      required this.forward,
-      required this.left,
-      required this.right,
-      required this.backward,
-      required this.median,
+      required this.doubleLeg,
+      required this.tandem,
+      required this.singleLeg,
+      required this.total,
+      required this.nonDominantFoot,
       required this.tID});
 
-  final String forward;
-  final String left;
-  final String right;
-  final String backward;
-  final String median;
+  final String doubleLeg;
+  final String tandem;
+  final String singleLeg;
+  final String total;
+  final String nonDominantFoot;
 
   final int tID;
 
   @override
-  State<TestResultsPage> createState() => _TestResultsPageState();
+  State<StaticResultsPage> createState() => _StaticResultsPage();
 }
 
-class _TestResultsPageState extends State<TestResultsPage> {
-  Future<dynamic> createReactiveTest() async {
+class _StaticResultsPage extends State<StaticResultsPage> {
+  Future<dynamic> createStaticTest() async {
     try {
-      return await createReactive({
-        "fTime": widget.forward,
-        "rTime": widget.right,
-        "lTime": widget.left,
-        "bTime": widget.backward,
-        "mTime": widget.median,
-        "tID": widget.tID,
-      });
+      // create dynamic
+      // return await createReactive({
+      //   "fTime": widget.forward,
+      //   "rTime": widget.right,
+      //   "lTime": widget.left,
+      //   "bTime": widget.backward,
+      //   "mTime": median,
+      //   "tID": widget.tID,
+      // });
+      return 1;
     } catch (e) {
       print("Error creating reactive test: $e");
     }
@@ -44,7 +46,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: createReactiveTest(),
+      future: createStaticTest(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return MaterialApp(
@@ -82,7 +84,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Time To Stability',
+                          const Text('Errors',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -102,7 +104,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: const Text(
-                                    'Average',
+                                    'Double Leg Stance',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -112,7 +114,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: Text(
-                                    '${widget.median}s',
+                                    widget.doubleLeg,
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
@@ -132,7 +134,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: const Text(
-                                    'Forward',
+                                    'Tandem',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -141,7 +143,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: Text(
-                                    '${widget.forward}s',
+                                    widget.tandem,
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
@@ -161,7 +163,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: const Text(
-                                    'Right',
+                                    'Single Leg Stance',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -170,7 +172,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: Text(
-                                    '${widget.right}s',
+                                    widget.singleLeg,
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
@@ -190,7 +192,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: const Text(
-                                    'Left',
+                                    'Total',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -199,36 +201,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                                 Container(
                                   margin: const EdgeInsets.all(15.0),
                                   child: Text(
-                                    '${widget.left}s',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                //Text(widget.timeToStab)
-                              ],
-                            ),
-                          ),
-                          Card(
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            shadowColor: Colors.black,
-                            margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: const Text(
-                                    "Backward",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    '${widget.backward}s',
+                                    widget.total,
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),

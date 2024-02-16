@@ -1,8 +1,12 @@
 // import 'package:capstone_project/main.dart';
+import 'package:capstone_project/dynamic_test_page.dart';
 import 'package:capstone_project/start_test_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/models/test.dart';
 import 'package:capstone_project/models/reactive.dart';
+import 'package:capstone_project/static_test_page.dart';
+import 'package:capstone_project/test_results_page.dart';
+import 'package:capstone_project/incident_page.dart';
 import 'package:flutter/material.dart';
 
 class TestsPage extends StatefulWidget {
@@ -76,7 +80,12 @@ class _TestsPage extends State<TestsPage> {
                 title: const Text('Tests'),
                 centerTitle: true,
                 leading: BackButton(onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IncidentPage(iID: test.iID),
+                    ),
+                  );
                 }),
                 actions: <Widget>[
                   if (editMode)
@@ -207,134 +216,100 @@ class _TestsPage extends State<TestsPage> {
                       thickness: 1,
                       color: Colors.grey,
                     ),
-                    if (test.reactive != null)
-                      ExpansionTile(
-                        title: const Text(
-                          'Reactive',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: ListView(children: [
+                        ListTile(
+                          onTap: () {
+                            if (test.reactive != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TestResultsPage(
+                                    backward: test.reactive!.bTime.toString(),
+                                    forward: test.reactive!.fTime.toString(),
+                                    left: test.reactive!.lTime.toString(),
+                                    right: test.reactive!.rTime.toString(),
+                                    median: test.reactive!.mTime.toString(),
+                                    tID: test.tID,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => StartTestPage(
+                                    title: 'Reactive',
+                                    direction: 'Forward',
+                                    forward: "0",
+                                    left: "0",
+                                    right: "0",
+                                    backward: "0",
+                                    tID: widget.tID,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          title: const Text(
+                            'Reactive',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          trailing: Icon(test.reactive == null
+                              ? Icons.add_circle
+                              : Icons.arrow_forward_ios),
                         ),
-                        trailing: Icon(
-                          reactiveTile
-                              ? Icons.arrow_drop_down_circle
-                              : Icons.arrow_drop_down_circle,
-                        ),
-                        onExpansionChanged: (bool expanded) {
-                          setState(() {
-                            reactiveTile = expanded;
-                          });
-                        },
-                        children: [
-                          ListTile(
-                            title: const Text('Average',
-                                style: TextStyle(fontSize: 16)),
-                            trailing: Text(test.reactive!.mTime.toString(),
-                                style: const TextStyle(fontSize: 16)),
-                          ),
-                          ListTile(
-                            title: const Text('Forward',
-                                style: TextStyle(fontSize: 16)),
-                            trailing: Text(test.reactive!.fTime.toString(),
-                                style: const TextStyle(fontSize: 16)),
-                          ),
-                          ListTile(
-                            title: const Text('Right',
-                                style: TextStyle(fontSize: 16)),
-                            trailing: Text(test.reactive!.rTime.toString(),
-                                style: const TextStyle(fontSize: 16)),
-                          ),
-                          ListTile(
-                            title: const Text('Left',
-                                style: TextStyle(fontSize: 16)),
-                            trailing: Text(test.reactive!.lTime.toString(),
-                                style: const TextStyle(fontSize: 16)),
-                          ),
-                          ListTile(
-                            title: const Text('Backward',
-                                style: TextStyle(fontSize: 16)),
-                            trailing: Text(test.reactive!.bTime.toString(),
-                                style: const TextStyle(fontSize: 16)),
-                          ),
-                        ],
-                      ),
-                    if (test.reactive == null)
-                      ExpansionTile(
-                        title: const Text(
-                          'Reactive',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        trailing: const Icon(Icons.play_arrow_rounded),
-                        onExpansionChanged: (bool? value) {
-                          setState(() {
+                        ListTile(
+                          onTap: () {
+                            // check if dynamic exists
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => StartTestPage(
-                                  title: 'Reactive',
-                                  direction: 'Forward',
-                                  forward: "0",
-                                  left: "0",
-                                  right: "0",
-                                  backward: "0",
+                                builder: (context) => DynamicTestPage(
                                   tID: widget.tID,
+                                  start: true,
+                                  trialNumber: 1,
+                                  trialOne: '0',
+                                  trialTwo: '0',
+                                  trialThree: '0',
                                 ),
                               ),
                             );
-                          });
-                        },
-                      ),
-                    ExpansionTile(
-                      title: const Text(
-                        'Dynamic',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      trailing: const Icon(Icons.play_arrow_rounded),
-                      onExpansionChanged: (bool? value) {
-                        setState(() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => StartTestPage(
-                                title: 'Dynamic',
-                                direction: 'Forward',
-                                forward: "",
-                                left: "",
-                                right: "",
-                                backward: "",
-                                tID: widget.tID,
+                          },
+                          title: const Text(
+                            'Dynamic',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          trailing: const Icon(Icons.add_circle),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            // check if static exists
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => StaticTestPage(
+                                  tID: widget.tID,
+                                  start: true,
+                                  stance: "Double Leg Stance",
+                                  doubleLeg: '0',
+                                  tandem: '0',
+                                  singleLeg: '0',
+                                  nonDominantFoot: '',
+                                ),
                               ),
-                            ),
-                          );
-                        });
-                      },
-                    ),
-                    ExpansionTile(
-                      title: const Text(
-                        'Static',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      trailing: const Icon(Icons.play_arrow_rounded),
-                      onExpansionChanged: (bool? value) {
-                        setState(() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => StartTestPage(
-                                title: 'Static',
-                                direction: 'Forward',
-                                forward: "",
-                                left: "",
-                                right: "",
-                                backward: "",
-                                tID: widget.tID,
-                              ),
-                            ),
-                          );
-                        });
-                      },
+                            );
+                          },
+                          title: const Text(
+                            'Static',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          trailing: const Icon(Icons.add_circle),
+                        ),
+                      ]),
                     ),
                   ],
                 ),

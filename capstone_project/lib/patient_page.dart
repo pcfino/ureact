@@ -160,68 +160,63 @@ class _PatientPage extends State<PatientPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (!editMode)
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                          child: TextField(
-                            readOnly: !editMode,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              labelText: "Name *",
-                              contentPadding: EdgeInsets.all(11),
+                        TextField(
+                          readOnly: !editMode,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
                             ),
-                            controller: fullName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            labelText: "Name *",
+                            contentPadding: EdgeInsets.all(11),
+                          ),
+                          controller: fullName,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       if (editMode)
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    labelText: "First *",
-                                    contentPadding: EdgeInsets.all(11),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
                                   ),
-                                  controller: firstName,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  labelText: "First *",
+                                  contentPadding: EdgeInsets.all(11),
+                                ),
+                                controller: firstName,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: TextField(
-                                  readOnly: !editMode,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    labelText: "Last *",
-                                    contentPadding: EdgeInsets.all(11),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                readOnly: !editMode,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
                                   ),
-                                  controller: lastName,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  labelText: "Last *",
+                                  contentPadding: EdgeInsets.all(11),
+                                ),
+                                controller: lastName,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       Row(
                         children: [
@@ -335,17 +330,11 @@ class _PatientPage extends State<PatientPage> {
                           ),
                         ],
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text('Incidents',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ],
+                      const Text(
+                        'Incidents',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const Divider(
@@ -354,7 +343,7 @@ class _PatientPage extends State<PatientPage> {
                         color: Colors.grey,
                       ),
                       Expanded(
-                        child: ListView.builder(
+                        child: ListView.separated(
                           itemCount: incidents.length,
                           itemBuilder: (BuildContext context, int index) {
                             return ListTile(
@@ -370,6 +359,9 @@ class _PatientPage extends State<PatientPage> {
                                 );
                               },
                             );
+                          },
+                          separatorBuilder: (context, index) {
+                            return const Divider();
                           },
                         ),
                       ),

@@ -103,14 +103,14 @@ class _EndTestPageState extends State<EndTestPage> {
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                   child: const Text(
-                    '1. Attach phone to belt',
+                    '1. Attach phone to lumbar spine',
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                   child: const Text(
-                    '2. Position phone over participant\'s lumbar spine',
+                    '2. Press the start button',
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
@@ -219,6 +219,13 @@ class _EndTestPageState extends State<EndTestPage> {
                                     ),
                                   );
                                 } else if (widget.direction == 'Backward') {
+                                  double median =
+                                      (double.parse(widget.forward) +
+                                              double.parse(widget.left) +
+                                              double.parse(widget.right) +
+                                              double.parse(widget.backward)) /
+                                          4;
+                                  String medianString = median.toString();
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -227,6 +234,7 @@ class _EndTestPageState extends State<EndTestPage> {
                                         left: widget.left,
                                         right: widget.right,
                                         backward: timeToStab,
+                                        median: medianString,
                                         tID: widget.tID,
                                       ),
                                     ),

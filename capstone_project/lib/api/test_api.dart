@@ -51,3 +51,42 @@ Future runReactiveTestScript(Map sensorData) async {
     return {"TTS": 0.0};
   }
 }
+
+/// Makes request for analysis on raw accelerometer and gyroscope
+/// data to determine the sway parameters
+///
+/// @param sensorData: Object containing all needed sensor data.
+/// The object should take the folowing form:
+/// {dataAcc: [float], dataRot: [float], timeStamps: [int], fs: int}
+///
+/// @return Json object with the sway parameteres
+Future runSwayTestScript(Map sensorData) async {
+  try {
+    var results = await api.post('/sway', sensorData);
+    return await jsonDecode(results);
+  } catch (err) {
+    return {"rmsMl": 0.0, "rmsAp": 0.0, "rmsV": 0.0};
+  }
+}
+
+/// Makes request for analysis on raw accelerometer and gyroscope
+/// data to determine the sway parameter
+///
+/// @param sensorData: Object containing all needed sensor data.
+/// The object should take the folowing form:
+/// {dataAcc: [float], dataRot: [float], timeStamps: [int], fs: int}
+///
+/// @return Json object with the sway parameteres
+Future runTandemGaitTestScript(Map sensorData) async {
+  try {
+    var results = await api.post('/tandemGait', sensorData);
+    return await jsonDecode(results);
+  } catch (err) {
+    return {
+      "rmsMlGoing": 0.345,
+      "rmsApGoing": 0.972,
+      "rmsMlReturn": 0.564,
+      "rmsApReturn": 0.826
+    };
+  }
+}

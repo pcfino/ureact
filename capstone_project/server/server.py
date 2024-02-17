@@ -438,6 +438,44 @@ def timeToStability():
 
     return jsonify(t0 = int(t0), EndTTS = int(EndTTS), TTS = TTS)
 
+@app.route('/sway', methods=['POST'])
+def sway():
+    dataAcc = request.json.get('dataAcc')
+    dataRot = request.json.get('dataRot')
+    fs = request.json.get('fs')
+
+    Fc = 3.5;
+
+    # Filters[data] data using butterworth filter with specified [order] order,
+    # [Fc] cuttoff frequency and [Fs] sampling frequency.
+
+    [b,a] = signal.butter(4,(Fc/(fs/2)));
+    Sway_ml = signal.filtfilt(b,a, dataAcc[2])/9.81 # z-direction
+    Sway_ap = signal.filtfilt(b,a, dataAcc[1])/9.81 # y-direction
+    Sway_v = signal.filtfilt(b,a, dataAcc[0])/9.81 # x-direction
+
+    rms_ml = rms(Sway_ml)
+    rms_ap = rms(Sway_ap)
+    rms_v = rms(Sway_v)
+
+    return jsonify(rmsMl = rms_ml, rmsAp = rms_ap, rmsV = rms_v)
+
+# root mean square
+def rms(arr):
+    square = 0
+    mean = 0.0
+    root = 0.0
+     
+    #Calculate square
+    for i in range(0,len(arr)):
+        square += (arr[i]**2)
+     
+    #Calculate Mean 
+    mean = (square / (float)(len(arr)))
+     
+    #Calculate Root
+    return np.sqrt(mean)
+
 
 # --------------------------------------------------------------- SERVER ----------------------------------------------------------------
 

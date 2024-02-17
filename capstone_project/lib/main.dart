@@ -1,5 +1,3 @@
-// import 'dart:convert';
-
 import 'package:capstone_project/create_patient_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/patient_page.dart';
@@ -17,6 +15,16 @@ void main() {
   );
 }
 
+class AzItem extends ISuspensionBean {
+  final String name;
+  final String tag;
+
+  AzItem({required this.name, required this.tag});
+
+  @override
+  String getSuspensionTag() => tag;
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -32,7 +40,8 @@ class _MyApp extends State<MyApp> {
           jsonPatientList.map((model) => Patient.fromJson(model)));
 
       patientList = List.from(patientList);
-      patientList.sort((a, b) => a.lastName.compareTo(b.lastName));
+      patientList.sort((a, b) =>
+          a.lastName.toLowerCase().compareTo(b.lastName.toLowerCase()));
       return patientList;
     } catch (e) {
       print("Error fetching patients: $e");
@@ -118,34 +127,71 @@ class _MyApp extends State<MyApp> {
                     ),
                   ),
                   Expanded(
-                    flex: 10,
-                    child: ListView.separated(
-                      controller: scrollController,
-                      //padding: const EdgeInsets.all(8.0),
-                      itemCount: updateList(patients, search.text).length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                          title: Text(
-                              "${updateList(patients, search.text)[index].lastName}, ${updateList(patients, search.text)[index].firstName}"),
-                          //subtitle: Text(incidents[index].iDate),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PatientPage(
-                                    pID:
-                                        updateList(patients, search.text)[index]
-                                            .pID),
+                      flex: 10,
+                      child: AzListView(
+                        data: updateList(patients, search.text)
+                            .map((e) => AzItem(
+                                name: "${e.lastName}, ${e.firstName}",
+                                tag: e.firstName[0].toUpperCase()))
+                            .toList(),
+                        itemCount: updateList(patients, search.text).length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final patientName =
+                              updateList(patients, search.text)[index];
+                          return Column(
+                            children: [
+                              ListTile(
+                                title: Text(
+                                    "${patientName.lastName}, ${patientName.firstName}"),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          PatientPage(pID: patientName.pID),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const Divider();
-                      },
-                    ),
-                  ),
+                              if (index !=
+                                  updateList(patients, search.text).length - 1)
+                                const Divider(
+                                  color: Colors.grey,
+                                  height: 1,
+                                  thickness: 0.5,
+                                  endIndent: 30,
+                                )
+                            ],
+                          );
+                        },
+                      )
+                      // ListView.separated(
+                      //   controller: scrollController,
+                      //   //padding: const EdgeInsets.all(8.0),
+                      //   itemCount: updateList(patients, search.text).length,
+                      //   itemBuilder: (BuildContext context, int index) {
+                      //     return ListTile(
+                      //       title: Text(
+                      //           "${updateList(patients, search.text)[index].lastName}, ${updateList(patients, search.text)[index].firstName}"),
+                      //       //subtitle: Text(incidents[index].iDate),
+                      //       onTap: () {
+                      //         Navigator.push(
+                      //           context,
+                      //           MaterialPageRoute(
+                      //             builder: (context) => PatientPage(
+                      //                 pID:
+                      //                     updateList(patients, search.text)[index]
+                      //                         .pID),
+                      //           ),
+                      //         );
+                      //       },
+                      //     );
+                      //   },
+                      //   separatorBuilder: (context, index) {
+                      //     return const Divider();
+                      //   },
+                      // ),
+                      ),
                 ]),
               ),
               floatingActionButton: FloatingActionButton(

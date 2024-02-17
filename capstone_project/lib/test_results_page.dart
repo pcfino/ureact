@@ -243,16 +243,12 @@ class _TestResultsPageState extends State<TestResultsPage> {
                     ),
                   )));
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
-            width: 30.0,
-            height: 30.0,
-            child: Center(
-              child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                  color: Colors.red,
-                  strokeAlign: 0.0),
+          return Scaffold(
+            appBar: AppBar(),
+            body: const Center(
+              child: CircularProgressIndicator(),
             ),
-          ); // or any other loading indicator
+          );
         } else {
           return Text('Error: ${snapshot.error}');
         }

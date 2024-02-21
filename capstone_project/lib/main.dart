@@ -1,5 +1,3 @@
-// import 'dart:convert';
-
 import 'package:capstone_project/create_patient_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/patient_page.dart';
@@ -7,12 +5,24 @@ import 'package:capstone_project/settings_page.dart';
 import 'package:capstone_project/api/patient_api.dart';
 import 'package:flutter/material.dart';
 
+import 'package:azlistview/azlistview.dart';
+
 void main() {
   runApp(
     const MaterialApp(
       home: MyApp(),
     ),
   );
+}
+
+class AzItem extends ISuspensionBean {
+  final String name;
+  final String tag;
+
+  AzItem({required this.name, required this.tag});
+
+  @override
+  String getSuspensionTag() => tag;
 }
 
 class MyApp extends StatefulWidget {
@@ -30,30 +40,31 @@ class _MyApp extends State<MyApp> {
           jsonPatientList.map((model) => Patient.fromJson(model)));
 
       patientList = List.from(patientList);
-      patientList.sort((a, b) => a.lastName.compareTo(b.lastName));
+      patientList.sort((a, b) =>
+          a.lastName.toLowerCase().compareTo(b.lastName.toLowerCase()));
       return patientList;
     } catch (e) {
       print("Error fetching patients: $e");
     }
   }
 
-  void updateList(String value) {
-    setState(() {
-      // displayPatientList = patientList
-      //     .where((element) =>
-      //         element.lastName.toLowerCase().contains(value.toLowerCase()) ||
-      //         element.firstName.toLowerCase().contains(value.toLowerCase()) ||
-      //         ("${element.firstName} ${element.lastName}")
-      //             .toLowerCase()
-      //             .contains(value.toLowerCase()) ||
-      //         ("${element.lastName}, ${element.firstName}")
-      //             .toLowerCase()
-      //             .contains(value.toLowerCase()))
-      //     .toList();
-    });
+  List<Patient> updateList(List<Patient> list, [String? value]) {
+    if (value == null) return list;
+    return list
+        .where((element) =>
+            element.lastName.toLowerCase().contains(value.toLowerCase()) ||
+            element.firstName.toLowerCase().contains(value.toLowerCase()) ||
+            ("${element.firstName} ${element.lastName}")
+                .toLowerCase()
+                .contains(value.toLowerCase()) ||
+            ("${element.lastName}, ${element.firstName}")
+                .toLowerCase()
+                .contains(value.toLowerCase()))
+        .toList();
   }
 
   final ScrollController scrollController = ScrollController();
+  final TextEditingController search = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +73,6 @@ class _MyApp extends State<MyApp> {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
           List<Patient> patients = snapshot.data!;
-          List<Patient> displayPatientList = List.from(patients);
 
           return MaterialApp(
             title: 'Patients',
@@ -71,6 +81,7 @@ class _MyApp extends State<MyApp> {
               useMaterial3: true,
             ),
             home: Scaffold(
+              resizeToAvoidBottomInset: false,
               appBar: AppBar(
                 title: const Text('Patients'),
                 centerTitle: true,
@@ -94,67 +105,108 @@ class _MyApp extends State<MyApp> {
               body: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(children: [
-                  TextField(
-                    onChanged: (value) => updateList(value),
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                      prefixIcon: const Icon(Icons.search),
-                      prefixIconColor: Colors.red,
-                      constraints: const BoxConstraints(
-                        maxHeight: 40,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white10,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100.0),
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      controller: search,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        prefixIcon: const Icon(Icons.search),
+                        prefixIconColor: Colors.red,
+                        suffixIcon: search.text != ""
+                            ? IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                ),
+                                onPressed: () {
+                                  search.text = "";
+                                  updateList(patients);
+                                  setState(() {});
+                                },
+                              )
+                            : null,
+                        constraints: const BoxConstraints(
+                          maxHeight: 40,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white10,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(100.0),
+                        ),
                       ),
                     ),
                   ),
                   Expanded(
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      controller: scrollController,
-                      child: ListView.builder(
-                        controller: scrollController,
-                        padding: const EdgeInsets.all(8.0),
-                        itemCount: displayPatientList.length,
+                      flex: 10,
+                      child: AzListView(
+                        data: updateList(patients, search.text)
+                            .map((e) => AzItem(
+                                name: "${e.lastName}, ${e.firstName}",
+                                tag: e.firstName[0].toUpperCase()))
+                            .toList(),
+                        itemCount: updateList(patients, search.text).length,
                         itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            child: Card(
-                              margin: const EdgeInsets.all(0),
-                              elevation: 0,
-                              color: Colors.white10,
-                              shape: const Border(
-                                bottom: BorderSide(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "${displayPatientList[index].lastName}, ${displayPatientList[index].firstName}",
+                          final patientName =
+                              updateList(patients, search.text)[index];
+                          return Column(
+                            children: [
+                              ListTile(
+                                title: Text(
+                                    "${patientName.lastName}, ${patientName.firstName}"),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          PatientPage(pID: patientName.pID),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               ),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PatientPage(
-                                      pID: displayPatientList[index].pID),
-                                ),
-                              );
-                            },
+                              if (index !=
+                                  updateList(patients, search.text).length - 1)
+                                const Divider(
+                                  color: Colors.grey,
+                                  height: 1,
+                                  thickness: 0.5,
+                                  endIndent: 30,
+                                )
+                            ],
                           );
                         },
+                      )
+                      // ListView.separated(
+                      //   controller: scrollController,
+                      //   //padding: const EdgeInsets.all(8.0),
+                      //   itemCount: updateList(patients, search.text).length,
+                      //   itemBuilder: (BuildContext context, int index) {
+                      //     return ListTile(
+                      //       title: Text(
+                      //           "${updateList(patients, search.text)[index].lastName}, ${updateList(patients, search.text)[index].firstName}"),
+                      //       //subtitle: Text(incidents[index].iDate),
+                      //       onTap: () {
+                      //         Navigator.push(
+                      //           context,
+                      //           MaterialPageRoute(
+                      //             builder: (context) => PatientPage(
+                      //                 pID:
+                      //                     updateList(patients, search.text)[index]
+                      //                         .pID),
+                      //           ),
+                      //         );
+                      //       },
+                      //     );
+                      //   },
+                      //   separatorBuilder: (context, index) {
+                      //     return const Divider();
+                      //   },
+                      // ),
                       ),
-                    ),
-                  ),
                 ]),
               ),
               floatingActionButton: FloatingActionButton(

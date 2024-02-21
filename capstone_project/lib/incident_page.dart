@@ -187,6 +187,7 @@ class _IncidentPage extends State<IncidentPage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                 child: TextField(
+                  textCapitalization: TextCapitalization.sentences,
                   readOnly: !editMode,
                   maxLines: null,
                   decoration: const InputDecoration(

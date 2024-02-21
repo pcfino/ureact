@@ -40,6 +40,7 @@ dependencies:
   provider: ^6.1.1
   flutter_ringtone_player: ^3.2.0
   json_annotation: ^4.8.1
+  azlistview: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -83,14 +83,14 @@ class _StartTestPageState extends State<StartTestPage> {
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                   child: const Text(
-                    '1. Attach phone to belt',
+                    '1. Attach phone to lumbar spine',
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                   child: const Text(
-                    '2. Position phone over participant\'s lumbar spine',
+                    '2. Press the start button',
                     style: TextStyle(fontSize: 20),
                   ),
                 ),

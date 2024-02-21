@@ -48,7 +48,8 @@ class _MyApp extends State<MyApp> {
     }
   }
 
-  List<Patient> updateList(List<Patient> list, String value) {
+  List<Patient> updateList(List<Patient> list, [String? value]) {
+    if (value == null) return list;
     return list
         .where((element) =>
             element.lastName.toLowerCase().contains(value.toLowerCase()) ||
@@ -80,6 +81,7 @@ class _MyApp extends State<MyApp> {
               useMaterial3: true,
             ),
             home: Scaffold(
+              resizeToAvoidBottomInset: false,
               appBar: AppBar(
                 title: const Text('Patients'),
                 centerTitle: true,
@@ -110,11 +112,24 @@ class _MyApp extends State<MyApp> {
                         setState(() {});
                       },
                       controller: search,
+                      textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
                         contentPadding:
                             const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         prefixIcon: const Icon(Icons.search),
                         prefixIconColor: Colors.red,
+                        suffixIcon: search.text != ""
+                            ? IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                ),
+                                onPressed: () {
+                                  search.text = "";
+                                  updateList(patients);
+                                  setState(() {});
+                                },
+                              )
+                            : null,
                         constraints: const BoxConstraints(
                           maxHeight: 40,
                         ),

@@ -318,7 +318,7 @@ def deleteIncident():
             return jsonify({"Status": False})
 
 
-# --------------------------------------------------------------- REACTIVE TEST ------------------------------------------------------------------
+# ---------------------------------------------------------------  TEST ------------------------------------------------------------------
 
 @app.route('/mysql/getTest', methods=['GET'])
 def getTest():
@@ -337,7 +337,7 @@ def getTest():
         # Get the Incident we are looking for
         test = OrderedDict()
         for x in myresult:
-            test = OrderedDict({"tID": x[0], "tName": x[1], "tDate": str(x[2]), "tNotes": x[3], "iID": x[4]}) # , "dynamic": {}, "static": {}, "reactive": {}
+            test = OrderedDict({"tID": x[0], "tName": x[1], "tDate": str(x[2]), "tNotes": x[3], "iID": x[4]})
 
         # Get the ReactiveTests that that patient has
         sql = "SELECT * FROM ReactiveTest WHERE tID=%s"
@@ -369,6 +369,8 @@ def createTest():
         returnTest = {"tID": tID, "tName": data['tName'], "tDate": str(data['tDate']), "tNotes": data['tNotes'], "iID": data['iID']} #, "dynamic": {}, "static": {}, "reactive": {}}
         return jsonify(returnTest)
 
+# --------------------------------------------------------------- REACTIVE TEST ------------------------------------------------------------------
+
 @app.route('/mysql/createReactiveTest', methods=['POST'])
 def createReactiveTest():
     if request.method == 'POST':
@@ -378,7 +380,8 @@ def createReactiveTest():
  
         data = request.json
         sql = "INSERT INTO ReactiveTest (fTime, bTime, lTime, rTime, mTime, tID) VALUES(%s, %s, %s, %s, %s, %s)"
-        val = (data['fTime'], data['bTime'], data['lTime'], data['rTime'], data['mTime'], data['tID'])
+        val = (data['fTime'], data['bTime'], 
+               data['lTime'], data['rTime'], data['mTime'], data['tID'])
         mycursor.execute(sql, val)
         mydb.commit()
         
@@ -388,7 +391,52 @@ def createReactiveTest():
 
 # --------------------------------------------------------------- DYNAMIC TEST ------------------------------------------------------------------
 
+@app.route('/mysql/createDynamicTest', methods=['POST'])
+def createDynamicTest():
+    if request.method == 'POST':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+ 
+        data = request.json
+        sql = "INSERT INTO DynamicTest (t1Duration, t1TurnSpeed, t1MLSway, t2Duration, t2TurnSpeed, t2MLSway, t3Duration, t3TurnSpeed, t3MLSway, tID) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (data['t1Duration'], data['t1TurnSpeed'], data['t1MLSway'], 
+               data['t2Duration'], data['t2TurnSpeed'], data['t2MLSway'], 
+               data['t3Duration'], data['t3TurnSpeed'], data['t3MLSway'], data['tID'])
+        mycursor.execute(sql, val)
+        mydb.commit()
+        
+        dID = mycursor.lastrowid
+        returnRTest = {"dID": dID, 
+        "t1Duration": data['t1Duration'], "t1TurnSpeed": data['t1TurnSpeed'], "t1MLSway": data['t1MLSway'], 
+        "t2Duration": data['t2Duration'], "t2TurnSpeed": data['t2TurnSpeed'], "t2MLSway": data['t2MLSway'], 
+        "t3Duration": data['t3Duration'], "t3TurnSpeed": data['t3TurnSpeed'], "t3MLSway": data['t3MLSway'], "tID": data['tID']}
+        return jsonify(returnRTest)
+
+
 # --------------------------------------------------------------- STATIC TEST -------------------------------------------------------------------
+
+@app.route('/mysql/createStaticTest', methods=['POST'])
+def createStaticTest():
+    if request.method == 'POST':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+ 
+        data = request.json
+        sql = "INSERT INTO StaticTest (tlSolidML, tlFoamML, slSolidML, slFoamML, tandSolidML, tandFoamML, tID) VALUES(%s, %s, %s, %s, %s, %s, %s)"
+        val = (data['tlSolidML'], data['tlFoamML'], 
+               data['slSolidML'], data['slFoamML'], 
+               data['tandSolidML'], data['tandFoamML'], data['tID'])
+        mycursor.execute(sql, val)
+        mydb.commit()
+        
+        sID = mycursor.lastrowid
+        returnRTest = {"sID": sID, 
+        "tlSolidML": data['tlSolidML'], "tlFoamML": data['tlFoamML'], 
+        "slSolidML": data['slSolidML'], "slFoamML": data['slFoamML'], 
+        "tandSolidML": data['tandSolidML'], "tandFoamML": data['tandFoamML'], "tID": data['tID']}
+        return jsonify(returnRTest)
 
 # --------------------------------------------------------------- EXPORTING ---------------------------------------------------------------------
 
@@ -540,4 +588,9 @@ def rms(arr):
 
 if __name__ == "__main__":
     serve(app, host="0.0.0.0", port=8000)
+
+
+# CHANGE THE DAMN PORT BACK TO 8000 for updating this
+# CHANGE THE DAMN PORT BACK TO 8111 for testing this
+# DELETE THE TEST PORT AT THE END OF THE YEAR
 

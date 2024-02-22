@@ -35,6 +35,34 @@ Future createReactive(Map testInfo) async {
   return await jsonDecode(results);
 }
 
+/// Makes request to create a dynamic test
+///
+/// @param testInfo: info needed to create a dynamic test.
+/// The object should take the folowing form:
+/// {tID: int, t1Duration: float, t1TurnSpeed: float, t1MLSway: float, t2Duration: float, t2TurnSpeed: float, t2MLSway: float, t3Duration: float, t3TurnSpeed: float, t3MLSway: float}
+///
+/// @return Json object with the created dynamic test
+Future createDynamic(Map testInfo) async {
+  var results = await api.post('/mysql/createDynamicTest', testInfo);
+  // return should look like:
+  // {"dID":1,"t1Duration":1.45,"t1TurnSpeed":1.27,"t1MLSway":1.95,"t2Duration":0.54,"t2TurnSpeed":0.28,"t2MLSway":0.18,"t3Duration":0.98,"t3TurnSpeed":1.99,"t3MLSway":2.88,"tID":42}
+  return await jsonDecode(results);
+}
+
+/// Makes request to create a static test
+///
+/// @param testInfo: info needed to create a static test.
+/// The object should take the folowing form:
+/// {tID: int, tlSolidML: float, tlFoamML: float, slSolidML: float, slFoamML: float, tandSolidML: float, tandFoamML: float}
+///
+/// @return Json object with the created static test
+Future createStatic(Map testInfo) async {
+  var results = await api.post('/mysql/createStaticTest', testInfo);
+  // return should look like:
+  // {"sID":1,"tlSolidML":1.96,"tlFoamML":1.72,"slSolidML":0.98,"slFoamML":0.75,"tandSolidML":0.64,"tandFoamML":0.15,"tID":42}
+  return await jsonDecode(results);
+}
+
 /// Makes request for analysis on raw accelerometer and gyroscope
 /// data to determine the time to stability
 ///

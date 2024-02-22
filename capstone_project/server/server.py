@@ -20,6 +20,9 @@ import botocore
 import botocore.session 
 from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
 
+#For Cognito Implementation
+import cognito
+
 client = botocore.session.get_session().create_client('secretsmanager')
 cache_config = SecretCacheConfig()
 cache = SecretCache( config = cache_config, client = client)
@@ -37,6 +40,9 @@ def connectSql():
 
 app = Flask(__name__)
 app.json.sort_keys = False # make the order same as construction 
+
+#Temporailly here this will eventually need to be called from the page where you choose your client group
+CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client, user_pool_id = 'XXXXX', client_id= 'XXXXXX')
 
 print("Server has started: ")
 # ctrl-shift U - uppercase
@@ -475,6 +481,39 @@ def rms(arr):
      
     #Calculate Root
     return np.sqrt(mean)
+
+# --------------------------------------------------------------- Login ----------------------------------------------------------
+@app.route('/signUp', methods=['POST'])
+def signUp():
+    userName = request.json.get('dataAcc')
+    password = request.json.get('password')
+    email = request.json.get('email')
+    firstName = request.json.get('firstName')
+    lastName = request.json.get('lastName')
+    success = CIPW.sign_up_user(user_name= userName, user_email= email, password= password)
+    #thinking about how to evaluate return -- if false then we need to confirm sign up
+    return jsonify(success)
+
+@app.route('/confirmSignUp', methods=['POST'])
+def confirmSignUp():
+    userName = request.json.get('dataAcc')
+    confrimation = request.json.get('confirmationCode')
+    success = CIPW.confirm_user_sign_up(user_name= userName, confirmation_code= confrimation)
+    return jsonify(success)
+
+@app.route('/signIn', methods=['POST'])
+def signIp():
+    userName = request.json.get('dataAcc')
+    password = request.json.get('password')
+    accessToken = CIPW.start_sign_in(user_name= userName, password= password)
+    #thinking...
+
+@app.route('/mysql/getUsers', methods=['GET'])
+def getUsers():
+    return jsonify(CIPW.list_users())
+
+
+
 
 
 # --------------------------------------------------------------- SERVER ----------------------------------------------------------------

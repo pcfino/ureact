@@ -318,7 +318,7 @@ def deleteIncident():
             return jsonify({"Status": False})
 
 
-# --------------------------------------------------------------- TEST ------------------------------------------------------------------
+# --------------------------------------------------------------- REACTIVE TEST ------------------------------------------------------------------
 
 @app.route('/mysql/getTest', methods=['GET'])
 def getTest():
@@ -386,7 +386,56 @@ def createReactiveTest():
         returnRTest = {"rID": rID, "fTime": data['fTime'], "bTime": data['bTime'], "lTime": data['lTime'], "rTime": data['rTime'], "mTime": data['mTime'], "tID": data['tID']}
         return jsonify(returnRTest)
 
-# --------------------------------------------------------------- TEST SCRIPTS ----------------------------------------------------------
+# --------------------------------------------------------------- DYNAMIC TEST ------------------------------------------------------------------
+
+# --------------------------------------------------------------- STATIC TEST -------------------------------------------------------------------
+
+# --------------------------------------------------------------- EXPORTING ---------------------------------------------------------------------
+
+@app.route('/mysql/exportSinglePatient', methods=['GET'])
+def exportSinglePatient():
+    if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+        
+        data = request.args.get('ID')
+        sql = "SELECT thirdPartyID FROM Patient WHERE pID=%s;"
+        val = [(data)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        returnList = []
+        for x in myresult:
+            returnList.append({"thirdPartyID": x[0], "incidents": []})
+
+        # ------------------------------------------------------------------
+        sql = "select i.iName, i.iDate, i.iNotes, t.tDate, rt.mTime, i.iID from Incident as i left join Test as t on i.iID=t.iID left join ReactiveTest as rt on t.tID=rt.tID where i.pID=%s;"
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        # Get the Incidents we are looking for
+        incident = {}
+        for x in myresult:
+            incident = {"iName": x[0], "iDate": str(x[1]), "iNotes": x[2], "iID": x[5], "tests": []}
+            # hande the case that an incident may have multiple tests
+            flag = False
+            for i in returnList[0]['incidents']:
+                if i["iID"] == x[5]:
+                    # If the desired iID is found, append a new test to its tests list
+                    i['tests'].append({"tDate": str(x[3]), "reactive": {"mTime": x[4]}})
+                    flag = True
+                    break
+            
+            if flag == False:
+                if(str(x[3]) != "None"):
+                    incident['tests'].append({"tDate": str(x[3]), "reactive": {"mTime": x[4]}})
+                    returnList[0]['incidents'].append(incident)
+                else:
+                    returnList[0]['incidents'].append(incident)
+        
+        return jsonify(returnList)
+# --------------------------------------------------------------- TEST SCRIPTS ------------------------------------------------------------------
 
 @app.route('/timeToStability', methods=['POST'])
 def timeToStability():
@@ -444,12 +493,12 @@ def sway():
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
 
-    Fc = 3.5;
+    Fc = 3.5
 
     # Filters[data] data using butterworth filter with specified [order] order,
     # [Fc] cuttoff frequency and [Fs] sampling frequency.
 
-    [b,a] = signal.butter(4,(Fc/(fs/2)));
+    [b,a] = signal.butter(4,(Fc/(fs/2)))
     Sway_ml = signal.filtfilt(b,a, dataAcc[2])/9.81 # z-direction
     Sway_ap = signal.filtfilt(b,a, dataAcc[1])/9.81 # y-direction
     Sway_v = signal.filtfilt(b,a, dataAcc[0])/9.81 # x-direction

@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import logging
 
+
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,23 @@ class CognitoIdentityProviderWrapper:
         self.client_id = client_id
         self.client_secret = client_secret
     
-    def sign_up_user(self, user_name, password, user_email):
+    
+    def _secret_hash(self, user_name):
+        """
+        Calculates a secret hash from a user name and a client secret.
+
+        :param user_name: The user name to use when calculating the hash.
+        :return: The secret hash.
+        """
+        key = self.client_secret.encode()
+        msg = bytes(user_name + self.client_id, "utf-8")
+        secret_hash = base64.b64encode(
+            hmac.new(key, msg, digestmod=hashlib.sha256).digest()
+        ).decode()
+        logger.info("Made secret hash for %s: %s.", user_name, secret_hash)
+        return secret_hash
+    
+    def sign_up_user(self, user_name, password, user_email, first_name, last_Name):
         """
         Signs up a new user with Amazon Cognito. This action prompts Amazon Cognito
         to send an email to the specified email address. The email contains a code that
@@ -42,7 +59,10 @@ class CognitoIdentityProviderWrapper:
                 "ClientId": self.client_id,
                 "Username": user_name,
                 "Password": password,
-                "UserAttributes": [{"Name": "email", "Value": user_email}],
+                "UserAttributes": [{"Name": "email", "Value": user_email},
+                                   {"Name": "firstName", "Value": first_name},
+                                   {"Name": "lastName", "Value": last_Name}
+                                   ],
             }
             if self.client_secret is not None:
                 kwargs["SecretHash"] = self._secret_hash(user_name)

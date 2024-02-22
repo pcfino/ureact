@@ -42,7 +42,7 @@ app = Flask(__name__)
 app.json.sort_keys = False # make the order same as construction 
 
 #Temporailly here this will eventually need to be called from the page where you choose your client group
-CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client, user_pool_id = 'XXXXX', client_id= 'XXXXXX')
+CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client, user_pool_id = 'XXXX', client_id= 'XXXX')
 
 print("Server has started: ")
 # ctrl-shift U - uppercase
@@ -490,16 +490,17 @@ def signUp():
     email = request.json.get('email')
     firstName = request.json.get('firstName')
     lastName = request.json.get('lastName')
-    success = CIPW.sign_up_user(user_name= userName, user_email= email, password= password)
+    success = CIPW.sign_up_user(user_name= userName, user_email= email, 
+                                password= password, first_name=firstName, last_name = lastName)
     #thinking about how to evaluate return -- if false then we need to confirm sign up
-    return jsonify(success)
+    return jsonify(status = success)
 
 @app.route('/confirmSignUp', methods=['POST'])
 def confirmSignUp():
     userName = request.json.get('dataAcc')
     confrimation = request.json.get('confirmationCode')
     success = CIPW.confirm_user_sign_up(user_name= userName, confirmation_code= confrimation)
-    return jsonify(success)
+    return jsonify(status = success)
 
 @app.route('/signIn', methods=['POST'])
 def signIp():
@@ -508,7 +509,7 @@ def signIp():
     accessToken = CIPW.start_sign_in(user_name= userName, password= password)
     #thinking...
 
-@app.route('/mysql/getUsers', methods=['GET'])
+@app.route('/getUsers', methods=['GET'])
 def getUsers():
     return jsonify(CIPW.list_users())
 

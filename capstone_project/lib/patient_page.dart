@@ -6,7 +6,8 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:io';
 
 import 'package:capstone_project/create_incident_page.dart';
-import 'package:capstone_project/main.dart';
+import 'package:capstone_project/home_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/patient.dart';
@@ -22,7 +23,13 @@ class PatientPage extends StatefulWidget {
 }
 
 class _PatientPage extends State<PatientPage> {
-  late final List<Incident> incidents;
+  late Future<dynamic> future;
+
+  @override
+  void initState() {
+    super.initState();
+    future = getPatient(widget.pID);
+  }
 
   Future<dynamic> getPatient(int pID) async {
     try {
@@ -37,16 +44,6 @@ class _PatientPage extends State<PatientPage> {
   Future<dynamic> savePatient(Map<String, dynamic> updatePatient) async {
     try {
       await update(widget.pID, updatePatient);
-      // Patient patient = Patient.fromJson(jsonPatient);
-      // return patient;
-      // setState(() {
-      //   Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (context) => PatientPage(pID: widget.pID),
-      //     ),
-      //   );
-      // });
     } catch (e) {
       print("Error updating patient: $e");
     }
@@ -60,7 +57,7 @@ class _PatientPage extends State<PatientPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const MyApp(),
+              builder: (context) => const HomePage(),
             ),
           );
         });
@@ -155,33 +152,42 @@ class _PatientPage extends State<PatientPage> {
   final TextEditingController lastName = TextEditingController();
   final TextEditingController dOB = TextEditingController();
   final TextEditingController sport = TextEditingController();
-  final TextEditingController height = TextEditingController();
-  final TextEditingController weight = TextEditingController();
-  final TextEditingController gender = TextEditingController();
+  final TextEditingController heightController = TextEditingController();
+  final TextEditingController weightController = TextEditingController();
   final TextEditingController thirdPartyID = TextEditingController();
 
   bool editMode = false;
   String mode = 'Edit';
 
+  Patient? patient;
+  int feet = 0;
+  int inches = 0;
+  int weight = 0;
+  List<Incident>? incidents;
+  String gen = '';
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getPatient(widget.pID),
+      future: future,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          Patient patient = snapshot.data! as Patient;
-          int feet = patient.height! ~/ 12;
-          int inches = patient.height! % 12;
-          incidents = patient.incidents!;
-          fullName.text = "${patient.firstName} ${patient.lastName}";
-          firstName.text = patient.firstName;
-          lastName.text = patient.lastName;
-          dOB.text = patient.dOB!.toString();
-          sport.text = patient.sport!;
-          weight.text = patient.weight!.toString();
-          height.text = patient.height!.toString();
-          gender.text = patient.gender!;
-          thirdPartyID.text = patient.thirdPartyID!;
+          if (patient == null) {
+            patient = snapshot.data! as Patient;
+            feet = patient!.height! ~/ 12;
+            inches = patient!.height! % 12;
+            incidents = patient!.incidents!;
+            fullName.text = "${patient!.firstName} ${patient!.lastName}";
+            firstName.text = patient!.firstName;
+            lastName.text = patient!.lastName;
+            dOB.text = patient!.dOB!.toString();
+            sport.text = patient!.sport!;
+            weightController.text = "${patient!.weight!} lbs";
+            weight = patient!.weight!;
+            heightController.text = "$feet' $inches\"";
+            gen = patient!.gender!;
+            thirdPartyID.text = patient!.thirdPartyID!;
+          }
 
           return MaterialApp(
             title: 'Patient',
@@ -197,7 +203,7 @@ class _PatientPage extends State<PatientPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MyApp(),
+                      builder: (context) => const HomePage(),
                     ),
                   );
                 }),
@@ -208,7 +214,7 @@ class _PatientPage extends State<PatientPage> {
                         Icons.delete_outline,
                       ),
                       onPressed: () {
-                        deletePatient(patient.pID);
+                        deletePatient(patient!.pID);
                       },
                     ),
                   TextButton(
@@ -225,10 +231,10 @@ class _PatientPage extends State<PatientPage> {
                           "firstName": firstName.text,
                           "lastName": lastName.text,
                           "dOB": dOB.text,
-                          "height": int.parse(height.text),
-                          "weight": int.parse(weight.text),
+                          "height": feet * 12 + inches,
+                          "weight": weight,
                           "sport": sport.text,
-                          "gender": gender.text,
+                          "gender": gen,
                           "thirdPartyID": thirdPartyID.text
                         };
                         setState(() {
@@ -245,68 +251,66 @@ class _PatientPage extends State<PatientPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (!editMode)
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                          child: TextField(
-                            readOnly: !editMode,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              labelText: "Name *",
-                              contentPadding: EdgeInsets.all(11),
+                        TextField(
+                          textCapitalization: TextCapitalization.words,
+                          readOnly: !editMode,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
                             ),
-                            controller: fullName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            labelText: "Name *",
+                            contentPadding: EdgeInsets.all(11),
+                          ),
+                          controller: fullName,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       if (editMode)
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    labelText: "First *",
-                                    contentPadding: EdgeInsets.all(11),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                textCapitalization: TextCapitalization.words,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
                                   ),
-                                  controller: firstName,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  labelText: "First *",
+                                  contentPadding: EdgeInsets.all(11),
+                                ),
+                                controller: firstName,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: TextField(
-                                  readOnly: !editMode,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    labelText: "Last *",
-                                    contentPadding: EdgeInsets.all(11),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                textCapitalization: TextCapitalization.words,
+                                readOnly: !editMode,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
                                   ),
-                                  controller: lastName,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  labelText: "Last *",
+                                  contentPadding: EdgeInsets.all(11),
+                                ),
+                                controller: lastName,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       Row(
                         children: [
@@ -327,7 +331,7 @@ class _PatientPage extends State<PatientPage> {
                                   DateTime? selectedDate = await showDatePicker(
                                     context: context,
                                     initialDate: DateTime.now(),
-                                    firstDate: DateTime(2000),
+                                    firstDate: DateTime(1900),
                                     lastDate: DateTime.now(),
                                   );
                                   if (selectedDate != null) {
@@ -343,6 +347,7 @@ class _PatientPage extends State<PatientPage> {
                           Expanded(
                             flex: 1,
                             child: TextField(
+                              textCapitalization: TextCapitalization.words,
                               readOnly: !editMode,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
@@ -361,6 +366,98 @@ class _PatientPage extends State<PatientPage> {
                           Expanded(
                             flex: 1,
                             child: TextField(
+                              controller: heightController,
+                              onTap: () {
+                                if (editMode) {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  showCupertinoModalPopup(
+                                    context: context,
+                                    builder: (context) => Container(
+                                      height: 300,
+                                      color: Colors.white,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 3,
+                                            child: CupertinoPicker(
+                                              scrollController:
+                                                  FixedExtentScrollController(
+                                                      initialItem: feet),
+                                              itemExtent: 32.0,
+                                              onSelectedItemChanged:
+                                                  (int index) {
+                                                setState(() {
+                                                  feet = index;
+                                                  heightController.text =
+                                                      "$feet' $inches\"";
+                                                });
+                                              },
+                                              children:
+                                                  List.generate(12, (index) {
+                                                return Center(
+                                                  child: Text('$index'),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                          const Expanded(
+                                            flex: 1,
+                                            child: Center(
+                                              child: Text(
+                                                'ft',
+                                                style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: CupertinoPicker(
+                                              scrollController:
+                                                  FixedExtentScrollController(
+                                                      initialItem: inches),
+                                              itemExtent: 32.0,
+                                              onSelectedItemChanged:
+                                                  (int index) {
+                                                setState(() {
+                                                  inches = index;
+                                                  heightController.text =
+                                                      "$feet' $inches\"";
+                                                });
+                                              },
+                                              children:
+                                                  List.generate(12, (index) {
+                                                return Center(
+                                                  child: Text('$index'),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                          const Expanded(
+                                            flex: 2,
+                                            child: Center(
+                                              child: Text(
+                                                'inches',
+                                                style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                               readOnly: !editMode,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
@@ -369,12 +466,65 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "Height",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: height,
                             ),
                           ),
                           Expanded(
                             flex: 1,
                             child: TextField(
+                              onTap: () {
+                                if (editMode) {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  showCupertinoModalPopup(
+                                    context: context,
+                                    builder: (context) => Container(
+                                      height: 300,
+                                      color: Colors.white,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 3,
+                                            child: CupertinoPicker(
+                                              scrollController:
+                                                  FixedExtentScrollController(
+                                                      initialItem: weight),
+                                              itemExtent: 32.0,
+                                              onSelectedItemChanged:
+                                                  (int index) {
+                                                setState(() {
+                                                  weight = (index);
+                                                  weightController.text =
+                                                      "$weight lbs";
+                                                });
+                                              },
+                                              children:
+                                                  List.generate(500, (index) {
+                                                return Center(
+                                                  child: Text('$index'),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                          const Expanded(
+                                            flex: 1,
+                                            child: Center(
+                                              child: Text(
+                                                'lbs',
+                                                style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                               readOnly: !editMode,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
@@ -383,7 +533,7 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "Weight",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: weight,
+                              controller: weightController,
                             ),
                           ),
                         ],
@@ -391,9 +541,34 @@ class _PatientPage extends State<PatientPage> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 1,
-                            child: TextField(
-                              readOnly: !editMode,
+                            child: DropdownButtonFormField(
+                              //disabledHint: Text(gen),
+                              value: gen,
+                              items: const [
+                                DropdownMenuItem<String>(
+                                  value: 'M',
+                                  child: Text('M'),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: 'F',
+                                  child: Text('F'),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: 'Other',
+                                  child: Text('Other'),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: '',
+                                  child: Text(''),
+                                )
+                              ],
+                              onChanged: editMode
+                                  ? (String? value) {
+                                      setState(() {
+                                        gen = value!;
+                                      });
+                                    }
+                                  : null,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                   borderSide: BorderSide.none,
@@ -401,7 +576,6 @@ class _PatientPage extends State<PatientPage> {
                                 labelText: "Gender",
                                 contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: gender,
                             ),
                           ),
                           Expanded(
@@ -420,17 +594,11 @@ class _PatientPage extends State<PatientPage> {
                           ),
                         ],
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text('Incidents',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ],
+                      const Text(
+                        'Incidents',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const Divider(
@@ -439,22 +607,27 @@ class _PatientPage extends State<PatientPage> {
                         color: Colors.grey,
                       ),
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: incidents.length,
+                        child: ListView.separated(
+                          itemCount: incidents!.length,
                           itemBuilder: (BuildContext context, int index) {
                             return ListTile(
-                              title: Text(incidents[index].iName),
-                              subtitle: Text(incidents[index].iDate),
+                              title: Text(incidents![index].iName),
+                              subtitle: Text(incidents![index].iDate),
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        IncidentPage(iID: incidents[index].iID),
-                                  ),
-                                );
+                                if (!editMode) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => IncidentPage(
+                                          iID: incidents![index].iID),
+                                    ),
+                                  );
+                                }
                               },
                             );
+                          },
+                          separatorBuilder: (context, index) {
+                            return const Divider();
                           },
                         ),
                       ),
@@ -468,7 +641,7 @@ class _PatientPage extends State<PatientPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => CreateIncidentPage(
-                        pID: patient.pID,
+                        pID: patient!.pID,
                       ),
                     ),
                   );

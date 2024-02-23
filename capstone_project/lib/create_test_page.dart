@@ -18,15 +18,12 @@ class CreateTestPage extends StatefulWidget {
 class _CreateTestPage extends State<CreateTestPage> {
   Future<dynamic> createTest() async {
     try {
-      print(1);
       dynamic jsonTest = await create({
         "tName": selectedValue,
         "tDate": date.text,
         "tNotes": notes.text,
         "iID": widget.iID,
       });
-      print(jsonTest);
-
       Test test = Test.fromJson(jsonTest);
       return test;
     } catch (e) {
@@ -155,6 +152,7 @@ class _CreateTestPage extends State<CreateTestPage> {
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                   child: TextField(
+                    textCapitalization: TextCapitalization.sentences,
                     maxLines: null,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),

@@ -1,4 +1,4 @@
-import 'package:capstone_project/main.dart';
+// import 'package:capstone_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/home_page.dart';
 

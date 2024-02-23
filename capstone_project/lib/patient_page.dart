@@ -1,3 +1,4 @@
+import 'package:capstone_project/models/patient_export.dart';
 import 'package:capstone_project/models/test.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,6 +14,7 @@ import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/patient_api.dart';
+import 'package:capstone_project/api/export_api.dart' as export_api;
 
 class PatientPage extends StatefulWidget {
   const PatientPage({super.key, required this.pID});
@@ -67,21 +69,15 @@ class _PatientPage extends State<PatientPage> {
     }
   }
 
-  Future<dynamic> getIncident(int iID) async {
+  Future<dynamic> getExport(int pID) async {
+    print("Entered getExport");
     try {
-      dynamic jsonIncident = await get(iID);
-      return Incident.fromJson(jsonIncident[0]);
+      dynamic jsonExport = await export_api.get(pID);
+      print(jsonExport);
+      PatientExport patientExport = PatientExport.fromJson(jsonExport[0]);
+      return patientExport;
     } catch (e) {
-      print("Error fetching incidents: $e");
-    }
-  }
-
-  Future<dynamic> getTest(int tID) async {
-    try {
-      var jsonTest = await get(tID);
-      return Test.fromJson(jsonTest[0]);
-    } catch (e) {
-      print("Error getting test: $e");
+      print("Error fetching export data: $e");
     }
   }
 
@@ -97,16 +93,6 @@ class _PatientPage extends State<PatientPage> {
     Share.shareXFiles([file]);
   }
 
-  // Future<void> getFilePicker() async {
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles();
-  //   if (result != null) {
-  //     File file = File(result.files.single.path ?? "");
-  //     await file.readAsString().then((value) => print(value));
-  //   } else {
-  //     print("User canceled selection");
-  //   }
-  // }
-
   void exportPatientData() async {
     // Get patient data
     String fileName = 'patient2';
@@ -118,19 +104,13 @@ class _PatientPage extends State<PatientPage> {
       'Condition',
       'Reactive TTS'
     ]);
-    for (var incident in incidents) {
-      print("ENTERED INCIDENT");
-      Incident i = await getIncident(incident.iID);
-      if (i.tests != null) {
-        for (var test in incident.tests ?? []) {
-          print("ENTERED TEST");
-          print(thirdPartyID.text);
-          print(incident.iName);
-          print(incident.iDate);
-          print(test?.reactive?.mTime);
 
+    PatientExport pE = await getExport(widget.pID);
+    if (pE.incidents != null) {
+      for (Incident incident in pE.incidents ?? []) {
+        for (var test in incident.tests ?? []) {
           rows.add([
-            thirdPartyID.text,
+            pE.thirdPartyID,
             incident.iName,
             incident.iDate,
             incident.iNotes,

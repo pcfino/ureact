@@ -1,7 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:capstone_project/models/reactive.dart';
+import 'package:capstone_project/models/dynamic.dart';
 
-/// This allows the `User` class to access private members in
+/// This allows the `Test` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
 /// the star denotes the source file name.
 part 'test.g.dart';
@@ -36,19 +37,17 @@ class Test {
 
   String? tNotes;
   int? baseline;
-  // DynamicTest? dynamicTest;
+  Dynamic? dynamicTest;
   // StaticTest? staticTest;
   Reactive? reactive;
 
-  // List<Test> tests;
-
   /// A necessary factory constructor for creating a new Incident instance
-  /// from a map. Pass the map to the generated `_$IncidentFromJson()` constructor.
+  /// from a map. Pass the map to the generated `_$TestFromJson()` constructor.
   /// The constructor is named after the source class, in this case, Incident.
   factory Test.fromJson(Map<String, dynamic> json) => _$TestFromJson(json);
 
   /// `toJson` is the convention for a class to declare support for serialization
   /// to JSON. The implementation simply calls the private, generated
-  /// helper method `_$UserToJson`.
+  /// helper method `_$TestToJson`.
   Map<String, dynamic> toJson() => _$TestToJson(this);
 }

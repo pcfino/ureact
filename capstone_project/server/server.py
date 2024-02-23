@@ -470,14 +470,14 @@ def exportSinglePatient():
         mycursor = mydb.cursor()
         
         data = request.args.get('ID')
-        sql = "SELECT thirdPartyID FROM Patient WHERE pID=%s;"
+        sql = "SELECT pID, thirdPartyID FROM Patient WHERE pID=%s;"
         val = [(data)]
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
 
         returnList = []
         for x in myresult:
-            returnList.append({"thirdPartyID": x[0], "incidents": []})
+            returnList.append({"pID": x[0], "thirdPartyID": x[1], "incidents": []})
 
         sql = "select i.iName, i.iDate, i.iNotes, t.tDate, rt.mTime, i.iID from Incident as i left join Test as t on i.iID=t.iID left join ReactiveTest as rt on t.tID=rt.tID where i.pID=%s;"
         mycursor.execute(sql, val)

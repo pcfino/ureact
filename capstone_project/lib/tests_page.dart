@@ -1,4 +1,3 @@
-// import 'package:capstone_project/main.dart';
 import 'package:capstone_project/dynamic_test_page.dart';
 import 'package:capstone_project/start_test_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
@@ -71,14 +70,14 @@ class _TestsPage extends State<TestsPage> {
           notes.text = test.tNotes!;
 
           return MaterialApp(
-            title: 'Tests',
+            title: 'Test',
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
               useMaterial3: true,
             ),
             home: Scaffold(
               appBar: AppBar(
-                title: const Text('Tests'),
+                title: const Text('Test'),
                 centerTitle: true,
                 leading: BackButton(onPressed: () {
                   Navigator.push(
@@ -222,16 +221,18 @@ class _TestsPage extends State<TestsPage> {
                       child: ListView(children: [
                         ListTile(
                           onTap: () {
-                            if (test.reactive != null) {
+                            if (test.reactiveTest != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => TestResultsPage(
-                                    backward: test.reactive!.bTime.toString(),
-                                    forward: test.reactive!.fTime.toString(),
-                                    left: test.reactive!.lTime.toString(),
-                                    right: test.reactive!.rTime.toString(),
-                                    median: test.reactive!.mTime.toString(),
+                                    backward:
+                                        test.reactiveTest!.bTime.toString(),
+                                    forward:
+                                        test.reactiveTest!.fTime.toString(),
+                                    left: test.reactiveTest!.lTime.toString(),
+                                    right: test.reactiveTest!.rTime.toString(),
+                                    median: test.reactiveTest!.mTime.toString(),
                                     tID: test.tID,
                                   ),
                                 ),
@@ -258,7 +259,7 @@ class _TestsPage extends State<TestsPage> {
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: Icon(test.reactive == null
+                          trailing: Icon(test.reactiveTest == null
                               ? Icons.add_circle
                               : Icons.arrow_forward_ios),
                         ),

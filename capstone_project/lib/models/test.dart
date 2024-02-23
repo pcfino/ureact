@@ -18,9 +18,9 @@ class Test {
     this.tNotes,
     this.baseline,
     this.iID,
-    // this.dynamicTest,
+    this.dynamicTest,
     // this.staticTest,
-    this.reactive,
+    this.reactiveTest,
   );
 
   @JsonKey(required: true)
@@ -39,7 +39,7 @@ class Test {
   int? baseline;
   Dynamic? dynamicTest;
   // StaticTest? staticTest;
-  Reactive? reactive;
+  Reactive? reactiveTest;
 
   /// A necessary factory constructor for creating a new Incident instance
   /// from a map. Pass the map to the generated `_$TestFromJson()` constructor.

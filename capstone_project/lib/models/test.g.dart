@@ -18,12 +18,13 @@ Test _$TestFromJson(Map<String, dynamic> json) {
     json['tNotes'] as String?,
     json['baseline'] as int?,
     json['iID'] as int,
-    json['reactive'] == null
+    json['dynamicTest'] == null
         ? null
-        : Reactive.fromJson(json['reactive'] as Map<String, dynamic>),
-  )..dynamicTest = json['dynamicTest'] == null
-      ? null
-      : Dynamic.fromJson(json['dynamicTest'] as Map<String, dynamic>);
+        : Dynamic.fromJson(json['dynamicTest'] as Map<String, dynamic>),
+    json['reactiveTest'] == null
+        ? null
+        : Reactive.fromJson(json['reactiveTest'] as Map<String, dynamic>),
+  );
 }
 
 Map<String, dynamic> _$TestToJson(Test instance) => <String, dynamic>{
@@ -34,5 +35,5 @@ Map<String, dynamic> _$TestToJson(Test instance) => <String, dynamic>{
       'tNotes': instance.tNotes,
       'baseline': instance.baseline,
       'dynamicTest': instance.dynamicTest,
-      'reactive': instance.reactive,
+      'reactiveTest': instance.reactiveTest,
     };

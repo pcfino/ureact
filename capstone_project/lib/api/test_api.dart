@@ -39,13 +39,18 @@ Future createReactive(Map testInfo) async {
 ///
 /// @param testInfo: info needed to create a dynamic test.
 /// The object should take the folowing form:
-/// {tID: int, t1Duration: float, t1TurnSpeed: float, t1MLSway: float, t2Duration: float, t2TurnSpeed: float, t2MLSway: float, t3Duration: float, t3TurnSpeed: float, t3MLSway: float}
+/// {tID: int, t1Duration: float, t1TurnSpeed: float, t1MLSway: float,
+///            t2Duration: float, t2TurnSpeed: float, t2MLSway: float,
+///            t3Duration: float, t3TurnSpeed: float, t3MLSway: float,
+///            dMax: float, dMin: float, dMean: float, dMedian: float,
+///            tsMax: float, tsMin: float, tsMean: float, tsMedian: float,
+///            mlMax: float, mlMin: float, mlMean: float, mlMedian: float }
 ///
 /// @return Json object with the created dynamic test
 Future createDynamic(Map testInfo) async {
   var results = await api.post('/mysql/createDynamicTest', testInfo);
   // return should look like:
-  // {"dID":1,"t1Duration":1.45,"t1TurnSpeed":1.27,"t1MLSway":1.95,"t2Duration":0.54,"t2TurnSpeed":0.28,"t2MLSway":0.18,"t3Duration":0.98,"t3TurnSpeed":1.99,"t3MLSway":2.88,"tID":42}
+  // {"dID":2,"t1Duration":1.45,"t1TurnSpeed":1.27,"t1MLSway":1.95,"t2Duration":0.54,"t2TurnSpeed":0.28,"t2MLSway":0.18,"t3Duration":0.98,"t3TurnSpeed":1.99,"t3MLSway":2.88,"dMax":3.9,"dMin":2.9,"dMean":1.7,"dMedian":1.5,"tsMax":1.7,"tsMin":0.6,"tsMean":0.68,"tsMedian":2.25,"mlMax":1.25,"mlMin":1.68,"mlMean":2.34,"mlMedian":1.74,"tID":51}
   return await jsonDecode(results);
 }
 

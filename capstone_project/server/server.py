@@ -399,10 +399,26 @@ def createDynamicTest():
         mycursor = mydb.cursor()
  
         data = request.json
-        sql = "INSERT INTO DynamicTest (t1Duration, t1TurnSpeed, t1MLSway, t2Duration, t2TurnSpeed, t2MLSway, t3Duration, t3TurnSpeed, t3MLSway, tID) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        sql = """INSERT INTO DynamicTest (t1Duration, t1TurnSpeed, t1MLSway, 
+                                        t2Duration, t2TurnSpeed, t2MLSway, 
+                                        t3Duration, t3TurnSpeed, t3MLSway,
+                                        dMax, dMin, dMean, dMedian,
+                                        tsMax, tsMin, tsMean, tsMedian,
+                                        mlMax, mlMin, mlMean, mlMedian, tID) 
+                                        VALUES(%s, %s, %s, 
+                                               %s, %s, %s, 
+                                               %s, %s, %s, 
+                                               %s, %s, %s, %s,
+                                               %s, %s, %s, %s,
+                                               %s, %s, %s, %s, %s)"""
         val = (data['t1Duration'], data['t1TurnSpeed'], data['t1MLSway'], 
                data['t2Duration'], data['t2TurnSpeed'], data['t2MLSway'], 
-               data['t3Duration'], data['t3TurnSpeed'], data['t3MLSway'], data['tID'])
+               data['t3Duration'], data['t3TurnSpeed'], data['t3MLSway'],
+
+               data['dMax'], data['dMin'], data['dMean'], data['dMedian'],
+               data['tsMax'], data['tsMin'], data['tsMean'], data['tsMedian'],
+               data['mlMax'], data['mlMin'], data['mlMean'], data['mlMedian'],
+               data['tID'])
         mycursor.execute(sql, val)
         mydb.commit()
         
@@ -410,7 +426,13 @@ def createDynamicTest():
         returnRTest = {"dID": dID, 
         "t1Duration": data['t1Duration'], "t1TurnSpeed": data['t1TurnSpeed'], "t1MLSway": data['t1MLSway'], 
         "t2Duration": data['t2Duration'], "t2TurnSpeed": data['t2TurnSpeed'], "t2MLSway": data['t2MLSway'], 
-        "t3Duration": data['t3Duration'], "t3TurnSpeed": data['t3TurnSpeed'], "t3MLSway": data['t3MLSway'], "tID": data['tID']}
+        "t3Duration": data['t3Duration'], "t3TurnSpeed": data['t3TurnSpeed'], "t3MLSway": data['t3MLSway'], 
+        
+        "dMax": data['dMax'], "dMin": data['dMin'], "dMean": data['dMean'], "dMedian": data['dMedian'],
+        "tsMax": data['tsMax'], "tsMin": data['tsMin'], "tsMean": data['tsMean'], "tsMedian": data['tsMedian'],
+        "mlMax": data['mlMax'], "mlMin": data['mlMin'], "mlMean": data['mlMean'], "mlMedian": data['mlMedian'],
+
+        "tID": data['tID']}
         return jsonify(returnRTest)
 
 
@@ -457,7 +479,6 @@ def exportSinglePatient():
         for x in myresult:
             returnList.append({"thirdPartyID": x[0], "incidents": []})
 
-        # ------------------------------------------------------------------
         sql = "select i.iName, i.iDate, i.iNotes, t.tDate, rt.mTime, i.iID from Incident as i left join Test as t on i.iID=t.iID left join ReactiveTest as rt on t.tID=rt.tID where i.pID=%s;"
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
@@ -593,4 +614,3 @@ if __name__ == "__main__":
 # CHANGE THE DAMN PORT BACK TO 8000 for updating this
 # CHANGE THE DAMN PORT BACK TO 8111 for testing this
 # DELETE THE TEST PORT AT THE END OF THE YEAR
-

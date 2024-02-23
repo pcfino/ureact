@@ -1,51 +1,31 @@
+import 'package:capstone_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/home_page.dart';
-import 'package:capstone_project/sign_up_page.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-      ),
-      home: App(),
-    );
-  }
+  State<SignUpPage> createState() => _SignUpPage();
 }
 
-class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
-
-  List<DropdownMenuItem<String>> get dropdownItems {
-    List<DropdownMenuItem<String>> institutions = [
-      const DropdownMenuItem(
-        value: "University of Utah",
-        child: Text(
-          "University of Utah",
-        ),
-      ),
-    ];
-    return institutions;
-  }
-
+class _SignUpPage extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
-    String defaultValue = "University of Utah";
     ColorScheme cs = Theme.of(context).colorScheme;
     return MaterialApp(
-      title: 'Login',
+      title: 'Sign Up',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(),
+        appBar: AppBar(
+          leading: BackButton(onPressed: () {
+            Navigator.pop(context);
+          }),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -54,7 +34,7 @@ class App extends StatelessWidget {
               const Expanded(
                 flex: 2,
                 child: Text(
-                  'Welcome',
+                  'Sign Up',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -75,16 +55,11 @@ class App extends StatelessWidget {
               ),
               Expanded(
                 flex: 2,
-                child: DropdownButtonFormField(
-                  value: defaultValue,
-                  items: dropdownItems,
-                  onChanged: (value) {
-                    defaultValue = value!;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Institution",
-                    contentPadding: EdgeInsets.all(11),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Token',
+                    prefixIcon: const Icon(Icons.token),
+                    prefixIconColor: cs.primary,
                   ),
                 ),
               ),
@@ -109,6 +84,32 @@ class App extends StatelessWidget {
                   ),
                 ),
               ),
+              const Expanded(
+                flex: 2,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 10,
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'First*',
+                        ),
+                      ),
+                    ),
+                    Spacer(flex: 1),
+                    Expanded(
+                      flex: 10,
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'Last*',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const Spacer(
                 flex: 1,
               ),
@@ -129,41 +130,14 @@ class App extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text('Login'),
+                    child: const Text('Sign Up'),
                   ),
                 ),
               ),
               const Spacer(
-                flex: 1,
-              ),
-              Expanded(
-                flex: 2,
-                child: TextButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.blueGrey,
-                  ),
-                  onPressed: () {},
-                  child: const Text("Forgot password?"),
-                ),
-              ),
-              const Spacer(
-                flex: 2,
+                flex: 7,
               ),
             ],
-          ),
-        ),
-        bottomNavigationBar: BottomAppBar(
-          surfaceTintColor: cs.background,
-          child: TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SignUpPage(),
-                ),
-              );
-            },
-            child: const Text("Don't have an account? Sign Up"),
           ),
         ),
       ),

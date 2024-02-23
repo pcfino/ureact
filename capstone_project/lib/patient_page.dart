@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:capstone_project/create_incident_page.dart';
-import 'package:capstone_project/main.dart';
+import 'package:capstone_project/home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/incident_page.dart';
@@ -53,7 +53,7 @@ class _PatientPage extends State<PatientPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const MyApp(),
+              builder: (context) => const HomePage(),
             ),
           );
         });
@@ -119,7 +119,7 @@ class _PatientPage extends State<PatientPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MyApp(),
+                      builder: (context) => const HomePage(),
                     ),
                   );
                 }),

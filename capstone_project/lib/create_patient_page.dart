@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:capstone_project/main.dart';
+import 'package:capstone_project/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/models/patient.dart';
@@ -64,7 +64,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const MyApp(),
+                builder: (context) => const HomePage(),
               ),
             );
           }),

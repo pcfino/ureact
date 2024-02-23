@@ -1,4 +1,4 @@
-import 'package:capstone_project/main.dart';
+import 'package:capstone_project/home_page.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _SettingsPage extends State<SettingsPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const MyApp(),
+                builder: (context) => const HomePage(),
               ),
             );
           }),

@@ -351,6 +351,70 @@ def getTest():
         returnList.append(test)
         return jsonify(returnList)
 
+@app.route('/mysql/getAllTests', methods=['GET'])
+def getAllTests():
+    if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+ 
+        data = request.args.get('ID')
+        sql = "SELECT * FROM Test WHERE tID=%s"
+        val = [(data)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        returnList = []
+        # Get the Incident we are looking for
+        test = OrderedDict()
+        for x in myresult:
+            test = OrderedDict({"tID": x[0], "tName": x[1], "tDate": str(x[2]), "tNotes": x[3], "iID": x[4]})
+
+        # Get the ReactiveTests that the patient has
+        sql = "SELECT * FROM ReactiveTest WHERE tID=%s"
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        if myresult == []:
+            test["reactive"] = {}
+        else:
+            for x in myresult:
+                test['reactive'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6]}
+
+        # Get the DynamicTest that the patient has
+        sql = "SELECT * FROM DynamicTest WHERE tID=%s"
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        if myresult == []:
+            test["dynamic"] = {}
+        else:
+            for x in myresult:
+                test['dynamic'] = {"dID": x[0], 
+                                "t1Duration": x[1], "t1TurnSpeed": x[2], "t1MLSway": x[3], 
+                                "t2Duration": x[4], "t2TurnSpeed": x[5], "t2MLSway": x[6], 
+                                "t3Duration": x[7], "t3TurnSpeed": x[8], "t3MLSway": x[9], 
+                                    
+                                "dMax": x[10], "dMin": x[11], "dMean": x[12], "dMedian": x[13],
+                                "tsMax": x[14], "tsMin": x[15], "tsMean": x[16], "tsMedian": x[17],
+                                "mlMax": x[18], "mlMin": x[19], "mlMean": x[20], "mlMedian": x[21],
+
+                                "tID": x[22]}
+
+        # Get the StaticTests that the patient has
+        sql = "SELECT * FROM StaticTest WHERE tID=%s"
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        if myresult == []:
+            test["static"] = {}
+        else:
+            for x in myresult:
+                test['static'] = {"sID": x[0], 
+                                "tlSolidML": x[1], "tlFoamML": x[2], 
+                                "slSolidML": x[3], "slFoamML": x[4], 
+                                "tandSolidML": x[5], "tandFoamML": x[6], "tID": x[7]}        
+
+        returnList.append(test)
+        return jsonify(returnList)
+
 # RIGHT NOW, YOU MUST INPUT ALL VALUES (front end is handling this)
 @app.route('/mysql/createTest', methods=['POST'])
 def createTest():

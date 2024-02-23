@@ -11,6 +11,72 @@ Future get(int testId) async {
   return await jsonDecode(results);
 }
 
+/// SWITCH TO THIS WHEN READY
+/// NEW AND UPDATED GET TEST METHOD THAT RETURNS ALL INFORMATION FROM ALL 3 TESTS
+/// Makes request to get test and relevent information
+///
+/// @param testId: info needed to get a test.
+///
+/// @return Json object with the test information (if any test is empty, returns like this: reactive{})
+/// [
+///    {
+///        "tID": 51,
+///        "tName": "6 Month Followup",
+///        "tDate": "2025-07-15",
+///        "tNotes": "",
+///        "iID": 42,
+///        "reactive": {
+///            "rID": 56,
+///            "fTime": 0.42,
+///            "bTime": 0.38,
+///            "lTime": 0.45,
+///            "rTime": 0.35,
+///            "mTime": 0.4,
+///            "tID": 51
+///        },
+///        "dynamic": {
+///            "dID": 2,
+///            "t1Duration": 1.45,
+///            "t1TurnSpeed": 1.27,
+///            "t1MLSway": 1.95,
+///            "t2Duration": 0.54,
+///            "t2TurnSpeed": 0.28,
+///            "t2MLSway": 0.18,
+///            "t3Duration": 0.98,
+///            "t3TurnSpeed": 1.99,
+///            "t3MLSway": 2.88,
+///            "dMax": 3.9,
+///            "dMin": 2.9,
+///            "dMean": 1.7,
+///            "dMedian": 1.5,
+///            "tsMax": 1.7,
+///            "tsMin": 0.6,
+///            "tsMean": 0.68,
+///            "tsMedian": 2.25,
+///            "mlMax": 1.25,
+///            "mlMin": 1.68,
+///            "mlMean": 2.34,
+///            "mlMedian": 1.74,
+///            "tID": 51
+///        },
+///        "static": {
+///            "sID": 4,
+///            "tlSolidML": 1.96,
+///            "tlFoamML": 1.72,
+///            "slSolidML": 0.98,
+///            "slFoamML": 0.75,
+///            "tandSolidML": 0.64,
+///            "tandFoamML": 0.15,
+///            "tID": 51
+///        }
+///     }
+/// ]
+///
+Future getAllTests(int testId) async {
+  var results = await api.get('/mysql/getAllTests?ID=$testId');
+  return await jsonDecode(results);
+}
+
 /// Makes request to create a test
 ///
 /// @param testInfo: info needed to create a test.

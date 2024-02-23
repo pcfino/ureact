@@ -375,20 +375,20 @@ def getAllTests():
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
         if myresult == []:
-            test["reactive"] = {}
+            test['reactiveTest'] = {}
         else:
             for x in myresult:
-                test['reactive'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6]}
+                test['reactiveTest'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6]}
 
         # Get the DynamicTest that the patient has
         sql = "SELECT * FROM DynamicTest WHERE tID=%s"
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
         if myresult == []:
-            test["dynamic"] = {}
+            test["dynamicTest"] = {}
         else:
             for x in myresult:
-                test['dynamic'] = {"dID": x[0], 
+                test['dynamicTest'] = {"dID": x[0], 
                                 "t1Duration": x[1], "t1TurnSpeed": x[2], "t1MLSway": x[3], 
                                 "t2Duration": x[4], "t2TurnSpeed": x[5], "t2MLSway": x[6], 
                                 "t3Duration": x[7], "t3TurnSpeed": x[8], "t3MLSway": x[9], 
@@ -404,10 +404,10 @@ def getAllTests():
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
         if myresult == []:
-            test["static"] = {}
+            test['staticTest'] = {}
         else:
             for x in myresult:
-                test['static'] = {"sID": x[0], 
+                test['staticTest'] = {"sID": x[0], 
                                 "tlSolidML": x[1], "tlFoamML": x[2], 
                                 "slSolidML": x[3], "slFoamML": x[4], 
                                 "tandSolidML": x[5], "tandFoamML": x[6], "tID": x[7]}        

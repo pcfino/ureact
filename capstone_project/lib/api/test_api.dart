@@ -25,7 +25,7 @@ Future get(int testId) async {
 ///        "tDate": "2025-07-15",
 ///        "tNotes": "",
 ///        "iID": 42,
-///        "reactive": {
+///        "reactiveTest": {
 ///            "rID": 56,
 ///            "fTime": 0.42,
 ///            "bTime": 0.38,
@@ -34,7 +34,7 @@ Future get(int testId) async {
 ///            "mTime": 0.4,
 ///            "tID": 51
 ///        },
-///        "dynamic": {
+///        "dynamicTest": {
 ///            "dID": 2,
 ///            "t1Duration": 1.45,
 ///            "t1TurnSpeed": 1.27,
@@ -59,7 +59,7 @@ Future get(int testId) async {
 ///            "mlMedian": 1.74,
 ///            "tID": 51
 ///        },
-///        "static": {
+///        "staticTest": {
 ///            "sID": 4,
 ///            "tlSolidML": 1.96,
 ///            "tlFoamML": 1.72,

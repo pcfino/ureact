@@ -1,6 +1,6 @@
-// import 'package:capstone_project/main.dart';
 import 'package:capstone_project/dynamic_test_page.dart';
 import 'package:capstone_project/start_test_page.dart';
+import 'package:capstone_project/dynamic_results_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/models/test.dart';
 import 'package:capstone_project/models/reactive.dart';
@@ -21,7 +21,7 @@ class TestsPage extends StatefulWidget {
 class _TestsPage extends State<TestsPage> {
   Future<dynamic> getTest(int tID) async {
     try {
-      var jsonTest = await get(tID);
+      var jsonTest = await getAllTests(tID);
       Test test = Test.fromJson(jsonTest[0]);
       return test;
     } catch (e) {
@@ -70,14 +70,14 @@ class _TestsPage extends State<TestsPage> {
           notes.text = test.tNotes!;
 
           return MaterialApp(
-            title: 'Tests',
+            title: 'Test',
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
               useMaterial3: true,
             ),
             home: Scaffold(
               appBar: AppBar(
-                title: const Text('Tests'),
+                title: const Text('Test'),
                 centerTitle: true,
                 leading: BackButton(onPressed: () {
                   Navigator.push(
@@ -221,16 +221,18 @@ class _TestsPage extends State<TestsPage> {
                       child: ListView(children: [
                         ListTile(
                           onTap: () {
-                            if (test.reactive != null) {
+                            if (test.reactiveTest != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => TestResultsPage(
-                                    backward: test.reactive!.bTime.toString(),
-                                    forward: test.reactive!.fTime.toString(),
-                                    left: test.reactive!.lTime.toString(),
-                                    right: test.reactive!.rTime.toString(),
-                                    median: test.reactive!.mTime.toString(),
+                                    backward:
+                                        test.reactiveTest!.bTime.toString(),
+                                    forward:
+                                        test.reactiveTest!.fTime.toString(),
+                                    left: test.reactiveTest!.lTime.toString(),
+                                    right: test.reactiveTest!.rTime.toString(),
+                                    median: test.reactiveTest!.mTime.toString(),
                                     tID: test.tID,
                                   ),
                                 ),
@@ -257,33 +259,73 @@ class _TestsPage extends State<TestsPage> {
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: Icon(test.reactive == null
+                          trailing: Icon(test.reactiveTest == null
                               ? Icons.add_circle
                               : Icons.arrow_forward_ios),
                         ),
                         ListTile(
                           onTap: () {
                             // check if dynamic exists
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DynamicTestPage(
-                                  tID: widget.tID,
-                                  start: true,
-                                  trialNumber: 1,
-                                  trialOne: '0',
-                                  trialTwo: '0',
-                                  trialThree: '0',
+                            if (test.dynamicTest != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DynamicResultsPage(
+                                    t1Duration: test.dynamicTest!.t1Duration,
+                                    t1TurnSpeed: test.dynamicTest!.t1TurnSpeed,
+                                    t1MLSway: test.dynamicTest!.t1MLSway,
+                                    t2Duration: test.dynamicTest!.t2Duration,
+                                    t2TurnSpeed: test.dynamicTest!.t2TurnSpeed,
+                                    t2MLSway: test.dynamicTest!.t2MLSway,
+                                    t3Duration: test.dynamicTest!.t3Duration,
+                                    t3TurnSpeed: test.dynamicTest!.t3TurnSpeed,
+                                    t3MLSway: test.dynamicTest!.t3MLSway,
+                                    dMax: test.dynamicTest!.dMax,
+                                    dMin: test.dynamicTest!.dMin,
+                                    dMean: test.dynamicTest!.dMean,
+                                    dMedian: test.dynamicTest!.dMedian,
+                                    tsMax: test.dynamicTest!.tsMax,
+                                    tsMin: test.dynamicTest!.tsMin,
+                                    tsMean: test.dynamicTest!.tsMean,
+                                    tsMedian: test.dynamicTest!.tsMedian,
+                                    mlMax: test.dynamicTest!.mlMax,
+                                    mlMin: test.dynamicTest!.mlMin,
+                                    mlMean: test.dynamicTest!.mlMean,
+                                    mlMedian: test.dynamicTest!.mlMedian,
+                                    tID: widget.tID,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DynamicTestPage(
+                                    tID: widget.tID,
+                                    start: true,
+                                    trialNumber: 1,
+                                    t1Duration: 0,
+                                    t1TurnSpeed: 0,
+                                    t1MLSway: 0,
+                                    t2Duration: 0,
+                                    t2TurnSpeed: 0,
+                                    t2MLSway: 0,
+                                    t3Duration: 0,
+                                    t3TurnSpeed: 0,
+                                    t3MLSway: 0,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           title: const Text(
                             'Dynamic',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: const Icon(Icons.add_circle),
+                          trailing: Icon(test.dynamicTest == null
+                              ? Icons.add_circle
+                              : Icons.arrow_forward_ios),
                         ),
                         ListTile(
                           onTap: () {

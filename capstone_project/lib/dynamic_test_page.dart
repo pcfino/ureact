@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
+import 'package:capstone_project/api/test_api.dart';
+import 'package:capstone_project/models/dynamic.dart';
 
 class DynamicTestPage extends StatefulWidget {
   const DynamicTestPage({
@@ -8,16 +13,28 @@ class DynamicTestPage extends StatefulWidget {
     required this.tID,
     required this.trialNumber,
     required this.start,
-    required this.trialOne,
-    required this.trialTwo,
-    required this.trialThree,
+    required this.t1Duration,
+    required this.t1TurnSpeed,
+    required this.t1MLSway,
+    required this.t2Duration,
+    required this.t2TurnSpeed,
+    required this.t2MLSway,
+    required this.t3Duration,
+    required this.t3TurnSpeed,
+    required this.t3MLSway,
   });
 
   final int trialNumber;
   final bool start;
-  final String trialOne;
-  final String trialTwo;
-  final String trialThree;
+  final double t1Duration;
+  final double t1TurnSpeed;
+  final double t1MLSway;
+  final double t2Duration;
+  final double t2TurnSpeed;
+  final double t2MLSway;
+  final double t3Duration;
+  final double t3TurnSpeed;
+  final double t3MLSway;
 
   final int tID;
 
@@ -26,6 +43,51 @@ class DynamicTestPage extends StatefulWidget {
 }
 
 class _DynamicTestPage extends State<DynamicTestPage> {
+  Future<dynamic> createDynamicTest(
+      double dMax,
+      double dMin,
+      double dMean,
+      double dMedian,
+      double tsMax,
+      double tsMin,
+      double tsMean,
+      double tsMedian,
+      double mlMax,
+      double mlMin,
+      double mlMean,
+      double mlMedian) async {
+    try {
+      dynamic jsonDynamic = await createDynamic({
+        "tID": widget.tID,
+        "t1Duration": widget.t1Duration,
+        "t1TurnSpeed": widget.t1TurnSpeed,
+        "t1MLSway": widget.t1MLSway,
+        "t2Duration": widget.t2Duration,
+        "t2TurnSpeed": widget.t2TurnSpeed,
+        "t2MLSway": widget.t2MLSway,
+        "t3Duration": widget.t3Duration,
+        "t3TurnSpeed": widget.t3TurnSpeed,
+        "t3MLSway": widget.t3MLSway,
+        "dMax": dMax,
+        "dMin": dMin,
+        "dMean": dMean,
+        "dMedian": dMedian,
+        "tsMax": tsMax,
+        "tsMin": tsMin,
+        "tsMean": tsMean,
+        "tsMedian": tsMedian,
+        "mlMax": mlMax,
+        "mlMin": mlMin,
+        "mlMean": mlMean,
+        "mlMedian": mlMedian,
+      });
+      Dynamic dynamicTest = Dynamic.fromJson(jsonDynamic);
+      return dynamicTest;
+    } catch (e) {
+      print("Error creating reactive test: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -149,56 +211,216 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                               color: const Color.fromRGBO(255, 220, 212, 1),
                               size: 75,
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (widget.trialNumber == 3) {
                                 if (widget.start) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => DynamicTestPage(
-                                          trialNumber: widget.start
-                                              ? widget.trialNumber
-                                              : widget.trialNumber + 1,
-                                          tID: widget.tID,
-                                          start: !widget.start,
-                                          trialOne: widget.trialOne,
-                                          trialTwo: widget.trialTwo,
-                                          trialThree: widget.trialThree),
-                                    ),
-                                  );
-                                } else {
-                                  double median =
-                                      (double.parse(widget.trialOne) +
-                                              double.parse(widget.trialTwo) +
-                                              double.parse(widget.trialThree)) /
-                                          3;
-                                  String medianString = median.toString();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DynamicResultsPage(
-                                        trialOne: widget.trialOne,
-                                        trialTwo: widget.trialTwo,
-                                        trialThree: widget.trialThree,
-                                        average: medianString,
+                                        trialNumber: widget.start
+                                            ? widget.trialNumber
+                                            : widget.trialNumber + 1,
                                         tID: widget.tID,
+                                        start: !widget.start,
+                                        t1Duration: widget.t1Duration,
+                                        t1TurnSpeed: widget.t1TurnSpeed,
+                                        t1MLSway: widget.t1MLSway,
+                                        t2Duration: widget.t1Duration,
+                                        t2TurnSpeed: widget.t1TurnSpeed,
+                                        t2MLSway: widget.t1MLSway,
+                                        t3Duration: widget.t1Duration,
+                                        t3TurnSpeed: widget.t1TurnSpeed,
+                                        t3MLSway: widget.t1MLSway,
                                       ),
                                     ),
                                   );
+                                } else {
+                                  // Values for duration
+                                  double dMax = max(
+                                      widget.t1Duration,
+                                      max(widget.t2Duration,
+                                          widget.t3Duration));
+                                  double dMin = min(
+                                      widget.t1Duration,
+                                      min(widget.t2Duration,
+                                          widget.t3Duration));
+                                  double dMean = (widget.t1Duration +
+                                          widget.t2Duration +
+                                          widget.t3Duration) /
+                                      3;
+                                  double dMedian;
+                                  if ((widget.t1Duration <=
+                                          widget.t2Duration) &&
+                                      (widget.t2Duration <=
+                                          widget.t3Duration)) {
+                                    dMedian = widget.t2Duration;
+                                  } else if ((widget.t1Duration <=
+                                          widget.t3Duration) &&
+                                      (widget.t3Duration <=
+                                          widget.t2Duration)) {
+                                    dMedian = widget.t3Duration;
+                                  } else if ((widget.t2Duration <=
+                                          widget.t1Duration) &&
+                                      (widget.t1Duration <=
+                                          widget.t3Duration)) {
+                                    dMedian = widget.t1Duration;
+                                  } else if ((widget.t2Duration <=
+                                          widget.t3Duration) &&
+                                      (widget.t3Duration <=
+                                          widget.t1Duration)) {
+                                    dMedian = widget.t3Duration;
+                                  } else if ((widget.t3Duration <=
+                                          widget.t1Duration) &&
+                                      (widget.t1Duration <=
+                                          widget.t2Duration)) {
+                                    dMedian = widget.t1Duration;
+                                  }
+                                  dMedian = widget.t2Duration;
+
+                                  // Values for turning speed
+                                  double tsMax = max(
+                                      widget.t1TurnSpeed,
+                                      max(widget.t2TurnSpeed,
+                                          widget.t3TurnSpeed));
+                                  double tsMin = min(
+                                      widget.t1TurnSpeed,
+                                      min(widget.t2TurnSpeed,
+                                          widget.t3TurnSpeed));
+                                  double tsMean = (widget.t1TurnSpeed +
+                                          widget.t2TurnSpeed +
+                                          widget.t3TurnSpeed) /
+                                      3;
+                                  double tsMedian;
+                                  if ((widget.t1TurnSpeed <=
+                                          widget.t2TurnSpeed) &&
+                                      (widget.t2TurnSpeed <=
+                                          widget.t3TurnSpeed)) {
+                                    tsMedian = widget.t2TurnSpeed;
+                                  } else if ((widget.t1TurnSpeed <=
+                                          widget.t3TurnSpeed) &&
+                                      (widget.t3TurnSpeed <=
+                                          widget.t2TurnSpeed)) {
+                                    tsMedian = widget.t3TurnSpeed;
+                                  } else if ((widget.t2TurnSpeed <=
+                                          widget.t1TurnSpeed) &&
+                                      (widget.t1TurnSpeed <=
+                                          widget.t3TurnSpeed)) {
+                                    tsMedian = widget.t1TurnSpeed;
+                                  } else if ((widget.t2TurnSpeed <=
+                                          widget.t3TurnSpeed) &&
+                                      (widget.t3TurnSpeed <=
+                                          widget.t1TurnSpeed)) {
+                                    tsMedian = widget.t3TurnSpeed;
+                                  } else if ((widget.t3TurnSpeed <=
+                                          widget.t1TurnSpeed) &&
+                                      (widget.t1TurnSpeed <=
+                                          widget.t2TurnSpeed)) {
+                                    tsMedian = widget.t1TurnSpeed;
+                                  }
+                                  tsMedian = widget.t2TurnSpeed;
+
+                                  // Values for ML
+                                  double mlMax = max(widget.t1MLSway,
+                                      max(widget.t2MLSway, widget.t3MLSway));
+                                  double mlMin = min(widget.t1MLSway,
+                                      min(widget.t2MLSway, widget.t3MLSway));
+                                  double mlMean = (widget.t1MLSway +
+                                          widget.t2MLSway +
+                                          widget.t3MLSway) /
+                                      3;
+                                  double mlMedian;
+                                  if ((widget.t1MLSway <= widget.t2MLSway) &&
+                                      (widget.t2MLSway <= widget.t3MLSway)) {
+                                    mlMedian = widget.t2MLSway;
+                                  } else if ((widget.t1MLSway <=
+                                          widget.t3MLSway) &&
+                                      (widget.t3MLSway <= widget.t2MLSway)) {
+                                    mlMedian = widget.t3MLSway;
+                                  } else if ((widget.t2MLSway <=
+                                          widget.t1MLSway) &&
+                                      (widget.t1MLSway <= widget.t3MLSway)) {
+                                    mlMedian = widget.t1MLSway;
+                                  } else if ((widget.t2MLSway <=
+                                          widget.t3MLSway) &&
+                                      (widget.t3MLSway <= widget.t1MLSway)) {
+                                    mlMedian = widget.t3MLSway;
+                                  } else if ((widget.t3MLSway <=
+                                          widget.t1MLSway) &&
+                                      (widget.t1MLSway <= widget.t2MLSway)) {
+                                    mlMedian = widget.t1MLSway;
+                                  }
+                                  mlMedian = widget.t2MLSway;
+
+                                  Dynamic? createdDynamic =
+                                      await createDynamicTest(
+                                          dMax,
+                                          dMin,
+                                          dMean,
+                                          dMedian,
+                                          tsMax,
+                                          tsMin,
+                                          tsMean,
+                                          tsMedian,
+                                          mlMax,
+                                          mlMin,
+                                          mlMean,
+                                          mlMedian);
+
+                                  if (createdDynamic != null &&
+                                      context.mounted) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DynamicResultsPage(
+                                          t1Duration: widget.t1Duration,
+                                          t1TurnSpeed: widget.t1TurnSpeed,
+                                          t1MLSway: widget.t1MLSway,
+                                          t2Duration: widget.t1Duration,
+                                          t2TurnSpeed: widget.t1TurnSpeed,
+                                          t2MLSway: widget.t1MLSway,
+                                          t3Duration: widget.t1Duration,
+                                          t3TurnSpeed: widget.t1TurnSpeed,
+                                          t3MLSway: widget.t1MLSway,
+                                          dMax: dMax,
+                                          dMin: dMin,
+                                          dMean: dMean,
+                                          dMedian: dMedian,
+                                          tsMax: tsMax,
+                                          tsMin: tsMin,
+                                          tsMean: tsMean,
+                                          tsMedian: tsMedian,
+                                          mlMax: mlMax,
+                                          mlMin: mlMin,
+                                          mlMean: mlMean,
+                                          mlMedian: mlMedian,
+                                          tID: widget.tID,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 }
                               } else {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
-                                        trialNumber: widget.start
-                                            ? widget.trialNumber
-                                            : widget.trialNumber + 1,
-                                        tID: widget.tID,
-                                        start: !widget.start,
-                                        trialOne: widget.trialOne,
-                                        trialTwo: widget.trialTwo,
-                                        trialThree: widget.trialThree),
+                                      trialNumber: widget.start
+                                          ? widget.trialNumber
+                                          : widget.trialNumber + 1,
+                                      tID: widget.tID,
+                                      start: !widget.start,
+                                      t1Duration: widget.t1Duration,
+                                      t1TurnSpeed: widget.t1TurnSpeed,
+                                      t1MLSway: widget.t1MLSway,
+                                      t2Duration: widget.t1Duration,
+                                      t2TurnSpeed: widget.t1TurnSpeed,
+                                      t2MLSway: widget.t1MLSway,
+                                      t3Duration: widget.t1Duration,
+                                      t3TurnSpeed: widget.t1TurnSpeed,
+                                      t3MLSway: widget.t1MLSway,
+                                    ),
                                   ),
                                 );
                               }

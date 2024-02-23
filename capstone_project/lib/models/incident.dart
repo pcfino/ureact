@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:capstone_project/models/test.dart';
 
-/// This allows the `User` class to access private members in
+/// This allows the `Incident` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
 /// the star denotes the source file name.
 part 'incident.g.dart';
@@ -35,6 +35,6 @@ class Incident {
 
   /// `toJson` is the convention for a class to declare support for serialization
   /// to JSON. The implementation simply calls the private, generated
-  /// helper method `_$UserToJson`.
+  /// helper method `_$IncidentToJson`.
   Map<String, dynamic> toJson() => _$IncidentToJson(this);
 }

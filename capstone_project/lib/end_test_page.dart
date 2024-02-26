@@ -4,6 +4,7 @@ import 'package:capstone_project/start_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/test_results_page.dart';
 import 'package:capstone_project/tests_page.dart';
+import 'package:capstone_project/models/reactive.dart';
 import 'sensor_recorder.dart';
 import 'dart:async';
 import 'api/test_api.dart';
@@ -48,6 +49,21 @@ class _EndTestPageState extends State<EndTestPage> {
     });
 
     timeToStab = decodedData['TTS'].toString();
+  }
+
+  Future<dynamic> createReactiveTest(String median) async {
+    try {
+      return await createReactive({
+        "fTime": widget.forward,
+        "rTime": widget.right,
+        "lTime": widget.left,
+        "bTime": widget.backward,
+        "mTime": median,
+        "tID": widget.tID,
+      });
+    } catch (e) {
+      print("Error creating reactive test: $e");
+    }
   }
 
   @override
@@ -219,26 +235,32 @@ class _EndTestPageState extends State<EndTestPage> {
                                     ),
                                   );
                                 } else if (widget.direction == 'Backward') {
-                                  double median =
-                                      (double.parse(widget.forward) +
-                                              double.parse(widget.left) +
-                                              double.parse(widget.right) +
-                                              double.parse(widget.backward)) /
-                                          4;
+                                  List<double> vals = [
+                                    double.parse(widget.forward),
+                                    double.parse(widget.left),
+                                    double.parse(widget.right),
+                                    double.parse(widget.backward)
+                                  ];
+                                  double median = (vals[1] + vals[2]) / 2;
                                   String medianString = median.toString();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => TestResultsPage(
-                                        forward: widget.forward,
-                                        left: widget.left,
-                                        right: widget.right,
-                                        backward: timeToStab,
-                                        median: medianString,
-                                        tID: widget.tID,
+                                  Reactive? createdReactive =
+                                      await createReactiveTest(medianString);
+                                  if (createdReactive != null &&
+                                      context.mounted) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => TestResultsPage(
+                                          forward: widget.forward,
+                                          left: widget.left,
+                                          right: widget.right,
+                                          backward: timeToStab,
+                                          median: medianString,
+                                          tID: widget.tID,
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  }
                                 }
                               }
                             },

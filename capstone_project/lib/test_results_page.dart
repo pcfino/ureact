@@ -26,233 +26,216 @@ class TestResultsPage extends StatefulWidget {
 }
 
 class _TestResultsPageState extends State<TestResultsPage> {
-  Future<dynamic> createReactiveTest() async {
-    try {
-      return await createReactive({
-        "fTime": widget.forward,
-        "rTime": widget.right,
-        "lTime": widget.left,
-        "bTime": widget.backward,
-        "mTime": widget.median,
-        "tID": widget.tID,
-      });
-    } catch (e) {
-      print("Error creating reactive test: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: createReactiveTest(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return MaterialApp(
-              title: 'Test Results',
-              theme: ThemeData(
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-                useMaterial3: true,
-              ),
-              home: Scaffold(
-                  appBar: AppBar(
-                    title: const Text('Test Results'),
-                    centerTitle: true,
-                    leading: BackButton(onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TestsPage(
-                                tID: widget.tID,
-                              ),
-                            ),
-                          );
-                        },
-                        child: const Text('Next'),
-                      )
+    return MaterialApp(
+      title: 'Test Results',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Test Results'),
+          centerTitle: true,
+          leading: BackButton(onPressed: () {
+            Navigator.pop(context);
+          }),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TestsPage(
+                      tID: widget.tID,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Next'),
+            )
+          ],
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Administered by John Doe',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Divider(
+                  thickness: 0.5,
+                  color: Colors.transparent,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: const Color.fromRGBO(255, 220, 212, 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 15,
+                      ),
                     ],
                   ),
-                  body: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Time To Stability',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              )),
-                          const Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: Colors.grey,
-                          ),
-                          Card(
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            shadowColor: Colors.black,
-                            margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: const Text(
-                                    'Average',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    '${widget.median}s',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                //Text(widget.timeToStab)
-                              ],
-                            ),
-                          ),
-                          Card(
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            shadowColor: Colors.black,
-                            margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: const Text(
-                                    'Forward',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    '${widget.forward}s',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                //Text(widget.timeToStab)
-                              ],
-                            ),
-                          ),
-                          Card(
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            shadowColor: Colors.black,
-                            margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: const Text(
-                                    'Right',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    '${widget.right}s',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                //Text(widget.timeToStab)
-                              ],
-                            ),
-                          ),
-                          Card(
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            shadowColor: Colors.black,
-                            margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: const Text(
-                                    'Left',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    '${widget.left}s',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                //Text(widget.timeToStab)
-                              ],
-                            ),
-                          ),
-                          Card(
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            shadowColor: Colors.black,
-                            margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: const Text(
-                                    "Backward",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    '${widget.backward}s',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                //Text(widget.timeToStab)
-                              ],
-                            ),
-                          ),
-                        ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: ListTile(
+                      title: const Text(
+                        'Median',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      trailing: Text(
+                        widget.median,
+                        style: const TextStyle(fontSize: 15),
                       ),
                     ),
-                  )));
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: const Center(
-              child: CircularProgressIndicator(),
+                  ),
+                ),
+                const Divider(
+                  color: Colors.transparent,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: const Color.fromRGBO(255, 220, 212, 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 15,
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: ListTile(
+                      title: const Text(
+                        'Forward',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      trailing: Text(
+                        widget.forward,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(
+                  color: Colors.transparent,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: const Color.fromRGBO(255, 220, 212, 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 15,
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: ListTile(
+                      title: const Text(
+                        'Right',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      trailing: Text(
+                        widget.right,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(
+                  color: Colors.transparent,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: const Color.fromRGBO(255, 220, 212, 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 15,
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: ListTile(
+                      title: const Text(
+                        'Left',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      trailing: Text(
+                        widget.left,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(
+                  color: Colors.transparent,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: const Color.fromRGBO(255, 220, 212, 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 15,
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: ListTile(
+                      title: const Text(
+                        'Backward',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      trailing: Text(
+                        widget.backward,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          );
-        } else {
-          return Text('Error: ${snapshot.error}');
-        }
-      },
+          ),
+        ),
+      ),
     );
   }
 }

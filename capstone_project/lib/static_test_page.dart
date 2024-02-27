@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/static_results_page.dart';
+import 'package:capstone_project/sensor_recorder.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/models/static.dart';
 
@@ -35,13 +36,28 @@ class StaticTestPage extends StatefulWidget {
 }
 
 class _StaticTestPage extends State<StaticTestPage> {
+  late SensorRecorder sensorRecorder;
+  late double dataML;
+
+  Future<dynamic> getStaticData() async {
+    var sensorData = sensorRecorder.endRecording();
+
+    var decodedData = await runSwayTestScript({
+      'dataAcc': sensorData.formattedAccData(),
+      'dataRot': sensorData.formattedGyrData(),
+      'timeStamps': sensorData.timeStamps,
+      'fs': sensorData.fs
+    });
+    dataML = decodedData["rmsMl"];
+  }
+
   Future<dynamic> createStaticTest() async {
     try {
       dynamic jsonStatic = await createStatic({
         "tlSolidML": widget.tlSolidML,
-        "tlFoamML": widget.slFoamML,
+        "tlFoamML": widget.tlFoamML,
         "slSolidML": widget.slSolidML,
-        "slFoamML": widget.slFoamML,
+        "slFoamML": double.parse(dataML.toStringAsFixed(2)),
         "tandSolidML": widget.tandSolidML,
         "tandFoamML": widget.tandFoamML,
         "tID": widget.tID,
@@ -55,6 +71,10 @@ class _StaticTestPage extends State<StaticTestPage> {
 
   @override
   Widget build(BuildContext context) {
+    dataML = 0;
+    if (!widget.start) {
+      sensorRecorder = SensorRecorder('forward');
+    }
     return MaterialApp(
         title: 'Static',
         theme: ThemeData(
@@ -170,34 +190,20 @@ class _StaticTestPage extends State<StaticTestPage> {
                               size: 75,
                             ),
                             onPressed: () async {
-                              if (widget.stance == "Single Leg Stance (Foam)") {
-                                if (widget.start) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => StaticTestPage(
-                                        stance: widget.stance,
-                                        tID: widget.tID,
-                                        start: !widget.start,
-                                        tlSolidML: widget.tlSolidML,
-                                        tlFoamML: widget.tlFoamML,
-                                        slSolidML: widget.slSolidML,
-                                        slFoamML: widget.slFoamML,
-                                        tandSolidML: widget.tandSolidML,
-                                        tandFoamML: widget.tandFoamML,
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  Static? createdStatic =
-                                      await createStaticTest();
-                                  if (createdStatic != null &&
-                                      context.mounted) {
+                              if (!widget.start) {
+                                await getStaticData();
+                              }
+                              if (context.mounted) {
+                                if (widget.stance ==
+                                    "Single Leg Stance (Foam)") {
+                                  if (widget.start) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => StaticResultsPage(
+                                        builder: (context) => StaticTestPage(
+                                          stance: widget.stance,
                                           tID: widget.tID,
+                                          start: !widget.start,
                                           tlSolidML: widget.tlSolidML,
                                           tlFoamML: widget.tlFoamML,
                                           slSolidML: widget.slSolidML,
@@ -207,108 +213,145 @@ class _StaticTestPage extends State<StaticTestPage> {
                                         ),
                                       ),
                                     );
+                                  } else {
+                                    Static? createdStatic =
+                                        await createStaticTest();
+                                    if (createdStatic != null &&
+                                        context.mounted) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              StaticResultsPage(
+                                            tID: widget.tID,
+                                            tlSolidML: widget.tlSolidML,
+                                            tlFoamML: widget.tlFoamML,
+                                            slSolidML: widget.slSolidML,
+                                            slFoamML: double.parse(
+                                                dataML.toStringAsFixed(2)),
+                                            tandSolidML: widget.tandSolidML,
+                                            tandFoamML: widget.tandFoamML,
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   }
+                                } else if (widget.stance ==
+                                    "Two Leg Stance (Solid)") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StaticTestPage(
+                                        stance: widget.start
+                                            ? widget.stance
+                                            : "Two Leg Stance (Foam)",
+                                        tID: widget.tID,
+                                        start: !widget.start,
+                                        tlSolidML: widget.start
+                                            ? widget.tlSolidML
+                                            : double.parse(
+                                                dataML.toStringAsFixed(2)),
+                                        tlFoamML: widget.tlFoamML,
+                                        slSolidML: widget.slSolidML,
+                                        slFoamML: widget.slFoamML,
+                                        tandSolidML: widget.tandSolidML,
+                                        tandFoamML: widget.tandFoamML,
+                                      ),
+                                    ),
+                                  );
+                                } else if (widget.stance ==
+                                    "Two Leg Stance (Foam)") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StaticTestPage(
+                                        stance: widget.start
+                                            ? widget.stance
+                                            : "Tandem Stance (Solid)",
+                                        tID: widget.tID,
+                                        start: !widget.start,
+                                        tlSolidML: widget.tlSolidML,
+                                        tlFoamML: widget.start
+                                            ? widget.tlFoamML
+                                            : double.parse(
+                                                dataML.toStringAsFixed(2)),
+                                        slSolidML: widget.slSolidML,
+                                        slFoamML: widget.slFoamML,
+                                        tandSolidML: widget.tandSolidML,
+                                        tandFoamML: widget.tandFoamML,
+                                      ),
+                                    ),
+                                  );
+                                } else if (widget.stance ==
+                                    "Tandem Stance (Solid)") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StaticTestPage(
+                                        stance: widget.start
+                                            ? widget.stance
+                                            : "Tandem Stance (Foam)",
+                                        tID: widget.tID,
+                                        start: !widget.start,
+                                        tlSolidML: widget.tlSolidML,
+                                        tlFoamML: widget.tlFoamML,
+                                        slSolidML: widget.slSolidML,
+                                        slFoamML: widget.slFoamML,
+                                        tandSolidML: widget.start
+                                            ? widget.tandSolidML
+                                            : double.parse(
+                                                dataML.toStringAsFixed(2)),
+                                        tandFoamML: widget.tandFoamML,
+                                      ),
+                                    ),
+                                  );
+                                } else if (widget.stance ==
+                                    "Tandem Stance (Foam)") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StaticTestPage(
+                                        stance: widget.start
+                                            ? widget.stance
+                                            : "Single Leg Stance (Solid)",
+                                        tID: widget.tID,
+                                        start: !widget.start,
+                                        tlSolidML: widget.tlSolidML,
+                                        tlFoamML: widget.tlFoamML,
+                                        slSolidML: widget.slSolidML,
+                                        slFoamML: widget.slFoamML,
+                                        tandSolidML: widget.tandSolidML,
+                                        tandFoamML: widget.start
+                                            ? widget.tandFoamML
+                                            : double.parse(
+                                                dataML.toStringAsFixed(2)),
+                                      ),
+                                    ),
+                                  );
+                                } else if (widget.stance ==
+                                    "Single Leg Stance (Solid)") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StaticTestPage(
+                                        stance: widget.start
+                                            ? widget.stance
+                                            : "Single Leg Stance (Foam)",
+                                        tID: widget.tID,
+                                        start: !widget.start,
+                                        tlSolidML: widget.tlSolidML,
+                                        tlFoamML: widget.tlFoamML,
+                                        slSolidML: widget.start
+                                            ? widget.slSolidML
+                                            : double.parse(
+                                                dataML.toStringAsFixed(2)),
+                                        slFoamML: widget.slFoamML,
+                                        tandSolidML: widget.tandSolidML,
+                                        tandFoamML: widget.tandFoamML,
+                                      ),
+                                    ),
+                                  );
                                 }
-                              } else if (widget.stance ==
-                                  "Two Leg Stance (Solid)") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StaticTestPage(
-                                      stance: widget.start
-                                          ? widget.stance
-                                          : "Two Leg Stance (Foam)",
-                                      tID: widget.tID,
-                                      start: !widget.start,
-                                      tlSolidML: widget.tlSolidML,
-                                      tlFoamML: widget.tlFoamML,
-                                      slSolidML: widget.slSolidML,
-                                      slFoamML: widget.slFoamML,
-                                      tandSolidML: widget.tandSolidML,
-                                      tandFoamML: widget.tandFoamML,
-                                    ),
-                                  ),
-                                );
-                              } else if (widget.stance ==
-                                  "Two Leg Stance (Foam)") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StaticTestPage(
-                                      stance: widget.start
-                                          ? widget.stance
-                                          : "Tandem Stance (Solid)",
-                                      tID: widget.tID,
-                                      start: !widget.start,
-                                      tlSolidML: widget.tlSolidML,
-                                      tlFoamML: widget.tlFoamML,
-                                      slSolidML: widget.slSolidML,
-                                      slFoamML: widget.slFoamML,
-                                      tandSolidML: widget.tandSolidML,
-                                      tandFoamML: widget.tandFoamML,
-                                    ),
-                                  ),
-                                );
-                              } else if (widget.stance ==
-                                  "Tandem Stance (Solid)") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StaticTestPage(
-                                      stance: widget.start
-                                          ? widget.stance
-                                          : "Tandem Stance (Foam)",
-                                      tID: widget.tID,
-                                      start: !widget.start,
-                                      tlSolidML: widget.tlSolidML,
-                                      tlFoamML: widget.tlFoamML,
-                                      slSolidML: widget.slSolidML,
-                                      slFoamML: widget.slFoamML,
-                                      tandSolidML: widget.tandSolidML,
-                                      tandFoamML: widget.tandFoamML,
-                                    ),
-                                  ),
-                                );
-                              } else if (widget.stance ==
-                                  "Tandem Stance (Foam)") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StaticTestPage(
-                                      stance: widget.start
-                                          ? widget.stance
-                                          : "Single Leg Stance (Solid)",
-                                      tID: widget.tID,
-                                      start: !widget.start,
-                                      tlSolidML: widget.tlSolidML,
-                                      tlFoamML: widget.tlFoamML,
-                                      slSolidML: widget.slSolidML,
-                                      slFoamML: widget.slFoamML,
-                                      tandSolidML: widget.tandSolidML,
-                                      tandFoamML: widget.tandFoamML,
-                                    ),
-                                  ),
-                                );
-                              } else if (widget.stance ==
-                                  "Single Leg Stance (Solid)") {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StaticTestPage(
-                                      stance: widget.start
-                                          ? widget.stance
-                                          : "Single Leg Stance (Foam)",
-                                      tID: widget.tID,
-                                      start: !widget.start,
-                                      tlSolidML: widget.tlSolidML,
-                                      tlFoamML: widget.tlFoamML,
-                                      slSolidML: widget.slSolidML,
-                                      slFoamML: widget.slFoamML,
-                                      tandSolidML: widget.tandSolidML,
-                                      tandFoamML: widget.tandFoamML,
-                                    ),
-                                  ),
-                                );
                               }
                             },
                           ),

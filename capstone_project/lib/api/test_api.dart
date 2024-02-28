@@ -186,7 +186,8 @@ Future runTandemGaitTestScript(Map sensorData) async {
       "rmsApGoing": 0.972,
       "rmsMlReturn": 0.564,
       "rmsApReturn": 0.826,
-      "duration": 12.651
+      "duration": 12.651,
+      "turningSpeed": 78.234
     };
   }
 }

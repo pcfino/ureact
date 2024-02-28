@@ -675,8 +675,9 @@ def tandemGait():
     returningX = dataRot[0][valueRight:end+1]
 
     duration = (end - begin) / fs
+    turningSpeed = maxTurn * 180 / np.pi
 
-    return jsonify(rmsMlGoing = rms(goingZ), rmsApGoing = rms(goingX), rmsMlReturn = rms(returningZ), rmsApReturn = rms(returningX), duration = duration)
+    return jsonify(rmsMlGoing = rms(goingZ), rmsApGoing = rms(goingX), rmsMlReturn = rms(returningZ), rmsApReturn = rms(returningX), duration = duration, turningSpeed = turningSpeed)
 
 # root mean square
 def rms(arr):

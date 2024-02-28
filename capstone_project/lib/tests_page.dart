@@ -1,13 +1,14 @@
-// import 'package:capstone_project/main.dart';
 import 'package:capstone_project/dynamic_test_page.dart';
-import 'package:capstone_project/start_test_page.dart';
+import 'package:capstone_project/reactive_start_test_page.dart';
+import 'package:capstone_project/dynamic_results_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/models/test.dart';
-import 'package:capstone_project/models/reactive.dart';
 import 'package:capstone_project/static_test_page.dart';
-import 'package:capstone_project/test_results_page.dart';
+import 'package:capstone_project/reactive_test_results_page.dart';
+import 'package:capstone_project/static_results_page.dart';
 import 'package:capstone_project/incident_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TestsPage extends StatefulWidget {
   const TestsPage({super.key, required this.tID});
@@ -21,7 +22,16 @@ class TestsPage extends StatefulWidget {
 class _TestsPage extends State<TestsPage> {
   Future<dynamic> getTest(int tID) async {
     try {
-      var jsonTest = await get(tID);
+      var jsonTest = await getAllTests(tID);
+      if (!jsonTest[0]["reactiveTest"].containsKey("rID")) {
+        jsonTest[0].remove("reactiveTest");
+      }
+      if (!jsonTest[0]["dynamicTest"].containsKey("dID")) {
+        jsonTest[0].remove("dynamicTest");
+      }
+      if (!jsonTest[0]["staticTest"].containsKey("sID")) {
+        jsonTest[0].remove("staticTest");
+      }
       Test test = Test.fromJson(jsonTest[0]);
       return test;
     } catch (e) {
@@ -70,14 +80,14 @@ class _TestsPage extends State<TestsPage> {
           notes.text = test.tNotes!;
 
           return MaterialApp(
-            title: 'Tests',
+            title: 'Test',
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
               useMaterial3: true,
             ),
             home: Scaffold(
               appBar: AppBar(
-                title: const Text('Tests'),
+                title: const Text('Test'),
                 centerTitle: true,
                 leading: BackButton(onPressed: () {
                   Navigator.push(
@@ -221,16 +231,16 @@ class _TestsPage extends State<TestsPage> {
                       child: ListView(children: [
                         ListTile(
                           onTap: () {
-                            if (test.reactive != null) {
+                            if (test.reactiveTest != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => TestResultsPage(
-                                    backward: test.reactive!.bTime.toString(),
-                                    forward: test.reactive!.fTime.toString(),
-                                    left: test.reactive!.lTime.toString(),
-                                    right: test.reactive!.rTime.toString(),
-                                    median: test.reactive!.mTime.toString(),
+                                  builder: (context) => ReactiveTestResultsPage(
+                                    backward: test.reactiveTest!.bTime,
+                                    forward: test.reactiveTest!.fTime,
+                                    left: test.reactiveTest!.lTime,
+                                    right: test.reactiveTest!.rTime,
+                                    median: test.reactiveTest!.mTime,
                                     tID: test.tID,
                                   ),
                                 ),
@@ -239,13 +249,13 @@ class _TestsPage extends State<TestsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => StartTestPage(
+                                  builder: (context) => ReactiveStartTestPage(
                                     title: 'Reactive',
                                     direction: 'Forward',
-                                    forward: "0",
-                                    left: "0",
-                                    right: "0",
-                                    backward: "0",
+                                    forward: 0,
+                                    left: 0,
+                                    right: 0,
+                                    backward: 0,
                                     tID: widget.tID,
                                   ),
                                 ),
@@ -257,58 +267,118 @@ class _TestsPage extends State<TestsPage> {
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: Icon(test.reactive == null
+                          trailing: Icon(test.reactiveTest == null
                               ? Icons.add_circle
                               : Icons.arrow_forward_ios),
                         ),
                         ListTile(
                           onTap: () {
                             // check if dynamic exists
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DynamicTestPage(
-                                  tID: widget.tID,
-                                  start: true,
-                                  trialNumber: 1,
-                                  trialOne: '0',
-                                  trialTwo: '0',
-                                  trialThree: '0',
+                            if (test.dynamicTest != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DynamicResultsPage(
+                                    t1Duration: test.dynamicTest!.t1Duration,
+                                    t1TurnSpeed: test.dynamicTest!.t1TurnSpeed,
+                                    t1MLSway: test.dynamicTest!.t1MLSway,
+                                    t2Duration: test.dynamicTest!.t2Duration,
+                                    t2TurnSpeed: test.dynamicTest!.t2TurnSpeed,
+                                    t2MLSway: test.dynamicTest!.t2MLSway,
+                                    t3Duration: test.dynamicTest!.t3Duration,
+                                    t3TurnSpeed: test.dynamicTest!.t3TurnSpeed,
+                                    t3MLSway: test.dynamicTest!.t3MLSway,
+                                    dMax: test.dynamicTest!.dMax,
+                                    dMin: test.dynamicTest!.dMin,
+                                    dMean: test.dynamicTest!.dMean,
+                                    dMedian: test.dynamicTest!.dMedian,
+                                    tsMax: test.dynamicTest!.tsMax,
+                                    tsMin: test.dynamicTest!.tsMin,
+                                    tsMean: test.dynamicTest!.tsMean,
+                                    tsMedian: test.dynamicTest!.tsMedian,
+                                    mlMax: test.dynamicTest!.mlMax,
+                                    mlMin: test.dynamicTest!.mlMin,
+                                    mlMean: test.dynamicTest!.mlMean,
+                                    mlMedian: test.dynamicTest!.mlMedian,
+                                    tID: widget.tID,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DynamicTestPage(
+                                    tID: widget.tID,
+                                    start: true,
+                                    trialNumber: 1,
+                                    t1Duration: 0,
+                                    t1TurnSpeed: 0,
+                                    t1MLSway: 0,
+                                    t2Duration: 0,
+                                    t2TurnSpeed: 0,
+                                    t2MLSway: 0,
+                                    t3Duration: 0,
+                                    t3TurnSpeed: 0,
+                                    t3MLSway: 0,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           title: const Text(
                             'Dynamic',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: const Icon(Icons.add_circle),
+                          trailing: Icon(test.dynamicTest == null
+                              ? Icons.add_circle
+                              : Icons.arrow_forward_ios),
                         ),
                         ListTile(
                           onTap: () {
                             // check if static exists
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => StaticTestPage(
-                                  tID: widget.tID,
-                                  start: true,
-                                  stance: "Double Leg Stance",
-                                  doubleLeg: '0',
-                                  tandem: '0',
-                                  singleLeg: '0',
-                                  nonDominantFoot: '',
+                            if (test.staticTest != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => StaticResultsPage(
+                                    tID: widget.tID,
+                                    tlSolidML: test.staticTest!.tlSolidML,
+                                    tlFoamML: test.staticTest!.tlFoamML,
+                                    slSolidML: test.staticTest!.slSolidML,
+                                    slFoamML: test.staticTest!.slSolidML,
+                                    tandSolidML: test.staticTest!.tandSolidML,
+                                    tandFoamML: test.staticTest!.tandFoamML,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => StaticTestPage(
+                                    tID: widget.tID,
+                                    stance: "Two Leg Stance (Solid)",
+                                    tlSolidML: 0,
+                                    tlFoamML: 0,
+                                    slSolidML: 0,
+                                    slFoamML: 0,
+                                    tandSolidML: 0,
+                                    tandFoamML: 0,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           title: const Text(
                             'Static',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: const Icon(Icons.add_circle),
+                          trailing: Icon(test.staticTest == null
+                              ? Icons.add_circle
+                              : Icons.arrow_forward_ios),
                         ),
                       ]),
                     ),

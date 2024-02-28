@@ -1,16 +1,16 @@
 import 'dart:convert';
 // import 'dart:io';
-import 'package:capstone_project/start_test_page.dart';
+import 'package:capstone_project/reactive_start_test_page.dart';
 import 'package:flutter/material.dart';
-import 'package:capstone_project/test_results_page.dart';
+import 'package:capstone_project/reactive_test_results_page.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/models/reactive.dart';
-import 'sensor_recorder.dart';
+import 'reactive_sensor_recorder.dart';
 import 'dart:async';
 import 'api/test_api.dart';
 
-class EndTestPage extends StatefulWidget {
-  const EndTestPage(
+class ReactiveEndTestPage extends StatefulWidget {
+  const ReactiveEndTestPage(
       {super.key,
       required this.title,
       required this.direction,
@@ -31,12 +31,12 @@ class EndTestPage extends StatefulWidget {
   final int tID;
 
   @override
-  State<EndTestPage> createState() => _EndTestPageState();
+  State<ReactiveEndTestPage> createState() => _EndTestPageState();
 }
 
-class _EndTestPageState extends State<EndTestPage> {
+class _EndTestPageState extends State<ReactiveEndTestPage> {
   late double timeToStab;
-  late SensorRecorder sensorRecorder;
+  late ReactiveSensorRecorder sensorRecorder;
 
   Future getTTS() async {
     var sensorData = sensorRecorder.endRecording();
@@ -57,7 +57,7 @@ class _EndTestPageState extends State<EndTestPage> {
         "fTime": widget.forward,
         "rTime": widget.right,
         "lTime": widget.left,
-        "bTime": widget.backward,
+        "bTime": timeToStab,
         "mTime": median,
         "tID": widget.tID,
       });
@@ -92,7 +92,7 @@ class _EndTestPageState extends State<EndTestPage> {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, animation1, animation2) =>
-                        StartTestPage(
+                        ReactiveStartTestPage(
                             title: widget.title,
                             direction: widget.direction,
                             forward: widget.forward,
@@ -219,7 +219,7 @@ class _EndTestPageState extends State<EndTestPage> {
                                 PageRouteBuilder(
                                   pageBuilder:
                                       (context, animation1, animation2) =>
-                                          StartTestPage(
+                                          ReactiveStartTestPage(
                                     title: 'Reactive',
                                     direction: 'Right',
                                     forward: timeToStab,
@@ -238,7 +238,7 @@ class _EndTestPageState extends State<EndTestPage> {
                                 PageRouteBuilder(
                                   pageBuilder:
                                       (context, animation1, animation2) =>
-                                          StartTestPage(
+                                          ReactiveStartTestPage(
                                     title: 'Reactive',
                                     direction: 'Left',
                                     forward: widget.forward,
@@ -257,7 +257,7 @@ class _EndTestPageState extends State<EndTestPage> {
                                 PageRouteBuilder(
                                   pageBuilder:
                                       (context, animation1, animation2) =>
-                                          StartTestPage(
+                                          ReactiveStartTestPage(
                                     title: 'Reactive',
                                     direction: 'Backward',
                                     forward: widget.forward,
@@ -275,17 +275,19 @@ class _EndTestPageState extends State<EndTestPage> {
                                 widget.forward,
                                 widget.left,
                                 widget.right,
-                                widget.backward
+                                timeToStab
                               ];
                               vals.sort();
                               double median = (vals[1] + vals[2]) / 2;
                               Reactive? createdReactive =
-                                  await createReactiveTest(median);
+                                  await createReactiveTest(
+                                      double.parse(median.toStringAsFixed(2)));
                               if (createdReactive != null && context.mounted) {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TestResultsPage(
+                                    builder: (context) =>
+                                        ReactiveTestResultsPage(
                                       forward: widget.forward,
                                       left: widget.left,
                                       right: widget.right,
@@ -337,13 +339,13 @@ class _EndTestPageState extends State<EndTestPage> {
     super.initState();
     timeToStab = 0;
     if (widget.direction == 'Forward') {
-      sensorRecorder = SensorRecorder("forward");
+      sensorRecorder = ReactiveSensorRecorder("forward");
     } else if (widget.direction == 'Right') {
-      sensorRecorder = SensorRecorder("right");
+      sensorRecorder = ReactiveSensorRecorder("right");
     } else if (widget.direction == 'Left') {
-      sensorRecorder = SensorRecorder("left");
+      sensorRecorder = ReactiveSensorRecorder("left");
     } else if (widget.direction == 'Backward') {
-      sensorRecorder = SensorRecorder("backward");
+      sensorRecorder = ReactiveSensorRecorder("backward");
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});

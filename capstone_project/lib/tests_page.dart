@@ -1,10 +1,10 @@
 import 'package:capstone_project/dynamic_test_page.dart';
-import 'package:capstone_project/start_test_page.dart';
+import 'package:capstone_project/reactive_start_test_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/models/test.dart';
 import 'package:capstone_project/static_test_page.dart';
-import 'package:capstone_project/test_results_page.dart';
+import 'package:capstone_project/reactive_test_results_page.dart';
 import 'package:capstone_project/static_results_page.dart';
 import 'package:capstone_project/incident_page.dart';
 import 'package:flutter/material.dart';
@@ -235,7 +235,7 @@ class _TestsPage extends State<TestsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => TestResultsPage(
+                                  builder: (context) => ReactiveTestResultsPage(
                                     backward: test.reactiveTest!.bTime,
                                     forward: test.reactiveTest!.fTime,
                                     left: test.reactiveTest!.lTime,
@@ -249,7 +249,7 @@ class _TestsPage extends State<TestsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => StartTestPage(
+                                  builder: (context) => ReactiveStartTestPage(
                                     title: 'Reactive',
                                     direction: 'Forward',
                                     forward: 0,

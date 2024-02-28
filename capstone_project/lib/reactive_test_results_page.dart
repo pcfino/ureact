@@ -3,8 +3,8 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:flutter/material.dart';
 
-class TestResultsPage extends StatefulWidget {
-  const TestResultsPage(
+class ReactiveTestResultsPage extends StatefulWidget {
+  const ReactiveTestResultsPage(
       {super.key,
       required this.forward,
       required this.left,
@@ -22,10 +22,10 @@ class TestResultsPage extends StatefulWidget {
   final int tID;
 
   @override
-  State<TestResultsPage> createState() => _TestResultsPageState();
+  State<ReactiveTestResultsPage> createState() => _TestResultsPageState();
 }
 
-class _TestResultsPageState extends State<TestResultsPage> {
+class _TestResultsPageState extends State<ReactiveTestResultsPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

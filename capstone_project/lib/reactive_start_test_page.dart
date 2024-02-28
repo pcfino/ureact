@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:capstone_project/end_test_page.dart';
+import 'package:capstone_project/reactive_end_test_page.dart';
 import 'package:capstone_project/tests_page.dart';
 
-class StartTestPage extends StatefulWidget {
-  const StartTestPage(
+class ReactiveStartTestPage extends StatefulWidget {
+  const ReactiveStartTestPage(
       {super.key,
       required this.title,
       required this.direction,
@@ -24,10 +24,10 @@ class StartTestPage extends StatefulWidget {
   final int tID;
 
   @override
-  State<StartTestPage> createState() => _StartTestPageState();
+  State<ReactiveStartTestPage> createState() => _StartTestPageState();
 }
 
-class _StartTestPageState extends State<StartTestPage> {
+class _StartTestPageState extends State<ReactiveStartTestPage> {
   @override
   Widget build(BuildContext context) {
     ColorScheme cs = Theme.of(context).colorScheme;
@@ -49,7 +49,7 @@ class _StartTestPageState extends State<StartTestPage> {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, animation1, animation2) =>
-                        StartTestPage(
+                        ReactiveStartTestPage(
                             title: widget.title,
                             direction: widget.direction,
                             forward: widget.forward,
@@ -171,7 +171,7 @@ class _StartTestPageState extends State<StartTestPage> {
                             context,
                             PageRouteBuilder(
                               pageBuilder: (context, animation1, animation2) =>
-                                  EndTestPage(
+                                  ReactiveEndTestPage(
                                 title: widget.title,
                                 direction: widget.direction,
                                 forward: widget.forward,

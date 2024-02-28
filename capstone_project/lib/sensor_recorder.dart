@@ -56,7 +56,6 @@ class SensorRecorder {
   // late final List<StreamSubscription> _streamSubscriptions;
   late SensorRecorderResults _results;
   late bool _killTimer;
-  late StreamSubscription<AccelerometerEvent> _stream;
 
   double _gyroX = 0.0;
   double _gyroY = 0.0;
@@ -123,6 +122,10 @@ class SensorRecorder {
       }
       angleMeet([_accX, _accY, _accZ]);
     });
+  }
+
+  bool getReady() {
+    return _ready;
   }
 
   SensorRecorderResults endRecording() {

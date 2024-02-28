@@ -13,11 +13,11 @@ class TestResultsPage extends StatefulWidget {
       required this.median,
       required this.tID});
 
-  final String forward;
-  final String left;
-  final String right;
-  final String backward;
-  final String median;
+  final double forward;
+  final double left;
+  final double right;
+  final double backward;
+  final double median;
 
   final int tID;
 
@@ -39,23 +39,15 @@ class _TestResultsPageState extends State<TestResultsPage> {
           title: const Text('Test Results'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TestsPage(
+                  tID: widget.tID,
+                ),
+              ),
+            );
           }),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TestsPage(
-                      tID: widget.tID,
-                    ),
-                  ),
-                );
-              },
-              child: const Text('Next'),
-            )
-          ],
         ),
         body: Center(
           child: Padding(
@@ -97,7 +89,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                         ),
                       ),
                       trailing: Text(
-                        widget.median,
+                        widget.median.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),
@@ -129,7 +121,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                         ),
                       ),
                       trailing: Text(
-                        widget.forward,
+                        widget.forward.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),
@@ -161,7 +153,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                         ),
                       ),
                       trailing: Text(
-                        widget.right,
+                        widget.right.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),
@@ -193,7 +185,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                         ),
                       ),
                       trailing: Text(
-                        widget.left,
+                        widget.left.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),
@@ -225,7 +217,7 @@ class _TestResultsPageState extends State<TestResultsPage> {
                         ),
                       ),
                       trailing: Text(
-                        widget.backward,
+                        widget.backward.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),

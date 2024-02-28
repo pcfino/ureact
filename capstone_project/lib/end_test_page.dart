@@ -23,10 +23,10 @@ class EndTestPage extends StatefulWidget {
   final String title;
   final String direction;
 
-  final String forward;
-  final String left;
-  final String right;
-  final String backward;
+  final double forward;
+  final double left;
+  final double right;
+  final double backward;
 
   final int tID;
 
@@ -35,7 +35,7 @@ class EndTestPage extends StatefulWidget {
 }
 
 class _EndTestPageState extends State<EndTestPage> {
-  late String timeToStab;
+  late double timeToStab;
   late SensorRecorder sensorRecorder;
 
   Future getTTS() async {
@@ -48,12 +48,12 @@ class _EndTestPageState extends State<EndTestPage> {
       'fs': sensorData.fs
     });
 
-    timeToStab = decodedData['TTS'].toString();
+    timeToStab = decodedData['TTS'];
   }
 
-  Future<dynamic> createReactiveTest(String median) async {
+  Future<dynamic> createReactiveTest(double median) async {
     try {
-      return await createReactive({
+      dynamic jsonReactive = await createReactive({
         "fTime": widget.forward,
         "rTime": widget.right,
         "lTime": widget.left,
@@ -61,6 +61,8 @@ class _EndTestPageState extends State<EndTestPage> {
         "mTime": median,
         "tID": widget.tID,
       });
+      Reactive reactiveTest = Reactive.fromJson(jsonReactive);
+      return reactiveTest;
     } catch (e) {
       print("Error creating reactive test: $e");
     }
@@ -68,6 +70,8 @@ class _EndTestPageState extends State<EndTestPage> {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme cs = Theme.of(context).colorScheme;
+
     return MaterialApp(
         title: widget.title,
         theme: ThemeData(
@@ -78,16 +82,40 @@ class _EndTestPageState extends State<EndTestPage> {
           appBar: AppBar(
             title: Text(widget.title),
             centerTitle: true,
-            leading: BackButton(onPressed: () {
-              Navigator.pop(context);
-            }),
+            leading: IconButton(
+              icon: const Icon(Icons.restart_alt),
+              onPressed: () {
+                if (sensorRecorder.getReady()) {
+                  sensorRecorder.endRecording();
+                }
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        StartTestPage(
+                            title: widget.title,
+                            direction: widget.direction,
+                            forward: widget.forward,
+                            left: widget.left,
+                            right: widget.right,
+                            backward: widget.backward,
+                            tID: widget.tID),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                );
+              },
+            ),
             actions: <Widget>[
               TextButton(
                   onPressed: () {
+                    if (sensorRecorder.getReady()) {
+                      sensorRecorder.endRecording();
+                    }
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TestsPage(tID: -1),
+                        builder: (context) => TestsPage(tID: widget.tID),
                       ),
                     );
                   },
@@ -97,69 +125,76 @@ class _EndTestPageState extends State<EndTestPage> {
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
-                  child: Text(
-                    'Directions',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Text(
+                          'Directions',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '1. Attach phone to lumbar spine',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '2. Press the start button',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '3. Lean participant until you hear the chime',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '4. Hold participant steady and release after 2-5 seconds',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '5. Press the end test button once the participant has regained their balance',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '6. Repeat for each direction',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: Colors.grey,
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '1. Attach phone to lumbar spine',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '2. Press the start button',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '3. Lean participant until you hear the chime',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '4. Hold participant steady and release after 2-5 seconds',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '5. Press the end test button once the participant has regained their balance',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '6. Repeat for each direction',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 100, 0, 5),
+                Expanded(
+                  flex: 2,
                   child: Column(
                     children: [
                       Center(
@@ -171,101 +206,116 @@ class _EndTestPageState extends State<EndTestPage> {
                           ),
                         ),
                       ),
-                      Stack(
-                        children: [
-                          Positioned.fill(
-                            child: Container(
-                              margin: const EdgeInsets.all(
-                                  30), // Modify this till it fills the color properly
-                              color: Colors.black54, // Color
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.pause_circle_filled_rounded,
-                              color: Color.fromRGBO(255, 220, 212, 1),
-                              size: 75,
-                            ),
-                            onPressed: () async {
-                              await getTTS();
-                              if (context.mounted) {
-                                if (widget.direction == 'Forward') {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => StartTestPage(
-                                        title: 'Reactive',
-                                        direction: 'Right',
-                                        forward: timeToStab,
-                                        left: widget.left,
-                                        right: widget.right,
-                                        backward: widget.backward,
-                                        tID: widget.tID,
-                                      ),
+                      const Divider(
+                        color: Colors.transparent,
+                      ),
+                      RawMaterialButton(
+                        onPressed: () async {
+                          await getTTS();
+                          if (context.mounted) {
+                            if (widget.direction == 'Forward') {
+                              Navigator.pushReplacement(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation1, animation2) =>
+                                          StartTestPage(
+                                    title: 'Reactive',
+                                    direction: 'Right',
+                                    forward: timeToStab,
+                                    left: widget.left,
+                                    right: widget.right,
+                                    backward: widget.backward,
+                                    tID: widget.tID,
+                                  ),
+                                  transitionDuration: Duration.zero,
+                                  reverseTransitionDuration: Duration.zero,
+                                ),
+                              );
+                            } else if (widget.direction == 'Right') {
+                              Navigator.pushReplacement(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation1, animation2) =>
+                                          StartTestPage(
+                                    title: 'Reactive',
+                                    direction: 'Left',
+                                    forward: widget.forward,
+                                    left: widget.left,
+                                    right: timeToStab,
+                                    backward: widget.backward,
+                                    tID: widget.tID,
+                                  ),
+                                  transitionDuration: Duration.zero,
+                                  reverseTransitionDuration: Duration.zero,
+                                ),
+                              );
+                            } else if (widget.direction == 'Left') {
+                              Navigator.pushReplacement(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation1, animation2) =>
+                                          StartTestPage(
+                                    title: 'Reactive',
+                                    direction: 'Backward',
+                                    forward: widget.forward,
+                                    left: timeToStab,
+                                    right: widget.right,
+                                    backward: widget.backward,
+                                    tID: widget.tID,
+                                  ),
+                                  transitionDuration: Duration.zero,
+                                  reverseTransitionDuration: Duration.zero,
+                                ),
+                              );
+                            } else if (widget.direction == 'Backward') {
+                              List<double> vals = [
+                                widget.forward,
+                                widget.left,
+                                widget.right,
+                                widget.backward
+                              ];
+                              double median = (vals[1] + vals[2]) / 2;
+                              Reactive? createdReactive =
+                                  await createReactiveTest(median);
+                              if (createdReactive != null && context.mounted) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TestResultsPage(
+                                      forward: widget.forward,
+                                      left: widget.left,
+                                      right: widget.right,
+                                      backward: timeToStab,
+                                      median: median,
+                                      tID: widget.tID,
                                     ),
-                                  );
-                                } else if (widget.direction == 'Right') {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => StartTestPage(
-                                        title: 'Reactive',
-                                        direction: 'Left',
-                                        forward: widget.forward,
-                                        left: widget.left,
-                                        right: timeToStab,
-                                        backward: widget.backward,
-                                        tID: widget.tID,
-                                      ),
-                                    ),
-                                  );
-                                } else if (widget.direction == 'Left') {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => StartTestPage(
-                                        title: 'Reactive',
-                                        direction: 'Backward',
-                                        forward: widget.forward,
-                                        left: timeToStab,
-                                        right: widget.right,
-                                        backward: widget.backward,
-                                        tID: widget.tID,
-                                      ),
-                                    ),
-                                  );
-                                } else if (widget.direction == 'Backward') {
-                                  List<double> vals = [
-                                    double.parse(widget.forward),
-                                    double.parse(widget.left),
-                                    double.parse(widget.right),
-                                    double.parse(widget.backward)
-                                  ];
-                                  double median = (vals[1] + vals[2]) / 2;
-                                  String medianString = median.toString();
-                                  Reactive? createdReactive =
-                                      await createReactiveTest(medianString);
-                                  if (createdReactive != null &&
-                                      context.mounted) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => TestResultsPage(
-                                          forward: widget.forward,
-                                          left: widget.left,
-                                          right: widget.right,
-                                          backward: timeToStab,
-                                          median: medianString,
-                                          tID: widget.tID,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
+                                  ),
+                                );
                               }
-                            },
+                            }
+                          }
+                        },
+                        shape: CircleBorder(
+                          side: BorderSide(
+                            width: 10,
+                            color: cs.background,
                           ),
-                        ],
+                        ),
+                        fillColor: const Color.fromRGBO(255, 220, 212, 1),
+                        padding: const EdgeInsets.all(87),
+                        elevation: 0,
+                        highlightElevation: 0,
+                        child: const Text(
+                          'End',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black54,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -284,14 +334,14 @@ class _EndTestPageState extends State<EndTestPage> {
   @override
   void initState() {
     super.initState();
-    timeToStab = "";
-    if (widget.forward == "0") {
+    timeToStab = 0;
+    if (widget.direction == 'Forward') {
       sensorRecorder = SensorRecorder("forward");
-    } else if (widget.right == "0") {
+    } else if (widget.direction == 'Right') {
       sensorRecorder = SensorRecorder("right");
-    } else if (widget.left == "0") {
+    } else if (widget.direction == 'Left') {
       sensorRecorder = SensorRecorder("left");
-    } else if (widget.backward == "0") {
+    } else if (widget.direction == 'Backward') {
       sensorRecorder = SensorRecorder("backward");
     }
 

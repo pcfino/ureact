@@ -236,13 +236,11 @@ class _TestsPage extends State<TestsPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => TestResultsPage(
-                                    backward:
-                                        test.reactiveTest!.bTime.toString(),
-                                    forward:
-                                        test.reactiveTest!.fTime.toString(),
-                                    left: test.reactiveTest!.lTime.toString(),
-                                    right: test.reactiveTest!.rTime.toString(),
-                                    median: test.reactiveTest!.mTime.toString(),
+                                    backward: test.reactiveTest!.bTime,
+                                    forward: test.reactiveTest!.fTime,
+                                    left: test.reactiveTest!.lTime,
+                                    right: test.reactiveTest!.rTime,
+                                    median: test.reactiveTest!.mTime,
                                     tID: test.tID,
                                   ),
                                 ),
@@ -254,10 +252,10 @@ class _TestsPage extends State<TestsPage> {
                                   builder: (context) => StartTestPage(
                                     title: 'Reactive',
                                     direction: 'Forward',
-                                    forward: "0",
-                                    left: "0",
-                                    right: "0",
-                                    backward: "0",
+                                    forward: 0,
+                                    left: 0,
+                                    right: 0,
+                                    backward: 0,
                                     tID: widget.tID,
                                   ),
                                 ),

@@ -62,10 +62,10 @@ class StaticDynamicRecorder {
 
   bool _ready = false;
 
-  late bool staticTest;
+  late bool _staticTest;
 
   StaticDynamicRecorder(bool staticTest) {
-    staticTest = staticTest;
+    _staticTest = staticTest;
     gyroscopeEventStream().listen((event) {
       _gyroX = event.x;
       _gyroY = event.y;
@@ -88,7 +88,7 @@ class StaticDynamicRecorder {
   }
 
   SensorRecorderResults endRecording() {
-    if (staticTest) {
+    if (_staticTest) {
       FlutterRingtonePlayer.play(
         android: AndroidSounds.notification,
         ios: IosSounds.glass,

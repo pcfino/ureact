@@ -277,6 +277,7 @@ class _EndTestPageState extends State<EndTestPage> {
                                 widget.right,
                                 widget.backward
                               ];
+                              vals.sort();
                               double median = (vals[1] + vals[2]) / 2;
                               Reactive? createdReactive =
                                   await createReactiveTest(median);

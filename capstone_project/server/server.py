@@ -742,7 +742,7 @@ def rms(arr):
 # python -m pip install waitress
 
 if __name__ == "__main__":
-    serve(app, host="0.0.0.0", port=8111)
+    serve(app, host="0.0.0.0", port=8000)
 
 
 # CHANGE THE DAMN PORT BACK TO 8000 for updating this

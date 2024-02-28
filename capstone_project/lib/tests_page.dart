@@ -8,6 +8,7 @@ import 'package:capstone_project/test_results_page.dart';
 import 'package:capstone_project/static_results_page.dart';
 import 'package:capstone_project/incident_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TestsPage extends StatefulWidget {
   const TestsPage({super.key, required this.tID});
@@ -360,7 +361,6 @@ class _TestsPage extends State<TestsPage> {
                                 MaterialPageRoute(
                                   builder: (context) => StaticTestPage(
                                     tID: widget.tID,
-                                    start: true,
                                     stance: "Two Leg Stance (Solid)",
                                     tlSolidML: 0,
                                     tlFoamML: 0,

@@ -41,6 +41,7 @@ dependencies:
   flutter_ringtone_player: ^3.2.0
   json_annotation: ^4.8.1
   azlistview: ^2.0.0
+  circular_countdown_timer: ^0.2.3
 
 dev_dependencies:
   flutter_test:

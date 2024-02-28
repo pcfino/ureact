@@ -116,9 +116,39 @@ class ReactiveSensorRecorder {
     });
 
     const samplePeriod = 20; // ms
+    int angleMetTime = 0;
     Timer.periodic(const Duration(milliseconds: samplePeriod), (timer) async {
       if (_ready) {
-        timer.cancel();
+        angleMetTime += 1;
+        if (angleMetTime == 50) {
+          FlutterRingtonePlayer.play(
+            android: AndroidSounds.notification,
+            ios: IosSounds.glass,
+            looping: true, // Android only - API >= 28
+            volume: 0.8, // Android only - API >= 28
+            asAlarm: false, // Android only - all APIs
+          );
+        } else if (angleMetTime == 100) {
+          FlutterRingtonePlayer.play(
+            android: AndroidSounds.notification,
+            ios: IosSounds.glass,
+            looping: true, // Android only - API >= 28
+            volume: 0.8, // Android only - API >= 28
+            asAlarm: false, // Android only - all APIs
+          );
+        } else if (angleMetTime == 150) {
+          FlutterRingtonePlayer.play(
+            android: AndroidSounds.notification,
+            ios: IosSounds.glass,
+            looping: true, // Android only - API >= 28
+            volume: 0.8, // Android only - API >= 28
+            asAlarm: false, // Android only - all APIs
+          );
+          startRecording();
+          timer.cancel();
+        }
+      } else {
+        angleMetTime = 0;
       }
       angleMeet([_accX, _accY, _accZ]);
     });
@@ -202,9 +232,11 @@ class ReactiveSensorRecorder {
         volume: 0.8, // Android only - API >= 28
         asAlarm: false, // Android only - all APIs
       );
-      startRecording();
       _ready = true;
+    } else {
+      _ready = false;
     }
+    print(_ready);
     //angleMeet([_accX, _accY, _accZ], front, back, left, right);
   }
 }

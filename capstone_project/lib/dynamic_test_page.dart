@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
+import 'package:capstone_project/static_dynamic_recorder.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/models/dynamic.dart';
 
@@ -43,6 +44,22 @@ class DynamicTestPage extends StatefulWidget {
 }
 
 class _DynamicTestPage extends State<DynamicTestPage> {
+  late StaticDynamicRecorder sensorRecorder;
+
+  Future<dynamic> getDynamicData() async {
+    var sensorData = sensorRecorder.endRecording();
+
+    var decodedData = await runTandemGaitTestScript({
+      'dataAcc': sensorData.formattedAccData(),
+      'dataRot': sensorData.formattedGyrData(),
+      'timeStamps': sensorData.timeStamps,
+      'fs': sensorData.fs
+    });
+    print(decodedData);
+    //double dataML = decodedData["rmsMl"];
+    //return dataML;
+  }
+
   Future<dynamic> createDynamicTest(
       double dMax,
       double dMin,
@@ -212,6 +229,32 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                               size: 75,
                             ),
                             onPressed: () async {
+                              if (widget.start) {
+                                sensorRecorder = StaticDynamicRecorder(false);
+                              }
+                              if (widget.trialNumber == 1) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DynamicTestPage(
+                                      trialNumber:
+                                          widget.start ? widget.trialNumber : 2,
+                                      tID: widget.tID,
+                                      start: !widget.start,
+                                      t1Duration: widget.t1Duration,
+                                      t1TurnSpeed: widget.t1TurnSpeed,
+                                      t1MLSway: widget.t1MLSway,
+                                      t2Duration: widget.t1Duration,
+                                      t2TurnSpeed: widget.t1TurnSpeed,
+                                      t2MLSway: widget.t1MLSway,
+                                      t3Duration: widget.t1Duration,
+                                      t3TurnSpeed: widget.t1TurnSpeed,
+                                      t3MLSway: widget.t1MLSway,
+                                    ),
+                                  ),
+                                );
+                              }
+
                               if (widget.trialNumber == 3) {
                                 if (widget.start) {
                                   Navigator.push(

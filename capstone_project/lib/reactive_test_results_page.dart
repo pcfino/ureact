@@ -3,31 +3,29 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:flutter/material.dart';
 
-class StaticResultsPage extends StatefulWidget {
-  const StaticResultsPage(
+class ReactiveTestResultsPage extends StatefulWidget {
+  const ReactiveTestResultsPage(
       {super.key,
-      required this.tlSolidML,
-      required this.tlFoamML,
-      required this.slSolidML,
-      required this.slFoamML,
-      required this.tandSolidML,
-      required this.tandFoamML,
+      required this.forward,
+      required this.left,
+      required this.right,
+      required this.backward,
+      required this.median,
       required this.tID});
 
-  final double tlSolidML;
-  final double tlFoamML;
-  final double slSolidML;
-  final double slFoamML;
-  final double tandSolidML;
-  final double tandFoamML;
+  final double forward;
+  final double left;
+  final double right;
+  final double backward;
+  final double median;
 
   final int tID;
 
   @override
-  State<StaticResultsPage> createState() => _StaticResultsPage();
+  State<ReactiveTestResultsPage> createState() => _TestResultsPageState();
 }
 
-class _StaticResultsPage extends State<StaticResultsPage> {
+class _TestResultsPageState extends State<ReactiveTestResultsPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -84,14 +82,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                     padding: const EdgeInsets.all(4),
                     child: ListTile(
                       title: const Text(
-                        'Two Leg Stance (Solid)',
+                        'Median',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        widget.tlSolidML.toString(),
+                        widget.median.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),
@@ -116,14 +114,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                     padding: const EdgeInsets.all(4),
                     child: ListTile(
                       title: const Text(
-                        'Two Leg Stance (Foam)',
+                        'Forward',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        widget.tlFoamML.toString(),
+                        widget.forward.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),
@@ -148,14 +146,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                     padding: const EdgeInsets.all(4),
                     child: ListTile(
                       title: const Text(
-                        'Tandem Stance (Solid)',
+                        'Right',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        widget.tandSolidML.toString(),
+                        widget.right.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),
@@ -180,14 +178,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                     padding: const EdgeInsets.all(4),
                     child: ListTile(
                       title: const Text(
-                        'Tandem Stance (Foam)',
+                        'Left',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        widget.tandFoamML.toString(),
+                        widget.left.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),
@@ -212,46 +210,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                     padding: const EdgeInsets.all(4),
                     child: ListTile(
                       title: const Text(
-                        'Single Leg Stance (Solid)',
+                        'Backward',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
                       trailing: Text(
-                        widget.slSolidML.toString(),
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                    ),
-                  ),
-                ),
-                const Divider(
-                  color: Colors.transparent,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    color: const Color.fromRGBO(255, 220, 212, 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        spreadRadius: 1,
-                        blurRadius: 15,
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: ListTile(
-                      title: const Text(
-                        'Single Leg Stance (Foam)',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      trailing: Text(
-                        widget.slFoamML.toString(),
+                        widget.backward.toString(),
                         style: const TextStyle(fontSize: 15),
                       ),
                     ),

@@ -554,8 +554,9 @@ def exportSinglePatient():
 
         # Get the Incidents we are looking for and their reactive tests
         incident = {}
+        pid = data
         for x in myresult:
-            incident = {"iName": x[0], "iDate": str(x[1]), "iNotes": x[2], "iID": x[6], "tests": []}
+            incident = {"iName": x[0], "iDate": str(x[1]), "iNotes": x[2], "iID": x[6], "pID": pid, "tests": []}
             # hande the case that an incident may have multiple tests
             flag = False
 

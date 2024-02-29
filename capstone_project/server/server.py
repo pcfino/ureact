@@ -16,15 +16,15 @@ from collections import OrderedDict
 
 # needed to set up a secret key for my user
 # needed to run aws configure
-import botocore 
-import botocore.session 
-from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
+# import botocore 
+# import botocore.session 
+# from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
 
-client = botocore.session.get_session().create_client('secretsmanager')
-cache_config = SecretCacheConfig()
-cache = SecretCache( config = cache_config, client = client)
-secret = cache.get_secret_string('prod/kines')
-CONFID = json.loads(secret)
+# client = botocore.session.get_session().create_client('secretsmanager')
+# cache_config = SecretCacheConfig()
+# cache = SecretCache( config = cache_config, client = client)
+# secret = cache.get_secret_string('prod/kines')
+# CONFID = json.loads(secret)
 # database connection
 def connectSql():
     mydb = connector.connect(
@@ -641,6 +641,43 @@ def sway():
     rms_v = rms(Sway_v)
 
     return jsonify(rmsMl = rms_ml, rmsAp = rms_ap, rmsV = rms_v)
+
+@app.route('/tandemGait', methods=['POST'])
+def tandemGait():
+    dataAcc = request.json.get('dataAcc')
+    dataRot = request.json.get('dataRot')
+    fs = request.json.get('fs')
+
+    # find the beginning and end
+    peaks, _ = signal.find_peaks(dataRot[2], height=0.1)
+    begin = peaks[0]
+    end = peaks[len(peaks)-1]
+
+    duration = (end - begin) / fs
+    
+    # find global minima - peak turn
+    peakTurnsLoc, _ = signal.find_peaks(dataRot[2])
+    peakTurns = list(map(lambda x: dataRot[2][x], peakTurnsLoc))
+    maxTurn = max(peakTurns)
+    maxTurnIndex = peakTurns.index(maxTurn)
+    
+    # find closest right and left
+    negetiveZList = [-x for x in dataRot[2]]
+    sideIndex, _ = signal.find_peaks(negetiveZList, height=-0.1)
+    valueLeft = max(filter(lambda x: x<peakTurnsLoc[maxTurnIndex], sideIndex))
+    indexLeft = list(sideIndex).index(valueLeft)
+    valueRight = sideIndex[indexLeft+1]
+
+    # trim going and return
+    goingZ = dataRot[2][begin:valueLeft+1]
+    returningZ = dataRot[2][valueRight:end+1]
+    goingX = dataRot[0][begin:valueLeft+1]
+    returningX = dataRot[0][valueRight:end+1]
+
+    duration = (end - begin) / fs
+    turningSpeed = maxTurn * 180 / np.pi
+
+    return jsonify(rmsMlGoing = rms(goingZ), rmsApGoing = rms(goingX), rmsMlReturn = rms(returningZ), rmsApReturn = rms(returningX), duration = duration, turningSpeed = turningSpeed)
 
 # root mean square
 def rms(arr):

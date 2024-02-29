@@ -101,20 +101,34 @@ class _PatientPage extends State<PatientPage> {
       'Reactive MTime',
       'Static TL Solid ML',
       'Static TL Foam ML',
-      'Dynamic T1 Duration',
-      'Dynamic T1 TurnSpeed',
-      'Dynamic T1 ML Sway',
-      'Dynamic T2 Duration',
-      'Dynamic T2 TurnSpeed',
-      'Dynamic T2 ML Sway',
-      'Dynamic T3 Duration',
-      'Dynamic T3 TurnSpeed',
-      'Dynamic T3 ML Sway',
+      // 'Dynamic T1 Duration',
+      // 'Dynamic T1 TurnSpeed',
+      // 'Dynamic T1 ML Sway',
+      // 'Dynamic T2 Duration',
+      // 'Dynamic T2 TurnSpeed',
+      // 'Dynamic T2 ML Sway',
+      // 'Dynamic T3 Duration',
+      // 'Dynamic T3 TurnSpeed',
+      // 'Dynamic T3 ML Sway',
+      'dMax',
+      'dMin',
+      'dMean',
+      'dMedian',
+      'tsMax',
+      'tsMin',
+      'tsMean',
+      'tsMedian',
+      'mlMax',
+      'mlMin',
+      'mlMean',
+      'mlMedian',
     ]);
 
     List<dynamic> colHeaders = rows[0];
     Map<String, dynamic> json = await getExport(widget.pID);
     Map<int, Map<String, dynamic>> processedJson = {};
+
+    print(json);
 
     if (json.containsKey('thirdPartyID')) {
       fileName = "patient${json['thirdPartyID']}";
@@ -134,17 +148,30 @@ class _PatientPage extends State<PatientPage> {
               double? staticTLSolidML;
               double? staticTLFoamML;
 
-              double? dynamicT1Duration;
-              double? dynamicT1TurnSpeed;
-              double? dynamicT1MLSway;
+              // double? dynamicT1Duration;
+              // double? dynamicT1TurnSpeed;
+              // double? dynamicT1MLSway;
 
-              double? dynamicT2Duration;
-              double? dynamicT2TurnSpeed;
-              double? dynamicT2MLSway;
+              // double? dynamicT2Duration;
+              // double? dynamicT2TurnSpeed;
+              // double? dynamicT2MLSway;
 
-              double? dynamicT3Duration;
-              double? dynamicT3TurnSpeed;
-              double? dynamicT3MLSway;
+              // double? dynamicT3Duration;
+              // double? dynamicT3TurnSpeed;
+              // double? dynamicT3MLSway;
+
+              double? dMax;
+              double? dMin;
+              double? dMean;
+              double? dMedian;
+              double? tsMax;
+              double? tsMin;
+              double? tsMean;
+              double? tsMedian;
+              double? mlMax;
+              double? mlMin;
+              double? mlMean;
+              double? mlMedian;
 
               // Get reactive test data
               if (test.containsKey('reactive')) {
@@ -164,17 +191,33 @@ class _PatientPage extends State<PatientPage> {
               // Get dynamic test data
               else if (test.containsKey('dynamic')) {
                 if (test['dynamic'].length != 0) {
-                  dynamicT1Duration = test['dynamic']['t1Duration'];
-                  dynamicT1TurnSpeed = test['dynamic']['t1TurnSpeed'];
-                  dynamicT1MLSway = test['dynamic']['t1MLSway'];
+                  // dynamicT1Duration = test['dynamic']['t1Duration'];
+                  // dynamicT1TurnSpeed = test['dynamic']['t1TurnSpeed'];
+                  // dynamicT1MLSway = test['dynamic']['t1MLSway'];
 
-                  dynamicT2Duration = test['dynamic']['t2Duration'];
-                  dynamicT2TurnSpeed = test['dynamic']['t2TurnSpeed'];
-                  dynamicT2MLSway = test['dynamic']['t2MLSway'];
+                  // dynamicT2Duration = test['dynamic']['t2Duration'];
+                  // dynamicT2TurnSpeed = test['dynamic']['t2TurnSpeed'];
+                  // dynamicT2MLSway = test['dynamic']['t2MLSway'];
 
-                  dynamicT3Duration = test['dynamic']['t3Duration'];
-                  dynamicT3TurnSpeed = test['dynamic']['t3TurnSpeed'];
-                  dynamicT3MLSway = test['dynamic']['t3MLSway'];
+                  // dynamicT3Duration = test['dynamic']['t3Duration'];
+                  // dynamicT3TurnSpeed = test['dynamic']['t3TurnSpeed'];
+                  // dynamicT3MLSway = test['dynamic']['t3MLSway'];
+
+                  dMax = test['dynamic']['dMax'];
+                  dMin = test['dynamic']['dMin'];
+                  dMean = test['dynamic']['dMean'];
+                  dMedian = test['dynamic']['dMedian'];
+
+                  tsMax = test['dynamic']['tsMax'];
+                  tsMin = test['dynamic']['tsMin'];
+                  tsMean = test['dynamic']['tsMean'];
+                  tsMedian = test['dynamic']['tsMedian'];
+
+                  mlMax = test['dynamic']['mlMax'];
+                  mlMin = test['dynamic']['mlMin'];
+                  mlMean = test['dynamic']['mlMean'];
+                  mlMedian = test['dynamic']['mlMedian'];
+
                   hasData = true;
                 }
               }
@@ -190,15 +233,27 @@ class _PatientPage extends State<PatientPage> {
                   reactiveMTime,
                   staticTLSolidML,
                   staticTLFoamML,
-                  dynamicT1Duration,
-                  dynamicT1TurnSpeed,
-                  dynamicT1MLSway,
-                  dynamicT2Duration,
-                  dynamicT2TurnSpeed,
-                  dynamicT2MLSway,
-                  dynamicT3Duration,
-                  dynamicT3TurnSpeed,
-                  dynamicT3MLSway,
+                  // dynamicT1Duration,
+                  // dynamicT1TurnSpeed,
+                  // dynamicT1MLSway,
+                  // dynamicT2Duration,
+                  // dynamicT2TurnSpeed,
+                  // dynamicT2MLSway,
+                  // dynamicT3Duration,
+                  // dynamicT3TurnSpeed,
+                  // dynamicT3MLSway,
+                  dMax,
+                  dMin,
+                  dMean,
+                  dMedian,
+                  tsMax,
+                  tsMin,
+                  tsMean,
+                  tsMedian,
+                  mlMax,
+                  mlMin,
+                  mlMean,
+                  mlMedian,
                 ];
                 rows.add(row);
 

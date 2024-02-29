@@ -46,6 +46,49 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
   late double timeToStab;
   late ReactiveSensorRecorder sensorRecorder;
 
+  void throwTestError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('You did not complete the test.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Try Again'),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        ReactiveStartTestPage(
+                      title: 'Reactive',
+                      direction: widget.direction,
+                      forward: widget.forward,
+                      left: widget.left,
+                      right: widget.right,
+                      backward: widget.backward,
+                      tID: widget.tID,
+                    ),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future getTTS() async {
     SensorRecorderResults? sensorData;
     try {
@@ -60,46 +103,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
       timeToStab = decodedData['TTS'];
     } catch (e) {
       if (context.mounted) {
-        showDialog<void>(
-          context: context,
-          barrierDismissible: false, // user must tap button!
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: const SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    Text('You did not complete the test.'),
-                  ],
-                ),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Try Again'),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation1, animation2) =>
-                            ReactiveStartTestPage(
-                          title: 'Reactive',
-                          direction: widget.direction,
-                          forward: widget.forward,
-                          left: widget.left,
-                          right: widget.right,
-                          backward: widget.backward,
-                          tID: widget.tID,
-                        ),
-                        transitionDuration: Duration.zero,
-                        reverseTransitionDuration: Duration.zero,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        throwTestError();
       }
     }
   }
@@ -138,32 +142,22 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
           leading: IconButton(
             icon: const Icon(Icons.restart_alt),
             onPressed: () {
-              if (!sensorRecorder.getDone()) {
-                sensorRecorder.endRecording();
+              try {
+                sensorRecorder.endSensors();
+                sensorRecorder.cancelPreTimer();
+                if (!sensorRecorder.getDone()) {
+                  sensorRecorder.endRecording();
+                }
+                throwTestError();
+              } catch (e) {
+                throwTestError();
               }
-              sensorRecorder.cancelPreTimer();
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation1, animation2) =>
-                      ReactiveStartTestPage(
-                          title: widget.title,
-                          direction: widget.direction,
-                          forward: widget.forward,
-                          left: widget.left,
-                          right: widget.right,
-                          backward: widget.backward,
-                          tID: widget.tID),
-                  transitionDuration: Duration.zero,
-                  reverseTransitionDuration: Duration.zero,
-                ),
-              );
             },
           ),
           actions: <Widget>[
             TextButton(
                 onPressed: () {
-                  if (sensorRecorder.getRunning()) {
+                  if (!sensorRecorder.getDone()) {
                     sensorRecorder.endRecording();
                   }
                   sensorRecorder.endSensors();
@@ -260,55 +254,13 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                       ),
                       RawMaterialButton(
                         onPressed: () async {
+                          // Stop gyroscope and accelerometer recording or they will continue forever
                           sensorRecorder.endSensors();
                           await getTTS();
-
                           if (context.mounted) {
+                            // Check for bad test and have them restart
                             if (timeToStab == 0) {
-                              showDialog<void>(
-                                context: context,
-                                barrierDismissible:
-                                    false, // user must tap button!
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text('Error'),
-                                    content: const SingleChildScrollView(
-                                      child: ListBody(
-                                        children: <Widget>[
-                                          Text(
-                                              'There was an error calculating the time to stability.'),
-                                        ],
-                                      ),
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: const Text('Try Again'),
-                                        onPressed: () {
-                                          Navigator.pushReplacement(
-                                            context,
-                                            PageRouteBuilder(
-                                              pageBuilder: (context, animation1,
-                                                      animation2) =>
-                                                  ReactiveStartTestPage(
-                                                title: 'Reactive',
-                                                direction: widget.direction,
-                                                forward: widget.forward,
-                                                left: widget.left,
-                                                right: widget.right,
-                                                backward: widget.backward,
-                                                tID: widget.tID,
-                                              ),
-                                              transitionDuration: Duration.zero,
-                                              reverseTransitionDuration:
-                                                  Duration.zero,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
+                              throwTestError();
                             } else if (widget.direction == 'Forward') {
                               Navigator.pushReplacement(
                                 context,

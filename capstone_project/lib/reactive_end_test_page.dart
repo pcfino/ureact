@@ -36,27 +36,72 @@ class ReactiveEndTestPage extends StatefulWidget {
 }
 
 class _EndTestPageState extends State<ReactiveEndTestPage> {
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // @override
+  // void dispose() {
+  //   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-    super.dispose();
-  }
+  //   super.dispose();
+  // }
 
   late double timeToStab;
   late ReactiveSensorRecorder sensorRecorder;
 
   Future getTTS() async {
-    var sensorData = sensorRecorder.endRecording();
+    SensorRecorderResults? sensorData;
+    try {
+      sensorData = sensorRecorder.endRecording();
+      var decodedData = await runReactiveTestScript({
+        'dataAcc': sensorData.formattedAccData(),
+        'dataRot': sensorData.formattedGyrData(),
+        'timeStamps': sensorData.timeStamps,
+        'fs': sensorData.fs
+      });
 
-    var decodedData = await runReactiveTestScript({
-      'dataAcc': sensorData.formattedAccData(),
-      'dataRot': sensorData.formattedGyrData(),
-      'timeStamps': sensorData.timeStamps,
-      'fs': sensorData.fs
-    });
-
-    timeToStab = decodedData['TTS'];
+      timeToStab = decodedData['TTS'];
+    } catch (e) {
+      if (context.mounted) {
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false, // user must tap button!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text('You did not complete the test.'),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Try Again'),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation1, animation2) =>
+                            ReactiveStartTestPage(
+                          title: 'Reactive',
+                          direction: widget.direction,
+                          forward: widget.forward,
+                          left: widget.left,
+                          right: widget.right,
+                          backward: widget.backward,
+                          tID: widget.tID,
+                        ),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 
   Future<dynamic> createReactiveTest(double median) async {
@@ -93,9 +138,10 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
           leading: IconButton(
             icon: const Icon(Icons.restart_alt),
             onPressed: () {
-              if (sensorRecorder.getReady()) {
+              if (!sensorRecorder.getDone()) {
                 sensorRecorder.endRecording();
               }
+              sensorRecorder.cancelPreTimer();
               Navigator.pushReplacement(
                 context,
                 PageRouteBuilder(
@@ -117,9 +163,11 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
           actions: <Widget>[
             TextButton(
                 onPressed: () {
-                  if (sensorRecorder.getReady()) {
+                  if (sensorRecorder.getRunning()) {
                     sensorRecorder.endRecording();
                   }
+                  sensorRecorder.endSensors();
+                  sensorRecorder.cancelPreTimer();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -132,7 +180,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
             child: Row(
               children: [
                 Expanded(
@@ -212,9 +260,56 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                       ),
                       RawMaterialButton(
                         onPressed: () async {
+                          sensorRecorder.endSensors();
                           await getTTS();
+
                           if (context.mounted) {
-                            if (widget.direction == 'Forward') {
+                            if (timeToStab == 0) {
+                              showDialog<void>(
+                                context: context,
+                                barrierDismissible:
+                                    false, // user must tap button!
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Error'),
+                                    content: const SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text(
+                                              'There was an error calculating the time to stability.'),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: const Text('Try Again'),
+                                        onPressed: () {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            PageRouteBuilder(
+                                              pageBuilder: (context, animation1,
+                                                      animation2) =>
+                                                  ReactiveStartTestPage(
+                                                title: 'Reactive',
+                                                direction: widget.direction,
+                                                forward: widget.forward,
+                                                left: widget.left,
+                                                right: widget.right,
+                                                backward: widget.backward,
+                                                tID: widget.tID,
+                                              ),
+                                              transitionDuration: Duration.zero,
+                                              reverseTransitionDuration:
+                                                  Duration.zero,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else if (widget.direction == 'Forward') {
                               Navigator.pushReplacement(
                                 context,
                                 PageRouteBuilder(
@@ -293,7 +388,8 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                       left: widget.left,
                                       right: widget.right,
                                       backward: timeToStab,
-                                      median: median,
+                                      median: double.parse(
+                                          median.toStringAsFixed(2)),
                                       tID: widget.tID,
                                     ),
                                   ),
@@ -313,7 +409,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                         elevation: 0,
                         highlightElevation: 0,
                         child: const Text(
-                          'Start',
+                          'End',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -544,7 +640,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
   @override
   void initState() {
     super.initState();
-    //SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
 
     timeToStab = 0;
     if (widget.direction == 'Forward') {

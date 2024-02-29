@@ -38,7 +38,7 @@ class _StartTestPageState extends State<ReactiveStartTestPage> {
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    //SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     super.dispose();
   }
@@ -96,7 +96,7 @@ class _StartTestPageState extends State<ReactiveStartTestPage> {
           ),
           body: SingleChildScrollView(
             child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
                 child: Row(
                   children: [
                     Expanded(

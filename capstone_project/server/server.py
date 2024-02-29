@@ -554,7 +554,7 @@ def exportSinglePatient():
 
         # Get the Incidents we are looking for and their reactive tests
         incident = {}
-        pid = data
+        pid = int(data)
         for x in myresult:
             incident = {"iName": x[0], "iDate": str(x[1]), "iNotes": x[2], "iID": x[6], "pID": pid, "tests": []}
             # hande the case that an incident may have multiple tests
@@ -574,9 +574,9 @@ def exportSinglePatient():
                     # If the desired iID is found, append a new test to its tests list
                     # if the test is none, append empty test
                     if x[5] is None:
-                        i['tests'].append({"tDate": str(x[3]), "reactive": {}})
+                        i['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {}})
                     else:
-                        i['tests'].append({"tDate": str(x[3]), "reactive": {"mTime": x[4]}})
+                        i['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {"mTime": x[4]}})
                     flag = True
                     break
             
@@ -584,7 +584,7 @@ def exportSinglePatient():
             if flag == False:
                 # if there is a test to add
                 if x[5] is not None:
-                    incident['tests'].append({"tDate": str(x[3]), "reactive": {"mTime": x[4]}})
+                    incident['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {"mTime": x[4]}})
                     returnList[0]['incidents'].append(incident)
                 else:
                     returnList[0]['incidents'].append(incident)
@@ -604,11 +604,11 @@ def exportSinglePatient():
                 if x[2] is None:
                     # is there is no static test yet, append this
                     if i["iID"] == x[0]: #iID
-                        i['tests'].append({"tDate": str(x[1]), "static": {}})
+                        i['tests'].append({"tDate": str(x[1]), "tID": x[2], "static": {}})
                         continue
                 if i["iID"] == x[0]:
                     # If the desired iID is found, append a new test to its tests list
-                    i['tests'].append({"tDate": str(x[1]), "static": {"tlSolidML": x[3], "tlFoamML": x[4],
+                    i['tests'].append({"tDate": str(x[1]),"tID": x[2], "static": {"tlSolidML": x[3], "tlFoamML": x[4],
                                                                       "slSolidML": x[5], "slFoamML": x[6],
                                                                       "tandSolidML": x[7], "tandFoamML": x[8]}})
                     break
@@ -629,11 +629,11 @@ def exportSinglePatient():
                 if x[2] is None:
                     # is there is no static test yet, append this
                     if i["iID"] == x[0]: #iID
-                        i['tests'].append({"tDate": str(x[1]), "dynamic": {}})
+                        i['tests'].append({"tDate": str(x[1]), "tID": x[2], "dynamic": {}})
                         continue
                 if i["iID"] == x[0]:
                     # If the desired iID is found, append a new test to its tests list
-                    i['tests'].append({"tDate": str(x[1]), "dynamic": {"dMax": x[3], "dMin": x[4], "dMean": x[5], "dMedian": x[6],
+                    i['tests'].append({"tDate": str(x[1]), "tID": x[2], "dynamic": {"dMax": x[3], "dMin": x[4], "dMean": x[5], "dMedian": x[6],
                                                                        "tsMax": x[7], "tsMin": x[8], "tsMean": x[9], "tsMedian": x[10],
                                                                        "mlMax": x[11], "mlMin": x[12], "mlMean": x[13], "mlMedian": x[14],}})
                     break

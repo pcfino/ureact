@@ -1,4 +1,3 @@
-import 'package:capstone_project/models/patient_export.dart';
 import 'package:capstone_project/models/test.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
@@ -70,12 +69,9 @@ class _PatientPage extends State<PatientPage> {
   }
 
   Future<dynamic> getExport(int pID) async {
-    print("Entered getExport");
     try {
       dynamic jsonExport = await export_api.get(pID);
-      print(jsonExport);
-      PatientExport patientExport = PatientExport.fromJson(jsonExport[0]);
-      return patientExport;
+      return jsonExport[0];
     } catch (e) {
       print("Error fetching export data: $e");
     }
@@ -95,30 +91,156 @@ class _PatientPage extends State<PatientPage> {
 
   void exportPatientData() async {
     // Get patient data
-    String fileName = 'patient2';
+    String fileName = "";
     List<List<dynamic>> rows = [];
     rows.add([
       '3rd Party ID',
       'Incident',
       'Incident Date/Time',
       'Condition',
-      'Reactive TTS'
+      'Reactive MTime',
+      'Static TL Solid ML',
+      'Static TL Foam ML',
+      'Dynamic T1 Duration',
+      'Dynamic T1 TurnSpeed',
+      'Dynamic T1 ML Sway',
+      'Dynamic T2 Duration',
+      'Dynamic T2 TurnSpeed',
+      'Dynamic T2 ML Sway',
+      'Dynamic T3 Duration',
+      'Dynamic T3 TurnSpeed',
+      'Dynamic T3 ML Sway',
     ]);
 
-    PatientExport pE = await getExport(widget.pID);
-    if (pE.incidents != null) {
-      for (Incident incident in pE.incidents ?? []) {
-        for (var test in incident.tests ?? []) {
-          rows.add([
-            pE.thirdPartyID,
-            incident.iName,
-            incident.iDate,
-            incident.iNotes,
-            test?.reactive?.mTime
-          ]);
+    List<dynamic> colHeaders = rows[0];
+    Map<String, dynamic> json = await getExport(widget.pID);
+    Map<int, Map<String, dynamic>> processedJson = {};
+
+    if (json.containsKey('thirdPartyID')) {
+      fileName = "patient${json['thirdPartyID']}";
+      if (json.containsKey('incidents')) {
+        List<dynamic> incidents = json['incidents'];
+
+        // Iterate over incidents
+        for (var incident in incidents) {
+          if (incident.containsKey('tests')) {
+            List<dynamic> tests = incident['tests'];
+
+            // Iterate over tests
+            for (var test in tests) {
+              bool hasData = false;
+              double? reactiveMTime;
+
+              double? staticTLSolidML;
+              double? staticTLFoamML;
+
+              double? dynamicT1Duration;
+              double? dynamicT1TurnSpeed;
+              double? dynamicT1MLSway;
+
+              double? dynamicT2Duration;
+              double? dynamicT2TurnSpeed;
+              double? dynamicT2MLSway;
+
+              double? dynamicT3Duration;
+              double? dynamicT3TurnSpeed;
+              double? dynamicT3MLSway;
+
+              // Get reactive test data
+              if (test.containsKey('reactive')) {
+                if (test['reactive'].length != 0) {
+                  reactiveMTime = test['reactive']['mTime'];
+                  hasData = true;
+                }
+              }
+              // Get static test data
+              else if (test.containsKey('static')) {
+                if (test['static'].length != 0) {
+                  staticTLSolidML = test['static']['tlSolidML'];
+                  staticTLFoamML = test['static']['tlFoamML'];
+                  hasData = true;
+                }
+              }
+              // Get dynamic test data
+              else if (test.containsKey('dynamic')) {
+                if (test['dynamic'].length != 0) {
+                  dynamicT1Duration = test['dynamic']['t1Duration'];
+                  dynamicT1TurnSpeed = test['dynamic']['t1TurnSpeed'];
+                  dynamicT1MLSway = test['dynamic']['t1MLSway'];
+
+                  dynamicT2Duration = test['dynamic']['t2Duration'];
+                  dynamicT2TurnSpeed = test['dynamic']['t2TurnSpeed'];
+                  dynamicT2MLSway = test['dynamic']['t2MLSway'];
+
+                  dynamicT3Duration = test['dynamic']['t3Duration'];
+                  dynamicT3TurnSpeed = test['dynamic']['t3TurnSpeed'];
+                  dynamicT3MLSway = test['dynamic']['t3MLSway'];
+                  hasData = true;
+                }
+              }
+
+              List<dynamic> row;
+
+              if (hasData) {
+                row = [
+                  json['thirdPartyID'],
+                  incident['iName'],
+                  incident['iDate'],
+                  incident['iNotes'],
+                  reactiveMTime,
+                  staticTLSolidML,
+                  staticTLFoamML,
+                  dynamicT1Duration,
+                  dynamicT1TurnSpeed,
+                  dynamicT1MLSway,
+                  dynamicT2Duration,
+                  dynamicT2TurnSpeed,
+                  dynamicT2MLSway,
+                  dynamicT3Duration,
+                  dynamicT3TurnSpeed,
+                  dynamicT3MLSway,
+                ];
+                rows.add(row);
+
+                // Condense csv rows to group related data
+                if (processedJson.containsKey(test['tID'])) {
+                  int headerIndex = 0;
+                  for (var col in row) {
+                    if (processedJson[test['tID']]?[colHeaders[headerIndex]] ==
+                            null &&
+                        col != null) {
+                      processedJson[test['tID']]![colHeaders[headerIndex]] =
+                          col;
+                    }
+                    headerIndex++;
+                  }
+                } else {
+                  int headerIndex = 0;
+                  for (var col in row) {
+                    if (processedJson[test['tID']] == null) {
+                      processedJson[test['tID']] = {};
+                    }
+                    processedJson[test['tID']]![colHeaders[headerIndex++]] =
+                        col;
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
+
+    rows.clear();
+    rows.add(colHeaders);
+    // Reorder the row data so that it matches the csv column order
+    processedJson.forEach((test, row) {
+      List<dynamic> orderedRow = [];
+      for (String header in colHeaders) {
+        orderedRow.add(row[header]);
+      }
+      rows.add(orderedRow);
+    });
 
     // Export patient data
     String csv = const ListToCsvConverter().convert(rows);

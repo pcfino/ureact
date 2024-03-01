@@ -42,7 +42,7 @@ app = Flask(__name__)
 app.json.sort_keys = False # make the order same as construction 
 
 #Temporailly here this will eventually need to be called from the page where you choose your client group
-CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client, user_pool_id = 'XXXX', client_id= 'XXXX')
+CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv')
 
 print("Server has started: ")
 # ctrl-shift U - uppercase
@@ -507,7 +507,8 @@ def signIp():
     userName = request.json.get('dataAcc')
     password = request.json.get('password')
     accessToken = CIPW.start_sign_in(user_name= userName, password= password)
-    #thinking...
+    #what is the token for?
+    return jsonify(status = accessToken)
 
 @app.route('/getUsers', methods=['GET'])
 def getUsers():

@@ -42,8 +42,7 @@ Future confirmSignUp(Map userConfirmation) async {
 /// to login: Username, password
 /// 
 ///
-/// @return True if user can now sign in, false if user confirmation failed in
-/// or error if action failed
+/// @return accesstoken for the user
 Future logIn(Map loginCredintials) async {
   try {
     var results = await api.post('/signIn', loginCredintials);
@@ -55,7 +54,7 @@ Future logIn(Map loginCredintials) async {
 
 /// Makes request to get all users
 ///
-/// @return Json object with the patients info
+/// @return Json object with the all users info
 Future getUsers() async {
   var results = await api.get('/getUsers');
   return jsonDecode(results);

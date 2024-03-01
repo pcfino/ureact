@@ -485,7 +485,7 @@ def rms(arr):
 # --------------------------------------------------------------- Login ----------------------------------------------------------
 @app.route('/signUp', methods=['POST'])
 def signUp():
-    userName = request.json.get('dataAcc')
+    userName = request.json.get('userName')
     password = request.json.get('password')
     email = request.json.get('email')
     firstName = request.json.get('firstName')
@@ -497,14 +497,14 @@ def signUp():
 
 @app.route('/confirmSignUp', methods=['POST'])
 def confirmSignUp():
-    userName = request.json.get('dataAcc')
+    userName = request.json.get('userName')
     confrimation = request.json.get('confirmationCode')
     success = CIPW.confirm_user_sign_up(user_name= userName, confirmation_code= confrimation)
     return jsonify(status = success)
 
 @app.route('/signIn', methods=['POST'])
 def signIp():
-    userName = request.json.get('dataAcc')
+    userName = request.json.get('userName')
     password = request.json.get('password')
     accessToken = CIPW.start_sign_in(user_name= userName, password= password)
     #what is the token for?

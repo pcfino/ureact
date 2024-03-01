@@ -20,11 +20,14 @@ from collections import OrderedDict
 # import botocore.session 
 # from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
 
-# client = botocore.session.get_session().create_client('secretsmanager')
-# cache_config = SecretCacheConfig()
-# cache = SecretCache( config = cache_config, client = client)
-# secret = cache.get_secret_string('prod/kines')
-# CONFID = json.loads(secret)
+#For Cognito Implementation
+import cognito
+
+client = botocore.session.get_session().create_client('secretsmanager')
+cache_config = SecretCacheConfig()
+cache = SecretCache( config = cache_config, client = client)
+secret = cache.get_secret_string('prod/kines')
+CONFID = json.loads(secret)
 # database connection
 def connectSql():
     mydb = connector.connect(
@@ -37,6 +40,11 @@ def connectSql():
 
 app = Flask(__name__)
 app.json.sort_keys = False # make the order same as construction 
+
+import boto3
+
+client_idp = boto3.client('cognito-idp')
+CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = "secret")
 
 print("Server has started: ")
 # ctrl-shift U - uppercase
@@ -765,6 +773,41 @@ def rms(arr):
      
     #Calculate Root
     return np.sqrt(mean)
+
+# --------------------------------------------------------------- Login ----------------------------------------------------------
+@app.route('/signUp', methods=['POST'])
+def signUp():
+    userName = request.json.get('userName')
+    password = request.json.get('password')
+    email = request.json.get('email')
+    firstName = request.json.get('firstName')
+    lastName = request.json.get('lastName')
+    success = CIPW.sign_up_user(user_name= userName, user_email= email, 
+                                password= password, first_name=firstName, last_Name = lastName)
+    #thinking about how to evaluate return -- if false then we need to confirm sign up
+    return jsonify(status = success)
+
+@app.route('/confirmSignUp', methods=['POST'])
+def confirmSignUp():
+    userName = request.json.get('userName')
+    confrimation = request.json.get('confirmationCode')
+    success = CIPW.confirm_user_sign_up(user_name= userName, confirmation_code= confrimation)
+    return jsonify(status = success)
+
+@app.route('/signIn', methods=['POST'])
+def signIp():
+    userName = request.json.get('userName')
+    password = request.json.get('password')
+    accessToken = CIPW.start_sign_in(user_name= userName, password= password)
+    #what is the token for?
+    return jsonify(status = accessToken)
+
+@app.route('/getUsers', methods=['GET'])
+def getUsers():
+    return jsonify(CIPW.list_users())
+
+
+
 
 
 # --------------------------------------------------------------- SERVER ----------------------------------------------------------------

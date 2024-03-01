@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:capstone_project/models/incident.dart';
 
-/// This allows the `User` class to access private members in
+/// This allows the `Patient` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
 /// the star denotes the source file name.
 part 'patient.g.dart';
@@ -32,13 +32,13 @@ class Patient {
   List<Incident>? incidents;
 
   /// A necessary factory constructor for creating a new User instance
-  /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
+  /// from a map. Pass the map to the generated `_$PatientFromJson()` constructor.
   /// The constructor is named after the source class, in this case, User.
   factory Patient.fromJson(Map<String, dynamic> json) =>
       _$PatientFromJson(json);
 
   /// `toJson` is the convention for a class to declare support for serialization
   /// to JSON. The implementation simply calls the private, generated
-  /// helper method `_$UserToJson`.
+  /// helper method `_$PatientToJson`.
   Map<String, dynamic> toJson() => _$PatientToJson(this);
 }

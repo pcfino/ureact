@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -50,13 +50,12 @@ class SensorRecorderResults {
   }
 }
 
-class SensorRecorder {
+class ReactiveSensorRecorder {
   // late final Stream<AccelerometerEvent> _accStream;
   // late final Stream<GyroscopeEvent> _gyrStream;
   // late final List<StreamSubscription> _streamSubscriptions;
   late SensorRecorderResults _results;
   late bool _killTimer;
-  late StreamSubscription<AccelerometerEvent> _stream;
 
   double _gyroX = 0.0;
   double _gyroY = 0.0;
@@ -69,7 +68,7 @@ class SensorRecorder {
   bool _ready = false;
   String _testDirection = '';
 
-  SensorRecorder(String testDirection) {
+  ReactiveSensorRecorder(String testDirection) {
     // _streamSubscriptions = <StreamSubscription>[];
 
     /*while(!ready) {
@@ -123,6 +122,10 @@ class SensorRecorder {
       }
       angleMeet([_accX, _accY, _accZ]);
     });
+  }
+
+  bool getReady() {
+    return _ready;
   }
 
   SensorRecorderResults endRecording() {

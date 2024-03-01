@@ -41,8 +41,10 @@ def connectSql():
 app = Flask(__name__)
 app.json.sort_keys = False # make the order same as construction 
 
-#Temporailly here this will eventually need to be called from the page where you choose your client group
-CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv')
+import boto3
+
+client_idp = boto3.client('cognito-idp')
+CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = "secret")
 
 print("Server has started: ")
 # ctrl-shift U - uppercase
@@ -491,7 +493,7 @@ def signUp():
     firstName = request.json.get('firstName')
     lastName = request.json.get('lastName')
     success = CIPW.sign_up_user(user_name= userName, user_email= email, 
-                                password= password, first_name=firstName, last_name = lastName)
+                                password= password, first_name=firstName, last_Name = lastName)
     #thinking about how to evaluate return -- if false then we need to confirm sign up
     return jsonify(status = success)
 

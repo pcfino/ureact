@@ -60,8 +60,8 @@ class CognitoIdentityProviderWrapper:
                 "Username": user_name,
                 "Password": password,
                 "UserAttributes": [{"Name": "email", "Value": user_email},
-                                   {"Name": "firstName", "Value": first_name},
-                                   {"Name": "lastName", "Value": last_Name}
+                                   {"Name": "name", "Value": first_name}
+                                #    {"Name": "lastName", "Value": last_Name}
                                    ],
             }
             if self.client_secret is not None:
@@ -78,13 +78,14 @@ class CognitoIdentityProviderWrapper:
                 )
                 confirmed = response["UserStatus"] == "CONFIRMED"
             else:
-                logger.error(
-                    "Couldn't sign up %s. Here's why: %s: %s",
-                    user_name,
-                    err.response["Error"]["Code"],
-                    err.response["Error"]["Message"],
-                )
-                raise
+                confirmed = err.response["Error"]["Message"]
+                # logger.error(
+                #     "Couldn't sign up %s. Here's why: %s: %s",
+                #     user_name,
+                #     err.response["Error"]["Code"],
+                #     err.response["Error"]["Message"],
+                # )
+                # raise
         return confirmed
 
     def confirm_user_sign_up(self, user_name, confirmation_code):
@@ -136,14 +137,14 @@ class CognitoIdentityProviderWrapper:
         """
         try:
             kwargs = {
-                "UserPoolId": self.user_pool_id,
+                #"UserPoolId": self.user_pool_id,
                 "ClientId": self.client_id,
-                "AuthFlow": "ADMIN_USER_PASSWORD_AUTH",
+                "AuthFlow": "USER_PASSWORD_AUTH",
                 "AuthParameters": {"USERNAME": user_name, "PASSWORD": password},
             }
             if self.client_secret is not None:
                 kwargs["AuthParameters"]["SECRET_HASH"] = self._secret_hash(user_name)
-            response = self.cognito_idp_client.admin_initiate_auth(**kwargs)
+            response = self.cognito_idp_client.initiate_auth(**kwargs)
             challenge_name = response.get("ChallengeName", None)
             if challenge_name == "MFA_SETUP":
                 if (

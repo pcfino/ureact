@@ -534,38 +534,109 @@ def exportSinglePatient():
         mycursor = mydb.cursor()
         
         data = request.args.get('ID')
-        sql = "SELECT pID, thirdPartyID FROM Patient WHERE pID=%s;"
+        sql = "SELECT thirdPartyID FROM Patient WHERE pID=%s;"
         val = [(data)]
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
 
         returnList = []
         for x in myresult:
-            returnList.append({"pID": x[0], "thirdPartyID": x[1], "incidents": []})
+            returnList.append({"thirdPartyID": x[0], "incidents": []})
 
-        sql = "select i.iName, i.iDate, i.iNotes, t.tDate, rt.mTime, i.iID from Incident as i left join Test as t on i.iID=t.iID left join ReactiveTest as rt on t.tID=rt.tID where i.pID=%s;"
+        sql = """select i.iName, i.iDate, i.iNotes, t.tDate, 
+	             rt.mTime, rt.tID,
+                 i.iID
+                 from Incident as i left join Test as t on i.iID=t.iID
+                 left join ReactiveTest as rt on t.tID=rt.tID
+                 where i.pID=%s;"""
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
 
-        # Get the Incidents we are looking for
+        # Get the Incidents we are looking for and their reactive tests
         incident = {}
+        pid = int(data)
         for x in myresult:
-            incident = {"iName": x[0], "iDate": str(x[1]), "iNotes": x[2], "iID": x[5], "tests": []}
+            incident = {"iName": x[0], "iDate": str(x[1]), "iNotes": x[2], "iID": x[6], "pID": pid, "tests": []}
             # hande the case that an incident may have multiple tests
             flag = False
+
+            # check if a test has been made yet for that incident, it will be none if there are no tests for that incident
+            if x[5] is None:
+                # check if there is any incident that has been input yet, if not, and there is no test with that incident, input the incident
+                if returnList[0]['incidents']:
+                    if x[6] not in returnList[0]['incidents']:
+                        # no test taken yet, does the incident exist in the list
+                        returnList[0]['incidents'].append(incident)
+            
+            #  check if in the incidents part of the json, that iID is not already there
             for i in returnList[0]['incidents']:
-                if i["iID"] == x[5]:
+                if i["iID"] == x[6]:
                     # If the desired iID is found, append a new test to its tests list
-                    i['tests'].append({"tDate": str(x[3]), "reactive": {"mTime": x[4]}})
+                    # if the test is none, append empty test
+                    if x[5] is None:
+                        i['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {}})
+                    else:
+                        i['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {"mTime": x[4]}})
                     flag = True
                     break
             
+            # if we did not add a test to an existing incident
             if flag == False:
-                if(str(x[3]) != "None"):
-                    incident['tests'].append({"tDate": str(x[3]), "reactive": {"mTime": x[4]}})
+                # if there is a test to add
+                if x[5] is not None:
+                    incident['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {"mTime": x[4]}})
                     returnList[0]['incidents'].append(incident)
                 else:
                     returnList[0]['incidents'].append(incident)
+            
+        # Get the Incidents we are looking for and their static tests
+        incident = {}
+        sql = """select i.iID, t.tDate, st.tID, 
+                 st.tlSolidML, st.tlFoamML, st.slSolidML, st.slFoamML, st.tandSolidML, st.tandFoamML
+                 from Incident as i left join Test as t on i.iID=t.iID
+                 left join StaticTest as st on t.tID=st.tID
+                 where i.pID=%s;"""
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        for x in myresult:
+            #  check if in the incidents part of the json, that iID is not already there
+            for i in returnList[0]['incidents']:
+                if x[2] is None:
+                    # is there is no static test yet, append this
+                    if i["iID"] == x[0]: #iID
+                        i['tests'].append({"tDate": str(x[1]), "tID": x[2], "static": {}})
+                        continue
+                if i["iID"] == x[0]:
+                    # If the desired iID is found, append a new test to its tests list
+                    i['tests'].append({"tDate": str(x[1]),"tID": x[2], "static": {"tlSolidML": x[3], "tlFoamML": x[4],
+                                                                      "slSolidML": x[5], "slFoamML": x[6],
+                                                                      "tandSolidML": x[7], "tandFoamML": x[8]}})
+                    break
+
+        # Get the Incidents we are looking for and their dynamic tests
+        sql = """select i.iID, t.tDate, dt.tID,
+                        dt.dMax, dt.dMin, dt.dMean, dt.dMedian, 
+                        dt.tsMax, dt.tsMin, dt.tsMean, dt.tsMedian, 
+                        dt.mlMax, dt.mlMin, dt.mlMean, dt.mlMedian
+                        from Incident as i left join Test as t on i.iID=t.iID
+                        left join DynamicTest as dt on t.tID=dt.tID
+                        where i.pID=%s;"""
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        for x in myresult:
+            #  check if in the incidents part of the json, that iID is not already there
+            for i in returnList[0]['incidents']:
+                if x[2] is None:
+                    # is there is no static test yet, append this
+                    if i["iID"] == x[0]: #iID
+                        i['tests'].append({"tDate": str(x[1]), "tID": x[2], "dynamic": {}})
+                        continue
+                if i["iID"] == x[0]:
+                    # If the desired iID is found, append a new test to its tests list
+                    i['tests'].append({"tDate": str(x[1]), "tID": x[2], "dynamic": {"dMax": x[3], "dMin": x[4], "dMean": x[5], "dMedian": x[6],
+                                                                       "tsMax": x[7], "tsMin": x[8], "tsMean": x[9], "tsMedian": x[10],
+                                                                       "mlMax": x[11], "mlMin": x[12], "mlMean": x[13], "mlMedian": x[14],}})
+                    break
         
         return jsonify(returnList)
 # --------------------------------------------------------------- TEST SCRIPTS ------------------------------------------------------------------

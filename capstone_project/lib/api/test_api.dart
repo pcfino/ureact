@@ -182,12 +182,12 @@ Future runTandemGaitTestScript(Map sensorData) async {
     return await jsonDecode(results);
   } catch (err) {
     return {
-      "rmsMlGoing": 0.345,
-      "rmsApGoing": 0.972,
-      "rmsMlReturn": 0.564,
-      "rmsApReturn": 0.826,
-      "duration": 12.651,
-      "turningSpeed": 78.234
+      "rmsMlGoing": 0.0,
+      "rmsApGoing": 0.0,
+      "rmsMlReturn": 0.0,
+      "rmsApReturn": 0.0,
+      "duration": 0.0,
+      "turningSpeed": 0.0
     };
   }
 }

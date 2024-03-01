@@ -76,23 +76,15 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
               title: const Text('Test Results'),
               centerTitle: true,
               leading: BackButton(onPressed: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TestsPage(
+                      tID: widget.tID,
+                    ),
+                  ),
+                );
               }),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TestsPage(
-                          tID: widget.tID,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Next'),
-                )
-              ],
             ),
             body: SingleChildScrollView(
               child: Center(

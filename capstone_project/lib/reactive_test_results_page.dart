@@ -56,7 +56,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Administered by John Doe',
+                  'Administered by Cannon Rudd',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

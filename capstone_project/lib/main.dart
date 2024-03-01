@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_project/home_page.dart';
 import 'package:capstone_project/sign_up_page.dart';
+import 'package:capstone_project/api/login_api.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,13 +14,28 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
       ),
-      home: const App(),
+      home: App(),
     );
   }
 }
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  App({Key? key}) : super(key: key);
+
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+
+  Future<dynamic> logInUser() async {
+    try {
+      var confirmed = await logIn({
+        "userName": _username.text,
+        "password": _password.text,
+      });
+      return confirmed;
+    } catch (e) {
+      print("Error signing up: $e");
+    }
+  }
 
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> institutions = [
@@ -91,6 +107,7 @@ class App extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: TextField(
+                  controller: _username,
                   decoration: InputDecoration(
                     labelText: 'Username',
                     prefixIcon: const Icon(Icons.person),
@@ -102,6 +119,7 @@ class App extends StatelessWidget {
                 flex: 2,
                 child: TextField(
                   obscureText: true,
+                  controller: _password,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock),
@@ -121,13 +139,16 @@ class App extends StatelessWidget {
                       backgroundColor: cs.primary,
                       foregroundColor: cs.background,
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ),
-                      );
+                    onPressed: () async {
+                      dynamic loggedIn = await logInUser();
+                      if (context.mounted && loggedIn['status'] != 'error') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomePage(),
+                          ),
+                        );
+                      }
                     },
                     child: const Text('Login'),
                   ),

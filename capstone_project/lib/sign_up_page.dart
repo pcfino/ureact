@@ -1,6 +1,8 @@
 // import 'package:capstone_project/main.dart';
+import 'package:capstone_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/home_page.dart';
+import 'package:capstone_project/api/login_api.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -10,6 +12,81 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPage extends State<SignUpPage> {
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _first = TextEditingController();
+  final TextEditingController _last = TextEditingController();
+  final TextEditingController _code = TextEditingController();
+
+  Future<dynamic> signUp() async {
+    try {
+      var signedUp = await signUpUser({
+        "firstName": _first.text,
+        "lastName": _last.text,
+        "userName": _username.text,
+        "password": _password.text,
+        "email": _email.text,
+      });
+      return signedUp;
+    } catch (e) {
+      print("Error signing up: $e");
+    }
+  }
+
+  Future<dynamic> confirm() async {
+    try {
+      var confirmed = await confirmSignUp({
+        "userName": _username.text,
+        "confirmationCode": _code.text,
+      });
+      return confirmed;
+    } catch (e) {
+      print("Error signing up: $e");
+    }
+  }
+
+  void confirmationCodeAlert() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation Code'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                const Text('A confirmation code was sent to your email'),
+                TextField(
+                  controller: _code,
+                  decoration: const InputDecoration(
+                    labelText: 'Code',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Enter'),
+              onPressed: () async {
+                dynamic confirmed = await confirm();
+                if (context.mounted && confirmed['status'] == true) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyApp(),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ColorScheme cs = Theme.of(context).colorScheme;
@@ -56,9 +133,10 @@ class _SignUpPage extends State<SignUpPage> {
               Expanded(
                 flex: 2,
                 child: TextField(
+                  controller: _email,
                   decoration: InputDecoration(
-                    labelText: 'Token',
-                    prefixIcon: const Icon(Icons.token),
+                    labelText: 'Email',
+                    prefixIcon: const Icon(Icons.email),
                     prefixIconColor: cs.primary,
                   ),
                 ),
@@ -66,6 +144,7 @@ class _SignUpPage extends State<SignUpPage> {
               Expanded(
                 flex: 2,
                 child: TextField(
+                  controller: _username,
                   decoration: InputDecoration(
                     labelText: 'Username',
                     prefixIcon: const Icon(Icons.person),
@@ -76,6 +155,7 @@ class _SignUpPage extends State<SignUpPage> {
               Expanded(
                 flex: 2,
                 child: TextField(
+                  controller: _password,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
@@ -84,25 +164,25 @@ class _SignUpPage extends State<SignUpPage> {
                   ),
                 ),
               ),
-              const Expanded(
+              Expanded(
                 flex: 2,
                 child: Row(
                   children: [
                     Expanded(
                       flex: 10,
                       child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
+                        controller: _first,
+                        decoration: const InputDecoration(
                           labelText: 'First*',
                         ),
                       ),
                     ),
-                    Spacer(flex: 1),
+                    const Spacer(flex: 1),
                     Expanded(
                       flex: 10,
                       child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
+                        controller: _last,
+                        decoration: const InputDecoration(
                           labelText: 'Last*',
                         ),
                       ),
@@ -122,13 +202,11 @@ class _SignUpPage extends State<SignUpPage> {
                       backgroundColor: cs.primary,
                       foregroundColor: cs.background,
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ),
-                      );
+                    onPressed: () async {
+                      dynamic signedUp = await signUp();
+                      if (context.mounted && signedUp['status'] == false) {
+                        confirmationCodeAlert();
+                      }
                     },
                     child: const Text('Sign Up'),
                   ),

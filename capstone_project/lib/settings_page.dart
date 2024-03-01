@@ -51,7 +51,7 @@ class _SettingsPage extends State<SettingsPage> {
                 const Row(children: [
                   Expanded(
                     child: Text(
-                      "James Smith",
+                      "Cannon Rudd",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

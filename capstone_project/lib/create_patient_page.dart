@@ -1,5 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
+// import 'dart:convert';
+// import 'dart:io';
 
 import 'package:capstone_project/home_page.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +82,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
                   );
                 }
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         ),

@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 // import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-const String _iosUrl = 'http://127.0.0.1:5000';
-const String _androidUrl = 'http://10.0.2.2:5000';
+// const String _iosUrl = 'http://127.0.0.1:5000';
+// const String _androidUrl = 'http://10.0.2.2:5000';
 // This is the server URL at the moment, the IP can change but this is the format
 const String _serverUrl = 'http://54.215.238.217:8000';
 

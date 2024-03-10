@@ -136,6 +136,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
         useMaterial3: true,
       ),
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text(widget.title),
           centerTitle: true,
@@ -269,7 +270,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                       (context, animation1, animation2) =>
                                           ReactiveStartTestPage(
                                     title: 'Reactive',
-                                    direction: 'Right',
+                                    direction: 'Backward',
                                     forward: timeToStab,
                                     left: widget.left,
                                     right: widget.right,
@@ -280,7 +281,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                   reverseTransitionDuration: Duration.zero,
                                 ),
                               );
-                            } else if (widget.direction == 'Right') {
+                            } else if (widget.direction == 'Backward') {
                               Navigator.pushReplacement(
                                 context,
                                 PageRouteBuilder(
@@ -291,8 +292,8 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                     direction: 'Left',
                                     forward: widget.forward,
                                     left: widget.left,
-                                    right: timeToStab,
-                                    backward: widget.backward,
+                                    right: widget.right,
+                                    backward: timeToStab,
                                     tID: widget.tID,
                                   ),
                                   transitionDuration: Duration.zero,
@@ -307,7 +308,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                       (context, animation1, animation2) =>
                                           ReactiveStartTestPage(
                                     title: 'Reactive',
-                                    direction: 'Backward',
+                                    direction: 'Right',
                                     forward: widget.forward,
                                     left: timeToStab,
                                     right: widget.right,
@@ -318,12 +319,12 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                   reverseTransitionDuration: Duration.zero,
                                 ),
                               );
-                            } else if (widget.direction == 'Backward') {
+                            } else if (widget.direction == 'Right') {
                               List<double> vals = [
                                 widget.forward,
                                 widget.left,
-                                widget.right,
-                                timeToStab
+                                timeToStab,
+                                widget.backward
                               ];
                               vals.sort();
                               double median = (vals[1] + vals[2]) / 2;
@@ -338,8 +339,8 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                         ReactiveTestResultsPage(
                                       forward: widget.forward,
                                       left: widget.left,
-                                      right: widget.right,
-                                      backward: timeToStab,
+                                      right: timeToStab,
+                                      backward: widget.backward,
                                       median: double.parse(
                                           median.toStringAsFixed(2)),
                                       tID: widget.tID,
@@ -374,210 +375,6 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                 ),
               ],
             ),
-            // body: Padding(
-            //   padding: const EdgeInsets.all(16.0),
-            //   child: Column(
-            //     children: [
-            //       Expanded(
-            //         flex: 3,
-            //         child: Column(
-            //           crossAxisAlignment: CrossAxisAlignment.start,
-            //           children: [
-            //             const Center(
-            //               child: Text(
-            //                 'Directions',
-            //                 style: TextStyle(
-            //                   fontSize: 20,
-            //                   fontWeight: FontWeight.bold,
-            //                 ),
-            //               ),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            //               child: const Divider(
-            //                 height: 1,
-            //                 thickness: 1,
-            //                 color: Colors.grey,
-            //               ),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            //               child: const Text(
-            //                 '1. Attach phone to lumbar spine',
-            //                 style: TextStyle(fontSize: 20),
-            //               ),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            //               child: const Text(
-            //                 '2. Press the start button',
-            //                 style: TextStyle(fontSize: 20),
-            //               ),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            //               child: const Text(
-            //                 '3. Lean participant until you hear the chime',
-            //                 style: TextStyle(fontSize: 20),
-            //               ),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            //               child: const Text(
-            //                 '4. Hold participant steady and release after 2-5 seconds',
-            //                 style: TextStyle(fontSize: 20),
-            //               ),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            //               child: const Text(
-            //                 '5. Press the end test button once the participant has regained their balance',
-            //                 style: TextStyle(fontSize: 20),
-            //               ),
-            //             ),
-            //             Container(
-            //               margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-            //               child: const Text(
-            //                 '6. Repeat for each direction',
-            //                 style: TextStyle(fontSize: 20),
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //       Expanded(
-            //         flex: 2,
-            //         child: Column(
-            //           children: [
-            //             Center(
-            //               child: Text(
-            //                 'Lean ${widget.direction}',
-            //                 style: const TextStyle(
-            //                   fontSize: 20,
-            //                   fontWeight: FontWeight.bold,
-            //                 ),
-            //               ),
-            //             ),
-            //             const Divider(
-            //               color: Colors.transparent,
-            //             ),
-            //             RawMaterialButton(
-            //               onPressed: () async {
-            //                 await getTTS();
-            //                 if (context.mounted) {
-            //                   if (widget.direction == 'Forward') {
-            //                     Navigator.pushReplacement(
-            //                       context,
-            //                       PageRouteBuilder(
-            //                         pageBuilder:
-            //                             (context, animation1, animation2) =>
-            //                                 ReactiveStartTestPage(
-            //                           title: 'Reactive',
-            //                           direction: 'Right',
-            //                           forward: timeToStab,
-            //                           left: widget.left,
-            //                           right: widget.right,
-            //                           backward: widget.backward,
-            //                           tID: widget.tID,
-            //                         ),
-            //                         transitionDuration: Duration.zero,
-            //                         reverseTransitionDuration: Duration.zero,
-            //                       ),
-            //                     );
-            //                   } else if (widget.direction == 'Right') {
-            //                     Navigator.pushReplacement(
-            //                       context,
-            //                       PageRouteBuilder(
-            //                         pageBuilder:
-            //                             (context, animation1, animation2) =>
-            //                                 ReactiveStartTestPage(
-            //                           title: 'Reactive',
-            //                           direction: 'Left',
-            //                           forward: widget.forward,
-            //                           left: widget.left,
-            //                           right: timeToStab,
-            //                           backward: widget.backward,
-            //                           tID: widget.tID,
-            //                         ),
-            //                         transitionDuration: Duration.zero,
-            //                         reverseTransitionDuration: Duration.zero,
-            //                       ),
-            //                     );
-            //                   } else if (widget.direction == 'Left') {
-            //                     Navigator.pushReplacement(
-            //                       context,
-            //                       PageRouteBuilder(
-            //                         pageBuilder:
-            //                             (context, animation1, animation2) =>
-            //                                 ReactiveStartTestPage(
-            //                           title: 'Reactive',
-            //                           direction: 'Backward',
-            //                           forward: widget.forward,
-            //                           left: timeToStab,
-            //                           right: widget.right,
-            //                           backward: widget.backward,
-            //                           tID: widget.tID,
-            //                         ),
-            //                         transitionDuration: Duration.zero,
-            //                         reverseTransitionDuration: Duration.zero,
-            //                       ),
-            //                     );
-            //                   } else if (widget.direction == 'Backward') {
-            //                     List<double> vals = [
-            //                       widget.forward,
-            //                       widget.left,
-            //                       widget.right,
-            //                       timeToStab
-            //                     ];
-            //                     vals.sort();
-            //                     double median = (vals[1] + vals[2]) / 2;
-            //                     Reactive? createdReactive =
-            //                         await createReactiveTest(
-            //                             double.parse(median.toStringAsFixed(2)));
-            //                     if (createdReactive != null && context.mounted) {
-            //                       Navigator.push(
-            //                         context,
-            //                         MaterialPageRoute(
-            //                           builder: (context) =>
-            //                               ReactiveTestResultsPage(
-            //                             forward: widget.forward,
-            //                             left: widget.left,
-            //                             right: widget.right,
-            //                             backward: timeToStab,
-            //                             median: median,
-            //                             tID: widget.tID,
-            //                           ),
-            //                         ),
-            //                       );
-            //                     }
-            //                   }
-            //                 }
-            //               },
-            //               shape: CircleBorder(
-            //                 side: BorderSide(
-            //                   width: 10,
-            //                   color: cs.background,
-            //                 ),
-            //               ),
-            //               fillColor: const Color.fromRGBO(255, 220, 212, 1),
-            //               padding: const EdgeInsets.all(87),
-            //               elevation: 0,
-            //               highlightElevation: 0,
-            //               child: const Text(
-            //                 'End',
-            //                 style: TextStyle(
-            //                   fontWeight: FontWeight.bold,
-            //                   fontSize: 18,
-            //                   color: Colors.black54,
-            //                 ),
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ),
         ),
       ),

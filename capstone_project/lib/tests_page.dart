@@ -20,6 +20,13 @@ class TestsPage extends StatefulWidget {
 }
 
 class _TestsPage extends State<TestsPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
   Future<dynamic> getTest(int tID) async {
     try {
       var jsonTest = await getAllTests(tID);

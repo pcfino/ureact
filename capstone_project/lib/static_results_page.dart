@@ -2,6 +2,7 @@
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class StaticResultsPage extends StatefulWidget {
   const StaticResultsPage(
@@ -28,6 +29,13 @@ class StaticResultsPage extends StatefulWidget {
 }
 
 class _StaticResultsPage extends State<StaticResultsPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

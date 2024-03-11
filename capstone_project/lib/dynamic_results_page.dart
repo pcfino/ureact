@@ -1,6 +1,7 @@
 // import 'package:capstone_project/main.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class DynamicResultsPage extends StatefulWidget {
   const DynamicResultsPage({
@@ -58,6 +59,13 @@ class DynamicResultsPage extends StatefulWidget {
 }
 
 class _DynamicResultsPage extends State<DynamicResultsPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
   @override
   Widget build(BuildContext context) {
     ColorScheme cs = Theme.of(context).colorScheme;

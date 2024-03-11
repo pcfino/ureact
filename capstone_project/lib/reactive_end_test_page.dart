@@ -2,6 +2,7 @@ import 'dart:convert';
 // import 'dart:io';
 import 'package:capstone_project/reactive_start_test_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:capstone_project/reactive_test_results_page.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/models/reactive.dart';
@@ -35,20 +36,76 @@ class ReactiveEndTestPage extends StatefulWidget {
 }
 
 class _EndTestPageState extends State<ReactiveEndTestPage> {
+  // @override
+  // void dispose() {
+  //   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  //   super.dispose();
+  // }
+
   late double timeToStab;
   late ReactiveSensorRecorder sensorRecorder;
 
+  void throwTestError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('You did not complete the test.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Try Again'),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        ReactiveStartTestPage(
+                      title: 'Reactive',
+                      direction: widget.direction,
+                      forward: widget.forward,
+                      left: widget.left,
+                      right: widget.right,
+                      backward: widget.backward,
+                      tID: widget.tID,
+                    ),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future getTTS() async {
-    var sensorData = sensorRecorder.endRecording();
+    SensorRecorderResults? sensorData;
+    try {
+      sensorData = sensorRecorder.endRecording();
+      var decodedData = await runReactiveTestScript({
+        'dataAcc': sensorData.formattedAccData(),
+        'dataRot': sensorData.formattedGyrData(),
+        'timeStamps': sensorData.timeStamps,
+        'fs': sensorData.fs
+      });
 
-    var decodedData = await runReactiveTestScript({
-      'dataAcc': sensorData.formattedAccData(),
-      'dataRot': sensorData.formattedGyrData(),
-      'timeStamps': sensorData.timeStamps,
-      'fs': sensorData.fs
-    });
-
-    timeToStab = decodedData['TTS'];
+      timeToStab = decodedData['TTS'];
+    } catch (e) {
+      if (context.mounted) {
+        throwTestError();
+      }
+    }
   }
 
   Future<dynamic> createReactiveTest(double median) async {
@@ -73,61 +130,56 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
     ColorScheme cs = Theme.of(context).colorScheme;
 
     return MaterialApp(
-        title: widget.title,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.restart_alt),
-              onPressed: () {
-                if (sensorRecorder.getReady()) {
+      title: widget.title,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.restart_alt),
+            onPressed: () {
+              try {
+                sensorRecorder.endSensors();
+                sensorRecorder.cancelPreTimer();
+                if (!sensorRecorder.getDone()) {
                   sensorRecorder.endRecording();
                 }
-                Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation1, animation2) =>
-                        ReactiveStartTestPage(
-                            title: widget.title,
-                            direction: widget.direction,
-                            forward: widget.forward,
-                            left: widget.left,
-                            right: widget.right,
-                            backward: widget.backward,
-                            tID: widget.tID),
-                    transitionDuration: Duration.zero,
-                    reverseTransitionDuration: Duration.zero,
-                  ),
-                );
-              },
-            ),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    if (sensorRecorder.getReady()) {
-                      sensorRecorder.endRecording();
-                    }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TestsPage(tID: widget.tID),
-                      ),
-                    );
-                  },
-                  child: const Text('Cancel'))
-            ],
+                throwTestError();
+              } catch (e) {
+                throwTestError();
+              }
+            },
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+          actions: <Widget>[
+            TextButton(
+                onPressed: () {
+                  if (!sensorRecorder.getDone()) {
+                    sensorRecorder.endRecording();
+                  }
+                  sensorRecorder.endSensors();
+                  sensorRecorder.cancelPreTimer();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TestsPage(tID: widget.tID),
+                    ),
+                  );
+                },
+                child: const Text('Cancel'))
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+            child: Row(
               children: [
                 Expanded(
-                  flex: 3,
+                  flex: 1,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -138,14 +190,6 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        child: const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
                         ),
                       ),
                       Container(
@@ -194,7 +238,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                   ),
                 ),
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Column(
                     children: [
                       Center(
@@ -211,9 +255,14 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                       ),
                       RawMaterialButton(
                         onPressed: () async {
+                          // Stop gyroscope and accelerometer recording or they will continue forever
+                          sensorRecorder.endSensors();
                           await getTTS();
                           if (context.mounted) {
-                            if (widget.direction == 'Forward') {
+                            // Check for bad test and have them restart
+                            if (timeToStab == 0) {
+                              throwTestError();
+                            } else if (widget.direction == 'Forward') {
                               Navigator.pushReplacement(
                                 context,
                                 PageRouteBuilder(
@@ -221,7 +270,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                       (context, animation1, animation2) =>
                                           ReactiveStartTestPage(
                                     title: 'Reactive',
-                                    direction: 'Right',
+                                    direction: 'Backward',
                                     forward: timeToStab,
                                     left: widget.left,
                                     right: widget.right,
@@ -232,7 +281,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                   reverseTransitionDuration: Duration.zero,
                                 ),
                               );
-                            } else if (widget.direction == 'Right') {
+                            } else if (widget.direction == 'Backward') {
                               Navigator.pushReplacement(
                                 context,
                                 PageRouteBuilder(
@@ -243,8 +292,8 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                     direction: 'Left',
                                     forward: widget.forward,
                                     left: widget.left,
-                                    right: timeToStab,
-                                    backward: widget.backward,
+                                    right: widget.right,
+                                    backward: timeToStab,
                                     tID: widget.tID,
                                   ),
                                   transitionDuration: Duration.zero,
@@ -259,7 +308,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                       (context, animation1, animation2) =>
                                           ReactiveStartTestPage(
                                     title: 'Reactive',
-                                    direction: 'Backward',
+                                    direction: 'Right',
                                     forward: widget.forward,
                                     left: timeToStab,
                                     right: widget.right,
@@ -270,12 +319,12 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                   reverseTransitionDuration: Duration.zero,
                                 ),
                               );
-                            } else if (widget.direction == 'Backward') {
+                            } else if (widget.direction == 'Right') {
                               List<double> vals = [
                                 widget.forward,
                                 widget.left,
-                                widget.right,
-                                timeToStab
+                                timeToStab,
+                                widget.backward
                               ];
                               vals.sort();
                               double median = (vals[1] + vals[2]) / 2;
@@ -290,9 +339,10 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                                         ReactiveTestResultsPage(
                                       forward: widget.forward,
                                       left: widget.left,
-                                      right: widget.right,
-                                      backward: timeToStab,
-                                      median: median,
+                                      right: timeToStab,
+                                      backward: widget.backward,
+                                      median: double.parse(
+                                          median.toStringAsFixed(2)),
                                       tID: widget.tID,
                                     ),
                                   ),
@@ -326,7 +376,9 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   @override
@@ -337,6 +389,8 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+
     timeToStab = 0;
     if (widget.direction == 'Forward') {
       sensorRecorder = ReactiveSensorRecorder("forward");

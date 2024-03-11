@@ -36,6 +36,13 @@ class StaticTestPage extends StatefulWidget {
 }
 
 class _StaticTestPage extends State<StaticTestPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+  }
+
   late StaticDynamicRecorder sensorRecorder;
   Duration duration = Duration();
   Timer? timer;
@@ -197,110 +204,109 @@ class _StaticTestPage extends State<StaticTestPage> {
     ColorScheme cs = Theme.of(context).colorScheme;
 
     return MaterialApp(
-        title: 'Static',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            title: const Text('Static'),
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.restart_alt),
+      title: 'Static',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: const Text('Static'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.restart_alt),
+            onPressed: () {
+              if (timer != null) {
+                timer!.cancel();
+              }
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation1, animation2) => widget,
+                  transitionDuration: Duration.zero,
+                  reverseTransitionDuration: Duration.zero,
+                ),
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
               onPressed: () {
                 if (timer != null) {
                   timer!.cancel();
                 }
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation1, animation2) => widget,
-                    transitionDuration: Duration.zero,
-                    reverseTransitionDuration: Duration.zero,
+                  MaterialPageRoute(
+                    builder: (context) => TestsPage(
+                      tID: widget.tID,
+                    ),
                   ),
                 );
               },
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  if (timer != null) {
-                    timer!.cancel();
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TestsPage(
-                        tID: widget.tID,
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Cancel'),
-              )
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              child: const Text('Cancel'),
+            )
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(50, 0, 50, 50),
+            child: Row(
               children: [
-                const Center(
-                  child: Text(
-                    'Directions',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Text(
+                          'Directions',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '1. Attach phone on lumbar spine',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '2. Press the start button',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '3. On the start chime, take the stance denoted below',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '4. Stand for 30 seconds until you hear the end chime',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: const Text(
+                          '5. Repeat for 3 stances',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: Colors.grey,
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '1. Attach phone on lumbar spine',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '2. Press the start button',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '3. On the start chime, take the stance denoted below',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '4. Stand for 30 seconds until you hear the end chime',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: const Text(
-                    '5. Repeat for 3 stances',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 100, 0, 5),
+                Expanded(
+                  flex: 1,
                   child: Column(
                     children: [
                       Center(
@@ -361,6 +367,8 @@ class _StaticTestPage extends State<StaticTestPage> {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

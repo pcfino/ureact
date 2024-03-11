@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
 import 'package:capstone_project/static_dynamic_recorder.dart';
@@ -44,6 +45,13 @@ class DynamicTestPage extends StatefulWidget {
 }
 
 class _DynamicTestPage extends State<DynamicTestPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+  }
+
   late StaticDynamicRecorder? sensorRecorder;
 
   void throwTestError() {
@@ -146,50 +154,52 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     ColorScheme cs = Theme.of(context).colorScheme;
 
     return MaterialApp(
-        title: 'Dynamic',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Dynamic'),
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.restart_alt),
-              onPressed: () {
-                widget.start = true;
-                Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation1, animation2) => widget,
-                    transitionDuration: Duration.zero,
-                    reverseTransitionDuration: Duration.zero,
-                  ),
-                );
-              },
-            ),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TestsPage(
-                          tID: widget.tID,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Cancel'))
-            ],
+      title: 'Dynamic',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: const Text('Dynamic'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.restart_alt),
+            onPressed: () {
+              widget.start = true;
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation1, animation2) => widget,
+                  transitionDuration: Duration.zero,
+                  reverseTransitionDuration: Duration.zero,
+                ),
+              );
+            },
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+          actions: <Widget>[
+            TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TestsPage(
+                        tID: widget.tID,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Cancel'))
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(50, 0, 50, 50),
+            child: Row(
               children: [
                 Expanded(
-                  flex: 3,
+                  flex: 1,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -200,14 +210,6 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        child: const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
                         ),
                       ),
                       Container(
@@ -256,7 +258,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                   ),
                 ),
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Column(
                     children: [
                       Center(
@@ -509,6 +511,8 @@ class _DynamicTestPage extends State<DynamicTestPage> {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

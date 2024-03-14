@@ -38,15 +38,18 @@ def connectSql():
     )
     return mydb
 
+cognitoSecret =CONFID['cognito_secret']
+
 app = Flask(__name__)
 app.json.sort_keys = False # make the order same as construction 
 
 import boto3
 
 client_idp = boto3.client('cognito-idp')
-CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = "secret")
+CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = cognitoSecret)
 
-print("Server has started: ")
+currentUser = None
+
 # ctrl-shift U - uppercase
 
 # --------------------------------------------------------------- PATIENT ---------------------------------------------------------------

@@ -9,6 +9,7 @@ import 'package:capstone_project/models/reactive.dart';
 import 'reactive_sensor_recorder.dart';
 import 'dart:async';
 import 'api/test_api.dart';
+import 'package:event/event.dart';
 
 class ReactiveEndTestPage extends StatefulWidget {
   const ReactiveEndTestPage(
@@ -93,6 +94,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
     SensorRecorderResults? sensorData;
     try {
       sensorData = sensorRecorder.endRecording();
+      print(sensorData);
       var decodedData = await runReactiveTestScript({
         'dataAcc': sensorData.formattedAccData(),
         'dataRot': sensorData.formattedGyrData(),
@@ -401,6 +403,9 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
     } else if (widget.direction == 'Backward') {
       sensorRecorder = ReactiveSensorRecorder("backward");
     }
+    sensorRecorder.stopEvent.subscribe((args) {
+      getTTS();
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }

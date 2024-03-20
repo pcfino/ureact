@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:event/event.dart';
 
 class AccelerometerData {
   late final List<double> x;
@@ -74,8 +75,11 @@ class ReactiveSensorRecorder {
   late Timer? preTimer;
   late StreamSubscription<GyroscopeEvent> _gyroscopeStreamEvent;
   late StreamSubscription<AccelerometerEvent> _accelerometerStreamEvent;
+  late Event stopEvent;
 
   ReactiveSensorRecorder(String testDirection) {
+    stopEvent = Event();
+
     _running = false;
     _done = false;
     _testDirection = testDirection;
@@ -177,9 +181,25 @@ class ReactiveSensorRecorder {
 
     _results = SensorRecorderResults(samplePeriod);
 
+    const motionlessThreshold = 10.4967;
+    int counter = 0;
+    bool dropped = false;
+
     Timer.periodic(sampleDuration, (timer) async {
       if (_killTimer) {
         timer.cancel();
+      }
+
+      double norm = sqrt(_accX * _accX + _accY * _accY + _accZ * _accZ);
+      if (!dropped && norm > motionlessThreshold) {
+        dropped = true;
+      } else if (norm < motionlessThreshold) {
+        counter++;
+        if (counter == 25) {
+          stopEvent.broadcast();
+        }
+      } else {
+        counter = 0;
       }
 
       _results!.accData.x.add(_accX);

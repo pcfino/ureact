@@ -778,6 +778,8 @@ def rms(arr):
     return np.sqrt(mean)
 
 # --------------------------------------------------------------- Login ----------------------------------------------------------
+
+#Signs up a user in thier selected orginization using cognito user pools
 @app.route('/signUp', methods=['POST'])
 def signUp():
     userName = request.json.get('userName')
@@ -790,6 +792,7 @@ def signUp():
     #thinking about how to evaluate return -- if false then we need to confirm sign up
     return jsonify(status = success)
 
+#Confirms the user's signup with a token from an email sent to them
 @app.route('/confirmSignUp', methods=['POST'])
 def confirmSignUp():
     userName = request.json.get('userName')
@@ -797,6 +800,7 @@ def confirmSignUp():
     success = CIPW.confirm_user_sign_up(user_name= userName, confirmation_code= confrimation)
     return jsonify(status = success)
 
+#signs the user in to thier selected orginization
 @app.route('/signIn', methods=['POST'])
 def signIp():
     userName = request.json.get('userName')
@@ -805,10 +809,53 @@ def signIp():
     #what is the token for?
     return jsonify(status = accessToken)
 
+#Gets all users within a selected orginization
 @app.route('/getUsers', methods=['GET'])
 def getUsers():
     return jsonify(CIPW.list_users())
 
+#Gets a list of all Orginizations
+@app.route('/getOrgNames', methods=['GET'])
+def getAllOrgNames():
+    if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+
+        mycursor.execute("SELECT organizationName FROM Organization")
+        myresult = mycursor.fetchall()
+
+        returnList = []
+        for x in myresult:
+            returnList.append(OrderedDict({"orgName": x[0]}))
+        return jsonify(returnList) 
+
+
+#sets the current working orginization
+@app.route('/setOrginization', methods=['POST'])
+def setOrg():
+    orgName = request.json.get('orgName')
+    # connection to database
+    mydb = connectSql()
+    mycursor = mydb.cursor()
+ 
+    sql = "SELECT * FROM Organization WHERE organizationName=%s"
+    val = [(orgName)]
+    mycursor.execute(sql, val)
+    myresult = mycursor.fetchall()
+
+    returnList = []
+    #checks if the orginization exists
+    if myresult != [] or len(myresult) == 0:
+        #default to test group
+        CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = cognitoSecret)
+        return jsonify(status = 'not found', orgID = 0)
+    
+    #if the orginization exists it sets the current orginization to that one
+    userPoolId = str(myresult[1]);
+    CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = userPoolId, client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = cognitoSecret)
+
+    return jsonify(status = 'succsess', orgID = myresult[0])
 
 
 

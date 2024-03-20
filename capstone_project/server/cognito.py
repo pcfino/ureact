@@ -52,7 +52,7 @@ class CognitoIdentityProviderWrapper:
         :param password: The password for the new user.
         :param user_email: The email address for the new user.
         :return: True when the user is already confirmed with Amazon Cognito.
-                 Otherwise, false.
+                 Otherwise, false. Also returns error message to be handled elsewhere
         """
         try:
             kwargs = {
@@ -60,8 +60,7 @@ class CognitoIdentityProviderWrapper:
                 "Username": user_name,
                 "Password": password,
                 "UserAttributes": [{"Name": "email", "Value": user_email},
-                                   {"Name": "name", "Value": first_name}
-                                #    {"Name": "lastName", "Value": last_Name}
+                                   {"Name": "name", "Value": first_name +' '+ last_Name}
                                    ],
             }
             if self.client_secret is not None:
@@ -79,13 +78,6 @@ class CognitoIdentityProviderWrapper:
                 confirmed = response["UserStatus"] == "CONFIRMED"
             else:
                 confirmed = err.response["Error"]["Message"]
-                # logger.error(
-                #     "Couldn't sign up %s. Here's why: %s: %s",
-                #     user_name,
-                #     err.response["Error"]["Code"],
-                #     err.response["Error"]["Message"],
-                # )
-                # raise
         return confirmed
 
     def confirm_user_sign_up(self, user_name, confirmation_code):
@@ -96,7 +88,7 @@ class CognitoIdentityProviderWrapper:
         :param user_name: The name of the user to confirm.
         :param confirmation_code: The confirmation code sent to the user's registered
                                   email address.
-        :return: True when the confirmation succeeds.
+        :return: True when the confirmation succeeds. Error message to be delt with else where if fails
         """
         try:
             kwargs = {
@@ -108,13 +100,7 @@ class CognitoIdentityProviderWrapper:
                 kwargs["SecretHash"] = self._secret_hash(user_name)
             self.cognito_idp_client.confirm_sign_up(**kwargs)
         except ClientError as err:
-            logger.error(
-                "Couldn't confirm sign up for %s. Here's why: %s: %s",
-                user_name,
-                err.response["Error"]["Code"],
-                err.response["Error"]["Message"],
-            )
-            raise
+            return err.response["Error"]["Message"]
         else:
             return True
 
@@ -173,7 +159,7 @@ class CognitoIdentityProviderWrapper:
         """
         Returns a list of the users in the current user pool.
 
-        :return: The list of users.
+        :return: The list of users. Or error if failed
         """
         try:
             response = self.cognito_idp_client.list_users(UserPoolId=self.user_pool_id)
@@ -185,6 +171,6 @@ class CognitoIdentityProviderWrapper:
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
-            raise
+            return logger.error
         else:
             return users

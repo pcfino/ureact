@@ -1,6 +1,31 @@
 import 'api_util.dart' as api;
 import 'dart:convert';
 
+/// Makes a request to set Current Orginization
+///
+/// @param orgData: Object containing all needed information
+/// to set orginization: orginization name
+/// 
+///
+/// @return Success if orginization set and the orginization's ID, 
+/// Failure if orginization not set: defualts to test organization w/ ID of 0
+Future setOrginization(Map orgData) async {
+  try {
+    var results = await api.post('/setOrginization', orgData);
+    return await jsonDecode(results);
+  } catch (err) {
+    return {"status": "error"};
+  }
+}
+
+/// Makes request to get all orginization names
+///
+/// @return Json object with the all orgs
+Future getOrgNames() async {
+  var results = await api.get('/getOrgNames');
+  return jsonDecode(results);
+}
+
 
 /// Makes a request to sign up a new User
 ///

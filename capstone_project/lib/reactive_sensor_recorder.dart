@@ -109,6 +109,8 @@ class ReactiveSensorRecorder {
 
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
+
+    //starts a sequence that checks for the angle of patient
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),
         (preTimer) async {
       if (_ready) {
@@ -164,7 +166,7 @@ class ReactiveSensorRecorder {
     // for (final subscription in _streamSubscriptions) {
     //   subscription.cancel();
     // }
-    //debugPrint((_results.gyrData.x.length.toString()));w
+
     try {
       return _results!;
       // ignore: empty_catches
@@ -188,6 +190,7 @@ class ReactiveSensorRecorder {
 
     _results = SensorRecorderResults(samplePeriod);
 
+    //Timer that records data on specified sample rate
     Timer.periodic(sampleDuration, (timer) async {
       if (_killTimer) {
         timer.cancel();
@@ -205,6 +208,8 @@ class ReactiveSensorRecorder {
     });
   }
 
+  ///Takes in a set of cords for this time stamp.
+  ///Checks if the angle has been met.
   void angleMeet(cord) {
     double minAngle = 0;
     double maxAngle = 0;
@@ -215,16 +220,16 @@ class ReactiveSensorRecorder {
     double z = cord[2];
     if (_testDirection == 'backward') {
       // Initially 90 - 8
-      minAngle = 45 + 6; //90 - 9;
+      minAngle = 5; //90 - 9;
       // Inititally 90 - 6
-      maxAngle = 45 + 8; //90 - 5;
+      maxAngle = 9; //90 - 5;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ / sqrt((_init_accX * _init_accX) + (_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'forward') {
       // Inititally 45 + 8
-      minAngle = -7; //45 + 7;
+      minAngle = -11; //45 + 7;
       // Initially 45 + 10
-      maxAngle = -11; //45 + 11;
+      maxAngle = -7; //45 + 11;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ / sqrt((_init_accX * _init_accX) + (_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'left') {

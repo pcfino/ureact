@@ -154,6 +154,7 @@ class ReactiveSensorRecorder {
     _done = true;
     _killTimer = true;
     _running = false;
+    endSensors();
     // for (final subscription in _streamSubscriptions) {
     //   subscription.cancel();
     // }
@@ -191,11 +192,17 @@ class ReactiveSensorRecorder {
       }
 
       double norm = sqrt(_accX * _accX + _accY * _accY + _accZ * _accZ);
+      // If the participant has not been dropped yet and they are moving more
+      // than the motionless threshold, set dropped to true
+      // Else if they have been dropped and are now less than the motionless
+      // threshold, we start a counter. After 1 second, we broadcast the results
+      // Else if they have been dropped and their motion is greater than the
+      // motionless threshold, keep the counter at 0
       if (!dropped && norm > motionlessThreshold) {
         dropped = true;
-      } else if (norm < motionlessThreshold) {
+      } else if (dropped && norm < motionlessThreshold) {
         counter++;
-        if (counter == 25) {
+        if (counter == 50) {
           stopEvent.broadcast();
         }
       } else {

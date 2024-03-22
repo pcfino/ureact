@@ -4,6 +4,7 @@ import 'package:capstone_project/create_test_page.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 
 class IncidentPage extends StatefulWidget {
   const IncidentPage({super.key, this.iID = -1});
@@ -65,8 +66,8 @@ class _IncidentPage extends State<IncidentPage> {
           leading: BackButton(onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => PatientPage(pID: incident.pID),
+              SlideRightRoute(
+                page: PatientPage(pID: incident.pID),
               ),
             );
           }),

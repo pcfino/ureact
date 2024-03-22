@@ -3,6 +3,7 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 
 class ReactiveTestResultsPage extends StatefulWidget {
   const ReactiveTestResultsPage(
@@ -50,10 +51,8 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
           leading: BackButton(onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => TestsPage(
-                  tID: widget.tID,
-                ),
+              SlideRightRoute(
+                page: TestsPage(tID: widget.tID),
               ),
             );
           }),

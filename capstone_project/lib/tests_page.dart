@@ -9,6 +9,7 @@ import 'package:capstone_project/static_results_page.dart';
 import 'package:capstone_project/incident_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 
 class TestsPage extends StatefulWidget {
   const TestsPage({super.key, required this.tID});
@@ -99,8 +100,8 @@ class _TestsPage extends State<TestsPage> {
                 leading: BackButton(onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => IncidentPage(iID: test.iID),
+                    SlideRightRoute(
+                      page: IncidentPage(iID: test.iID),
                     ),
                   );
                 }),

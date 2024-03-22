@@ -98,6 +98,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
       });
 
       timeToStab = decodedData['TTS'];
+      print(timeToStab);
       nextTest();
     } catch (e) {
       if (context.mounted) {

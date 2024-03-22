@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:event/event.dart';
 
 class AccelerometerData {
   late final List<double> x;
@@ -78,8 +79,11 @@ class ReactiveSensorRecorder {
   late Timer? preTimer;
   late StreamSubscription<GyroscopeEvent> _gyroscopeStreamEvent;
   late StreamSubscription<AccelerometerEvent> _accelerometerStreamEvent;
+  late Event stopEvent;
 
   ReactiveSensorRecorder(String testDirection) {
+    stopEvent = Event();
+
     _running = false;
     _done = false;
     _testDirection = testDirection;
@@ -163,6 +167,7 @@ class ReactiveSensorRecorder {
     _done = true;
     _killTimer = true;
     _running = false;
+    endSensors();
     // for (final subscription in _streamSubscriptions) {
     //   subscription.cancel();
     // }
@@ -190,10 +195,31 @@ class ReactiveSensorRecorder {
 
     _results = SensorRecorderResults(samplePeriod);
 
-    //Timer that records data on specified sample rate
+    const motionlessThreshold = 10.4967;
+    int counter = 0;
+    bool dropped = false;
+
     Timer.periodic(sampleDuration, (timer) async {
       if (_killTimer) {
         timer.cancel();
+      }
+
+      double norm = sqrt(_accX * _accX + _accY * _accY + _accZ * _accZ);
+      // If the participant has not been dropped yet and they are moving more
+      // than the motionless threshold, set dropped to true
+      // Else if they have been dropped and are now less than the motionless
+      // threshold, we start a counter. After 1 second, we broadcast the results
+      // Else if they have been dropped and their motion is greater than the
+      // motionless threshold, keep the counter at 0
+      if (!dropped && norm > motionlessThreshold) {
+        dropped = true;
+      } else if (dropped && norm < motionlessThreshold) {
+        counter++;
+        if (counter == 50) {
+          stopEvent.broadcast();
+        }
+      } else {
+        counter = 0;
       }
 
       _results!.accData.x.add(_accX);

@@ -1,6 +1,5 @@
 import 'dart:convert';
 // import 'dart:io';
-import 'package:capstone_project/reactive_start_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:capstone_project/reactive_test_results_page.dart';
@@ -9,11 +8,11 @@ import 'package:capstone_project/models/reactive.dart';
 import 'reactive_sensor_recorder.dart';
 import 'dart:async';
 import 'api/test_api.dart';
+import 'package:event/event.dart';
 
-class ReactiveEndTestPage extends StatefulWidget {
-  const ReactiveEndTestPage(
+class ReactiveTestPage extends StatefulWidget {
+  const ReactiveTestPage(
       {super.key,
-      required this.title,
       required this.direction,
       required this.forward,
       required this.left,
@@ -21,7 +20,6 @@ class ReactiveEndTestPage extends StatefulWidget {
       required this.backward,
       required this.tID});
 
-  final String title;
   final String direction;
 
   final double forward;
@@ -32,10 +30,10 @@ class ReactiveEndTestPage extends StatefulWidget {
   final int tID;
 
   @override
-  State<ReactiveEndTestPage> createState() => _EndTestPageState();
+  State<ReactiveTestPage> createState() => _ReactiveTestPage();
 }
 
-class _EndTestPageState extends State<ReactiveEndTestPage> {
+class _ReactiveTestPage extends State<ReactiveTestPage> {
   // @override
   // void dispose() {
   //   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -68,8 +66,7 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, animation1, animation2) =>
-                        ReactiveStartTestPage(
-                      title: 'Reactive',
+                        ReactiveTestPage(
                       direction: widget.direction,
                       forward: widget.forward,
                       left: widget.left,
@@ -101,9 +98,86 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
       });
 
       timeToStab = decodedData['TTS'];
+      nextTest();
     } catch (e) {
       if (context.mounted) {
         throwTestError();
+      }
+    }
+  }
+
+  void nextTest() async {
+    sensorRecorder.endSensors();
+    // Check for bad time
+    if (timeToStab == 0) {
+      throwTestError();
+    } else if (widget.direction == 'Forward') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReactiveTestPage(
+            direction: 'Backward',
+            forward: timeToStab,
+            left: widget.left,
+            right: widget.right,
+            backward: widget.backward,
+            tID: widget.tID,
+          ),
+        ),
+      );
+    } else if (widget.direction == 'Backward') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReactiveTestPage(
+            direction: 'Left',
+            forward: widget.forward,
+            left: widget.left,
+            right: widget.right,
+            backward: timeToStab,
+            tID: widget.tID,
+          ),
+        ),
+      );
+    } else if (widget.direction == 'Left') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReactiveTestPage(
+            direction: 'Right',
+            forward: widget.forward,
+            left: timeToStab,
+            right: widget.right,
+            backward: widget.backward,
+            tID: widget.tID,
+          ),
+        ),
+      );
+    } else if (widget.direction == 'Right') {
+      List<double> vals = [
+        widget.forward,
+        widget.left,
+        timeToStab,
+        widget.backward
+      ];
+      vals.sort();
+      double median = (vals[1] + vals[2]) / 2;
+      Reactive? createdReactive =
+          await createReactiveTest(double.parse(median.toStringAsFixed(2)));
+      if (createdReactive != null && context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReactiveTestResultsPage(
+              forward: widget.forward,
+              left: widget.left,
+              right: timeToStab,
+              backward: widget.backward,
+              median: double.parse(median.toStringAsFixed(2)),
+              tID: widget.tID,
+            ),
+          ),
+        );
       }
     }
   }
@@ -125,12 +199,14 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
     }
   }
 
+  TextEditingController startButton = TextEditingController();
+  bool start = true;
+
   @override
   Widget build(BuildContext context) {
     ColorScheme cs = Theme.of(context).colorScheme;
-
     return MaterialApp(
-      title: widget.title,
+      title: "Reactive",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
@@ -138,18 +214,21 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text(widget.title),
+          title: const Text("Reactive"),
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.restart_alt),
             onPressed: () {
               try {
-                sensorRecorder.endSensors();
-                sensorRecorder.cancelPreTimer();
-                if (!sensorRecorder.getDone()) {
-                  sensorRecorder.endRecording();
+                if (!start) {
+                  sensorRecorder.endSensors();
+                  sensorRecorder.cancelPreTimer();
+                  if (sensorRecorder.getRunning()) {
+                    sensorRecorder.endRecording();
+                  }
+                  start = true;
+                  setState(() {});
                 }
-                throwTestError();
               } catch (e) {
                 throwTestError();
               }
@@ -158,11 +237,13 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
           actions: <Widget>[
             TextButton(
                 onPressed: () {
-                  if (!sensorRecorder.getDone()) {
-                    sensorRecorder.endRecording();
+                  if (!start) {
+                    sensorRecorder.endSensors();
+                    sensorRecorder.cancelPreTimer();
+                    if (sensorRecorder.getRunning()) {
+                      sensorRecorder.endRecording();
+                    }
                   }
-                  sensorRecorder.endSensors();
-                  sensorRecorder.cancelPreTimer();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -255,100 +336,23 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                       ),
                       RawMaterialButton(
                         onPressed: () async {
-                          // Stop gyroscope and accelerometer recording or they will continue forever
-                          sensorRecorder.endSensors();
-                          await getTTS();
-                          if (context.mounted) {
-                            // Check for bad test and have them restart
-                            if (timeToStab == 0) {
-                              throwTestError();
-                            } else if (widget.direction == 'Forward') {
-                              Navigator.pushReplacement(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder:
-                                      (context, animation1, animation2) =>
-                                          ReactiveStartTestPage(
-                                    title: 'Reactive',
-                                    direction: 'Backward',
-                                    forward: timeToStab,
-                                    left: widget.left,
-                                    right: widget.right,
-                                    backward: widget.backward,
-                                    tID: widget.tID,
-                                  ),
-                                  transitionDuration: Duration.zero,
-                                  reverseTransitionDuration: Duration.zero,
-                                ),
-                              );
-                            } else if (widget.direction == 'Backward') {
-                              Navigator.pushReplacement(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder:
-                                      (context, animation1, animation2) =>
-                                          ReactiveStartTestPage(
-                                    title: 'Reactive',
-                                    direction: 'Left',
-                                    forward: widget.forward,
-                                    left: widget.left,
-                                    right: widget.right,
-                                    backward: timeToStab,
-                                    tID: widget.tID,
-                                  ),
-                                  transitionDuration: Duration.zero,
-                                  reverseTransitionDuration: Duration.zero,
-                                ),
-                              );
-                            } else if (widget.direction == 'Left') {
-                              Navigator.pushReplacement(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder:
-                                      (context, animation1, animation2) =>
-                                          ReactiveStartTestPage(
-                                    title: 'Reactive',
-                                    direction: 'Right',
-                                    forward: widget.forward,
-                                    left: timeToStab,
-                                    right: widget.right,
-                                    backward: widget.backward,
-                                    tID: widget.tID,
-                                  ),
-                                  transitionDuration: Duration.zero,
-                                  reverseTransitionDuration: Duration.zero,
-                                ),
-                              );
+                          if (start) {
+                            if (widget.direction == 'Forward') {
+                              sensorRecorder =
+                                  ReactiveSensorRecorder("forward");
                             } else if (widget.direction == 'Right') {
-                              List<double> vals = [
-                                widget.forward,
-                                widget.left,
-                                timeToStab,
-                                widget.backward
-                              ];
-                              vals.sort();
-                              double median = (vals[1] + vals[2]) / 2;
-                              Reactive? createdReactive =
-                                  await createReactiveTest(
-                                      double.parse(median.toStringAsFixed(2)));
-                              if (createdReactive != null && context.mounted) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ReactiveTestResultsPage(
-                                      forward: widget.forward,
-                                      left: widget.left,
-                                      right: timeToStab,
-                                      backward: widget.backward,
-                                      median: double.parse(
-                                          median.toStringAsFixed(2)),
-                                      tID: widget.tID,
-                                    ),
-                                  ),
-                                );
-                              }
+                              sensorRecorder = ReactiveSensorRecorder("right");
+                            } else if (widget.direction == 'Left') {
+                              sensorRecorder = ReactiveSensorRecorder("left");
+                            } else if (widget.direction == 'Backward') {
+                              sensorRecorder =
+                                  ReactiveSensorRecorder("backward");
                             }
+                            sensorRecorder.stopEvent.subscribe((args) {
+                              getTTS();
+                            });
+                            start = false;
+                            setState(() {});
                           }
                         },
                         shape: CircleBorder(
@@ -361,9 +365,9 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
                         padding: const EdgeInsets.all(87),
                         elevation: 0,
                         highlightElevation: 0,
-                        child: const Text(
-                          'End',
-                          style: TextStyle(
+                        child: Text(
+                          start ? "Start" : "Running",
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                             color: Colors.black54,
@@ -392,15 +396,6 @@ class _EndTestPageState extends State<ReactiveEndTestPage> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
 
     timeToStab = 0;
-    if (widget.direction == 'Forward') {
-      sensorRecorder = ReactiveSensorRecorder("forward");
-    } else if (widget.direction == 'Right') {
-      sensorRecorder = ReactiveSensorRecorder("right");
-    } else if (widget.direction == 'Left') {
-      sensorRecorder = ReactiveSensorRecorder("left");
-    } else if (widget.direction == 'Backward') {
-      sensorRecorder = ReactiveSensorRecorder("backward");
-    }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }

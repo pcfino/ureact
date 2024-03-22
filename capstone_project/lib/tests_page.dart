@@ -1,5 +1,5 @@
 import 'package:capstone_project/dynamic_test_page.dart';
-import 'package:capstone_project/reactive_start_test_page.dart';
+import 'package:capstone_project/reactive_test_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/models/test.dart';
@@ -256,8 +256,7 @@ class _TestsPage extends State<TestsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ReactiveStartTestPage(
-                                    title: 'Reactive',
+                                  builder: (context) => ReactiveTestPage(
                                     direction: 'Forward',
                                     forward: 0,
                                     left: 0,

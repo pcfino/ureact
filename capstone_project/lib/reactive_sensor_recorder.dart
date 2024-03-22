@@ -101,15 +101,13 @@ class ReactiveSensorRecorder {
       _accX = event.y;
       _accY = event.x;
       _accZ = event.z;
-      if(_init_accX.isNaN){
+      if (_init_accX.isNaN) {
         _init_accX = event.y;
         _init_accY = event.x;
         _init_accZ = event.z;
       }
       //print("accelerometer: $_accX, $_accY, $_accZ");
     });
-
-
 
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
@@ -216,6 +214,13 @@ class ReactiveSensorRecorder {
       } else if (dropped && norm < motionlessThreshold) {
         counter++;
         if (counter == 50) {
+          FlutterRingtonePlayer.play(
+            android: AndroidSounds.notification,
+            ios: IosSounds.chime,
+            looping: false, // Android only - API >= 28
+            volume: 0.8, // Android only - API >= 28
+            asAlarm: false, // Android only - all APIs
+          );
           stopEvent.broadcast();
         }
       } else {
@@ -250,24 +255,32 @@ class ReactiveSensorRecorder {
       // Inititally 90 - 6
       maxAngle = 9; //90 - 5;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
-      initAngle = acos(_init_accZ / sqrt((_init_accX * _init_accX) + (_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
+      initAngle = acos(_init_accZ /
+          sqrt((_init_accX * _init_accX) +
+              (_init_accY * _init_accY) +
+              (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'forward') {
       // Inititally 45 + 8
       minAngle = -11; //45 + 7;
       // Initially 45 + 10
       maxAngle = -7; //45 + 11;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
-      initAngle = acos(_init_accZ / sqrt((_init_accX * _init_accX) + (_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
+      initAngle = acos(_init_accZ /
+          sqrt((_init_accX * _init_accX) +
+              (_init_accY * _init_accY) +
+              (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'left') {
       minAngle = -12;
       maxAngle = -8;
       radAngle = atan(x / sqrt((y * y) + (z * z)));
-      initAngle = atan(_init_accX / sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
+      initAngle = atan(_init_accX /
+          sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'right') {
       minAngle = 8;
       maxAngle = 12;
       radAngle = atan(x / sqrt((y * y) + (z * z)));
-      initAngle = atan(_init_accX / sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
+      initAngle = atan(_init_accX /
+          sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
     } else {
       print("$_testDirection is not a valid test direction");
     }
@@ -275,7 +288,7 @@ class ReactiveSensorRecorder {
     minAngle = minAngle * pi / 180;
     maxAngle = maxAngle * pi / 180;
 
-    if (radAngle >= initAngle+minAngle && radAngle <= initAngle+maxAngle) {
+    if (radAngle >= initAngle + minAngle && radAngle <= initAngle + maxAngle) {
       _ready = true;
     } else {
       _ready = false;

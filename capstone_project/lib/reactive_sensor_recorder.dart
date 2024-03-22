@@ -65,6 +65,10 @@ class ReactiveSensorRecorder {
   double _accY = 0.0;
   double _accZ = 0.0;
 
+  double _init_accX = double.nan;
+  double _init_accY = double.nan;
+  double _init_accZ = double.nan;
+
   bool _ready = false;
   String _testDirection = '';
 
@@ -93,11 +97,20 @@ class ReactiveSensorRecorder {
       _accX = event.y;
       _accY = event.x;
       _accZ = event.z;
+      if(_init_accX.isNaN){
+        _init_accX = event.y;
+        _init_accY = event.x;
+        _init_accZ = event.z;
+      }
       //print("accelerometer: $_accX, $_accY, $_accZ");
     });
 
+
+
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
+
+    //starts a sequence that checks for the angle of patient
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),
         (preTimer) async {
       if (_ready) {
@@ -107,7 +120,7 @@ class ReactiveSensorRecorder {
           FlutterRingtonePlayer.play(
             android: AndroidSounds.notification,
             ios: IosSounds.chime,
-            looping: true, // Android only - API >= 28
+            looping: false, // Android only - API >= 28
             volume: 0.8, // Android only - API >= 28
             asAlarm: false, // Android only - all APIs
           );
@@ -119,7 +132,7 @@ class ReactiveSensorRecorder {
           FlutterRingtonePlayer.play(
             android: AndroidSounds.notification,
             ios: IosSounds.electronic,
-            looping: true, // Android only - API >= 28
+            looping: false, // Android only - API >= 28
             volume: 0.8, // Android only - API >= 28
             asAlarm: false, // Android only - all APIs
           );
@@ -153,7 +166,7 @@ class ReactiveSensorRecorder {
     // for (final subscription in _streamSubscriptions) {
     //   subscription.cancel();
     // }
-    //debugPrint((_results.gyrData.x.length.toString()));w
+
     try {
       return _results!;
       // ignore: empty_catches
@@ -177,6 +190,7 @@ class ReactiveSensorRecorder {
 
     _results = SensorRecorderResults(samplePeriod);
 
+    //Timer that records data on specified sample rate
     Timer.periodic(sampleDuration, (timer) async {
       if (_killTimer) {
         timer.cancel();
@@ -194,33 +208,40 @@ class ReactiveSensorRecorder {
     });
   }
 
+  ///Takes in a set of cords for this time stamp.
+  ///Checks if the angle has been met.
   void angleMeet(cord) {
     double minAngle = 0;
     double maxAngle = 0;
     double radAngle = 0;
+    double initAngle = 0;
     double x = cord[0];
     double y = cord[1];
     double z = cord[2];
     if (_testDirection == 'backward') {
       // Initially 90 - 8
-      minAngle = 90 - 9;
+      minAngle = 5; //90 - 9;
       // Inititally 90 - 6
-      maxAngle = 90 - 5;
+      maxAngle = 9; //90 - 5;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
+      initAngle = acos(_init_accZ / sqrt((_init_accX * _init_accX) + (_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'forward') {
       // Inititally 45 + 8
-      minAngle = 45 + 7;
+      minAngle = -11; //45 + 7;
       // Initially 45 + 10
-      maxAngle = 45 + 11;
+      maxAngle = -7; //45 + 11;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
+      initAngle = acos(_init_accZ / sqrt((_init_accX * _init_accX) + (_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'left') {
-      minAngle = 8;
-      maxAngle = 12;
-      radAngle = atan(x / sqrt((y * y) + (z * z)));
-    } else if (_testDirection == 'right') {
       minAngle = -12;
       maxAngle = -8;
       radAngle = atan(x / sqrt((y * y) + (z * z)));
+      initAngle = atan(_init_accX / sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
+    } else if (_testDirection == 'right') {
+      minAngle = 8;
+      maxAngle = 12;
+      radAngle = atan(x / sqrt((y * y) + (z * z)));
+      initAngle = atan(_init_accX / sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
     } else {
       print("$_testDirection is not a valid test direction");
     }
@@ -228,7 +249,7 @@ class ReactiveSensorRecorder {
     minAngle = minAngle * pi / 180;
     maxAngle = maxAngle * pi / 180;
 
-    if (radAngle >= minAngle && radAngle <= maxAngle) {
+    if (radAngle >= initAngle+minAngle && radAngle <= initAngle+maxAngle) {
       _ready = true;
     } else {
       _ready = false;

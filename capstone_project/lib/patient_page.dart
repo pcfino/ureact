@@ -14,6 +14,7 @@ import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/patient_api.dart';
 import 'package:capstone_project/api/export_api.dart' as export_api;
+import 'package:capstone_project/slide_right_transition.dart';
 
 class PatientPage extends StatefulWidget {
   const PatientPage({super.key, required this.pID});
@@ -359,8 +360,8 @@ class _PatientPage extends State<PatientPage> {
                 leading: BackButton(onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
+                    SlideRightRoute(
+                      page: const HomePage(),
                     ),
                   );
                 }),

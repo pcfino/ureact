@@ -125,10 +125,11 @@ class _HomePage extends State<HomePage> {
                         constraints: const BoxConstraints(
                           maxHeight: 40,
                         ),
+                        fillColor: const Color.fromARGB(255, 240, 240, 240),
                         filled: true,
-                        fillColor: Colors.white10,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none,
                         ),
                       ),
                     ),

@@ -21,9 +21,13 @@ class TestsPage extends StatefulWidget {
 }
 
 class _TestsPage extends State<TestsPage> {
+  late Future<dynamic> future;
+
   @override
   void initState() {
     super.initState();
+
+    future = getTest(widget.tID);
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
@@ -75,17 +79,20 @@ class _TestsPage extends State<TestsPage> {
   final TextEditingController _date = TextEditingController();
   final TextEditingController notes = TextEditingController();
 
+  Test? test;
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getTest(widget.tID),
+      future: future,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          Test test = snapshot.data! as Test;
-
-          selectedValue = test.tName;
-          _date.text = test.tDate;
-          notes.text = test.tNotes!;
+          if (test == null) {
+            test = snapshot.data! as Test;
+            selectedValue = test!.tName;
+            _date.text = test!.tDate;
+            notes.text = test!.tNotes!;
+          }
 
           return MaterialApp(
             title: 'Test',
@@ -101,7 +108,7 @@ class _TestsPage extends State<TestsPage> {
                   Navigator.push(
                     context,
                     SlideRightRoute(
-                      page: IncidentPage(iID: test.iID),
+                      page: IncidentPage(iID: test!.iID),
                     ),
                   );
                 }),
@@ -239,17 +246,17 @@ class _TestsPage extends State<TestsPage> {
                       child: ListView(children: [
                         ListTile(
                           onTap: () {
-                            if (test.reactiveTest != null) {
+                            if (test!.reactiveTest != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ReactiveTestResultsPage(
-                                    backward: test.reactiveTest!.bTime,
-                                    forward: test.reactiveTest!.fTime,
-                                    left: test.reactiveTest!.lTime,
-                                    right: test.reactiveTest!.rTime,
-                                    median: test.reactiveTest!.mTime,
-                                    tID: test.tID,
+                                    backward: test!.reactiveTest!.bTime,
+                                    forward: test!.reactiveTest!.fTime,
+                                    left: test!.reactiveTest!.lTime,
+                                    right: test!.reactiveTest!.rTime,
+                                    median: test!.reactiveTest!.mTime,
+                                    tID: test!.tID,
                                   ),
                                 ),
                               );
@@ -274,39 +281,39 @@ class _TestsPage extends State<TestsPage> {
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: Icon(test.reactiveTest == null
+                          trailing: Icon(test!.reactiveTest == null
                               ? Icons.add_circle
                               : Icons.arrow_forward_ios),
                         ),
                         ListTile(
                           onTap: () {
                             // check if dynamic exists
-                            if (test.dynamicTest != null) {
+                            if (test!.dynamicTest != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DynamicResultsPage(
-                                    t1Duration: test.dynamicTest!.t1Duration,
-                                    t1TurnSpeed: test.dynamicTest!.t1TurnSpeed,
-                                    t1MLSway: test.dynamicTest!.t1MLSway,
-                                    t2Duration: test.dynamicTest!.t2Duration,
-                                    t2TurnSpeed: test.dynamicTest!.t2TurnSpeed,
-                                    t2MLSway: test.dynamicTest!.t2MLSway,
-                                    t3Duration: test.dynamicTest!.t3Duration,
-                                    t3TurnSpeed: test.dynamicTest!.t3TurnSpeed,
-                                    t3MLSway: test.dynamicTest!.t3MLSway,
-                                    dMax: test.dynamicTest!.dMax,
-                                    dMin: test.dynamicTest!.dMin,
-                                    dMean: test.dynamicTest!.dMean,
-                                    dMedian: test.dynamicTest!.dMedian,
-                                    tsMax: test.dynamicTest!.tsMax,
-                                    tsMin: test.dynamicTest!.tsMin,
-                                    tsMean: test.dynamicTest!.tsMean,
-                                    tsMedian: test.dynamicTest!.tsMedian,
-                                    mlMax: test.dynamicTest!.mlMax,
-                                    mlMin: test.dynamicTest!.mlMin,
-                                    mlMean: test.dynamicTest!.mlMean,
-                                    mlMedian: test.dynamicTest!.mlMedian,
+                                    t1Duration: test!.dynamicTest!.t1Duration,
+                                    t1TurnSpeed: test!.dynamicTest!.t1TurnSpeed,
+                                    t1MLSway: test!.dynamicTest!.t1MLSway,
+                                    t2Duration: test!.dynamicTest!.t2Duration,
+                                    t2TurnSpeed: test!.dynamicTest!.t2TurnSpeed,
+                                    t2MLSway: test!.dynamicTest!.t2MLSway,
+                                    t3Duration: test!.dynamicTest!.t3Duration,
+                                    t3TurnSpeed: test!.dynamicTest!.t3TurnSpeed,
+                                    t3MLSway: test!.dynamicTest!.t3MLSway,
+                                    dMax: test!.dynamicTest!.dMax,
+                                    dMin: test!.dynamicTest!.dMin,
+                                    dMean: test!.dynamicTest!.dMean,
+                                    dMedian: test!.dynamicTest!.dMedian,
+                                    tsMax: test!.dynamicTest!.tsMax,
+                                    tsMin: test!.dynamicTest!.tsMin,
+                                    tsMean: test!.dynamicTest!.tsMean,
+                                    tsMedian: test!.dynamicTest!.tsMedian,
+                                    mlMax: test!.dynamicTest!.mlMax,
+                                    mlMin: test!.dynamicTest!.mlMin,
+                                    mlMean: test!.dynamicTest!.mlMean,
+                                    mlMedian: test!.dynamicTest!.mlMedian,
                                     tID: widget.tID,
                                   ),
                                 ),
@@ -338,25 +345,25 @@ class _TestsPage extends State<TestsPage> {
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: Icon(test.dynamicTest == null
+                          trailing: Icon(test!.dynamicTest == null
                               ? Icons.add_circle
                               : Icons.arrow_forward_ios),
                         ),
                         ListTile(
                           onTap: () {
                             // check if static exists
-                            if (test.staticTest != null) {
+                            if (test!.staticTest != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => StaticResultsPage(
                                     tID: widget.tID,
-                                    tlSolidML: test.staticTest!.tlSolidML,
-                                    tlFoamML: test.staticTest!.tlFoamML,
-                                    slSolidML: test.staticTest!.slSolidML,
-                                    slFoamML: test.staticTest!.slSolidML,
-                                    tandSolidML: test.staticTest!.tandSolidML,
-                                    tandFoamML: test.staticTest!.tandFoamML,
+                                    tlSolidML: test!.staticTest!.tlSolidML,
+                                    tlFoamML: test!.staticTest!.tlFoamML,
+                                    slSolidML: test!.staticTest!.slSolidML,
+                                    slFoamML: test!.staticTest!.slSolidML,
+                                    tandSolidML: test!.staticTest!.tandSolidML,
+                                    tandFoamML: test!.staticTest!.tandFoamML,
                                   ),
                                 ),
                               );
@@ -383,7 +390,7 @@ class _TestsPage extends State<TestsPage> {
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          trailing: Icon(test.staticTest == null
+                          trailing: Icon(test!.staticTest == null
                               ? Icons.add_circle
                               : Icons.arrow_forward_ios),
                         ),

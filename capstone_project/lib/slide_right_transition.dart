@@ -23,6 +23,6 @@ class SlideRightRoute extends PageRouteBuilder {
             ).animate(animation),
             child: child,
           ),
-          transitionDuration: const Duration(milliseconds: 150),
+          transitionDuration: const Duration(milliseconds: 175),
         );
 }

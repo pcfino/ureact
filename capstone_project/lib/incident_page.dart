@@ -15,7 +15,7 @@ class IncidentPage extends StatefulWidget {
 }
 
 class _IncidentPage extends State<IncidentPage> {
-  late Incident incident;
+  Incident? incident;
   final TextEditingController _date = TextEditingController();
   final TextEditingController _notes = TextEditingController();
 
@@ -49,10 +49,10 @@ class _IncidentPage extends State<IncidentPage> {
     }
   }
 
-  Widget incidentPageContent(
-      BuildContext context, Incident incident, String selectedValue) {
+  Widget incidentPageContent(BuildContext context, Incident incident) {
     _date.text = incident.iDate.toString();
     _notes.text = incident.iNotes!;
+    String selectedValue = incident.iName;
     return MaterialApp(
       title: 'Incident',
       theme: ThemeData(
@@ -251,34 +251,34 @@ class _IncidentPage extends State<IncidentPage> {
     );
   }
 
+  late Future<dynamic> future;
+  @override
+  void initState() {
+    super.initState();
+    future = getIncident(widget.iID);
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (editMode) {
-      _date.text = incident.iDate;
-      String selectedValue = incident.iName;
-
-      return incidentPageContent(context, incident, selectedValue);
-    } else {
-      return FutureBuilder(
-          future: getIncident(widget.iID),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(
-                appBar: AppBar(),
-                body: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              Incident incident = snapshot.data!;
-              _date.text = incident.iDate;
-              String selectedValue = incident.iName;
-
-              return incidentPageContent(context, incident, selectedValue);
+    return FutureBuilder(
+        future: future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            if (incident == null) {
+              incident = snapshot.data! as Incident;
             }
-          });
-    }
+            return incidentPageContent(context, incident!);
+          }
+        });
+    //}
   }
 }

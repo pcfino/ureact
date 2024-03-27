@@ -15,6 +15,7 @@ class _SignUpPage extends State<SignUpPage> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  final TextEditingController _confirm = TextEditingController();
   final TextEditingController _first = TextEditingController();
   final TextEditingController _last = TextEditingController();
   final TextEditingController _code = TextEditingController();
@@ -87,13 +88,16 @@ class _SignUpPage extends State<SignUpPage> {
     );
   }
 
+  ColorScheme cs = ColorScheme.fromSeed(seedColor: Colors.red);
+  bool hidePassword = true;
+  bool hideConfirmationPassword = true;
+
   @override
   Widget build(BuildContext context) {
-    ColorScheme cs = Theme.of(context).colorScheme;
     return MaterialApp(
       title: 'Sign Up',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        colorScheme: cs,
         useMaterial3: true,
       ),
       home: Scaffold(
@@ -136,10 +140,93 @@ class _SignUpPage extends State<SignUpPage> {
                   controller: _email,
                   decoration: InputDecoration(
                     labelText: 'Email',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
                     prefixIcon: const Icon(Icons.email),
                     prefixIconColor: cs.primary,
+                    fillColor: const Color.fromARGB(255, 240, 240, 240),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.all(42),
                   ),
                 ),
+              ),
+              const Divider(
+                color: Colors.transparent,
+              ),
+              Expanded(
+                flex: 2,
+                child: TextField(
+                  controller: _password,
+                  obscureText: hidePassword,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    prefixIcon: const Icon(Icons.lock),
+                    prefixIconColor: cs.primary,
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (hidePassword) {
+                              hidePassword = false;
+                            } else {
+                              hidePassword = true;
+                            }
+                          });
+                        },
+                        icon: hidePassword
+                            ? const Icon(Icons.visibility)
+                            : const Icon(Icons.visibility_off)),
+                    fillColor: const Color.fromARGB(255, 240, 240, 240),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.all(42),
+                  ),
+                ),
+              ),
+              const Divider(
+                color: Colors.transparent,
+              ),
+              Expanded(
+                flex: 2,
+                child: TextField(
+                  controller: _confirm,
+                  obscureText: hideConfirmationPassword,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm Password',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    prefixIcon: const Icon(Icons.lock),
+                    prefixIconColor: cs.primary,
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (hideConfirmationPassword) {
+                              hideConfirmationPassword = false;
+                            } else {
+                              hideConfirmationPassword = true;
+                            }
+                          });
+                        },
+                        icon: hideConfirmationPassword
+                            ? const Icon(Icons.visibility)
+                            : const Icon(Icons.visibility_off)),
+                    fillColor: const Color.fromARGB(255, 240, 240, 240),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.all(42),
+                  ),
+                ),
+              ),
+              const Divider(
+                color: Colors.transparent,
               ),
               Expanded(
                 flex: 2,
@@ -147,22 +234,21 @@ class _SignUpPage extends State<SignUpPage> {
                   controller: _username,
                   decoration: InputDecoration(
                     labelText: 'Username',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
                     prefixIcon: const Icon(Icons.person),
                     prefixIconColor: cs.primary,
+                    fillColor: const Color.fromARGB(255, 240, 240, 240),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.all(42),
                   ),
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: TextField(
-                  controller: _password,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock),
-                    prefixIconColor: cs.primary,
-                  ),
-                ),
+              const Divider(
+                color: Colors.transparent,
               ),
               Expanded(
                 flex: 2,
@@ -172,8 +258,18 @@ class _SignUpPage extends State<SignUpPage> {
                       flex: 10,
                       child: TextField(
                         controller: _first,
-                        decoration: const InputDecoration(
-                          labelText: 'First*',
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          labelText: 'First',
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: const Color.fromARGB(255, 240, 240, 240),
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(15, 42, 15, 42),
                         ),
                       ),
                     ),
@@ -182,8 +278,19 @@ class _SignUpPage extends State<SignUpPage> {
                       flex: 10,
                       child: TextField(
                         controller: _last,
-                        decoration: const InputDecoration(
-                          labelText: 'Last*',
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          labelText: 'Last',
+                          floatingLabelAlignment: FloatingLabelAlignment.center,
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: const Color.fromARGB(255, 240, 240, 240),
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(15, 42, 15, 42),
                         ),
                       ),
                     ),

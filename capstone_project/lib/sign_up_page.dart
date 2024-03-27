@@ -29,6 +29,7 @@ class _SignUpPage extends State<SignUpPage> {
         "password": _password.text,
         "email": _email.text,
       });
+      print(signedUp);
       return signedUp;
     } catch (e) {
       print("Error signing up: $e");
@@ -91,6 +92,9 @@ class _SignUpPage extends State<SignUpPage> {
   ColorScheme cs = ColorScheme.fromSeed(seedColor: Colors.red);
   bool hidePassword = true;
   bool hideConfirmationPassword = true;
+  bool passwordsMatch = true;
+  String errorMessage = "";
+  bool error = false;
 
   @override
   Widget build(BuildContext context) {
@@ -297,8 +301,17 @@ class _SignUpPage extends State<SignUpPage> {
                   ],
                 ),
               ),
-              const Spacer(
-                flex: 1,
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Text(
+                    errorMessage,
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        color: error ? Colors.red : Colors.transparent),
+                  ),
+                ),
               ),
               Expanded(
                 flex: 2,
@@ -310,10 +323,35 @@ class _SignUpPage extends State<SignUpPage> {
                       foregroundColor: cs.background,
                     ),
                     onPressed: () async {
-                      dynamic signedUp = await signUp();
-                      if (context.mounted && signedUp['status'] == false) {
-                        confirmationCodeAlert();
+                      passwordsMatch = _password.text == _confirm.text;
+                      if (passwordsMatch) {
+                        dynamic signedUp = await signUp();
+                        if (context.mounted) {
+                          if (signedUp['status'].toString().startsWith(
+                              "Password did not conform with policy:")) {
+                            errorMessage = signedUp['status']
+                                .toString()
+                                .substring(
+                                    signedUp['status'].toString().indexOf(':') +
+                                        2);
+                            error = true;
+                          } else if (signedUp['status'].toString() ==
+                              "Invalid email address format.") {
+                            errorMessage = "Invalid email";
+                            error = true;
+                          } else if (signedUp['status'] == true) {
+                            errorMessage =
+                                "An account with this username already exists";
+                            error = true;
+                          } else if (signedUp['status'] == false) {
+                            confirmationCodeAlert();
+                          }
+                        }
+                      } else {
+                        errorMessage = "Passwords must match";
+                        error = true;
                       }
+                      setState(() {});
                     },
                     child: const Text('Sign Up'),
                   ),

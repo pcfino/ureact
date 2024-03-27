@@ -90,6 +90,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     SensorRecorderResults? sensorData;
     try {
       sensorData = sensorRecorder.endRecording();
+      print(sensorData.accData.x.length);
       var decodedData = await runReactiveTestScript({
         'dataAcc': sensorData.formattedAccData(),
         'dataRot': sensorData.formattedGyrData(),

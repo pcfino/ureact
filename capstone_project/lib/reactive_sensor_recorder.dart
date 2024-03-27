@@ -131,6 +131,7 @@ class ReactiveSensorRecorder {
         }
         angleMetTime += 1;
       } else {
+        player.stop();
         //player.play(AssetSource(failureSoundPath));
         angleMetTime = 0;
       }
@@ -160,7 +161,7 @@ class ReactiveSensorRecorder {
     // for (final subscription in _streamSubscriptions) {
     //   subscription.cancel();
     // }
-
+    debugPrint(_results!.toString());
     try {
       return _results!;
       // ignore: empty_catches
@@ -204,7 +205,7 @@ class ReactiveSensorRecorder {
         dropped = true;
       } else if (dropped && norm < motionlessThreshold) {
         counter++;
-        if (counter == 50) {
+        if (counter == 100) {
           FlutterRingtonePlayer.play(
             android: AndroidSounds.notification,
             ios: IosSounds.chime,
@@ -218,12 +219,12 @@ class ReactiveSensorRecorder {
         counter = 0;
       }
 
-      _results!.accData.x.add(_accX);
-      _results!.accData.y.add(_accY);
+      _results!.accData.x.add(_accY);
+      _results!.accData.y.add(_accX);
       _results!.accData.z.add(_accZ);
 
-      _results!.gyrData.x.add(_gyroX);
-      _results!.gyrData.y.add(_gyroY);
+      _results!.gyrData.x.add(_gyroY);
+      _results!.gyrData.y.add(_gyroX);
       _results!.gyrData.z.add(_gyroZ);
 
       _results!.timeStamps.add(DateTime.now().millisecondsSinceEpoch);
@@ -242,9 +243,9 @@ class ReactiveSensorRecorder {
     double z = cord[2];
     if (_testDirection == 'backward') {
       // Initially 90 - 8
-      minAngle = 5; //90 - 9;
+      minAngle = 16; //90 - 9;
       // Inititally 90 - 6
-      maxAngle = 9; //90 - 5;
+      maxAngle = 20; //90 - 5;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ /
           sqrt((_init_accX * _init_accX) +
@@ -252,9 +253,9 @@ class ReactiveSensorRecorder {
               (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'forward') {
       // Inititally 45 + 8
-      minAngle = -16; //45 + 7;
+      minAngle = -20; //45 + 7; //-16 to -12 worked well with peter in the room
       // Initially 45 + 10
-      maxAngle = -12; //45 + 11;
+      maxAngle = -16; //45 + 11;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ /
           sqrt((_init_accX * _init_accX) +

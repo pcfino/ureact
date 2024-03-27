@@ -1,5 +1,6 @@
 import 'dart:convert';
-// import 'dart:io';
+import "dart:math";
+import 'package:capstone_project/patient_angle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:capstone_project/reactive_test_results_page.dart';
@@ -33,7 +34,8 @@ class ReactiveTestPage extends StatefulWidget {
   State<ReactiveTestPage> createState() => _ReactiveTestPage();
 }
 
-class _ReactiveTestPage extends State<ReactiveTestPage> {
+class _ReactiveTestPage extends State<ReactiveTestPage>
+    with SingleTickerProviderStateMixin {
   // @override
   // void dispose() {
   //   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -200,6 +202,10 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
   }
 
   TextEditingController startButton = TextEditingController();
+  late final AnimationController animation_controller =
+      AnimationController(vsync: this, duration: const Duration(minutes: 1))
+        ..repeat();
+
   bool start = true;
 
   @override
@@ -334,46 +340,67 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                       const Divider(
                         color: Colors.transparent,
                       ),
-                      RawMaterialButton(
-                        onPressed: () async {
-                          if (start) {
-                            if (widget.direction == 'Forward') {
-                              sensorRecorder =
-                                  ReactiveSensorRecorder("forward");
-                            } else if (widget.direction == 'Right') {
-                              sensorRecorder = ReactiveSensorRecorder("right");
-                            } else if (widget.direction == 'Left') {
-                              sensorRecorder = ReactiveSensorRecorder("left");
-                            } else if (widget.direction == 'Backward') {
-                              sensorRecorder =
-                                  ReactiveSensorRecorder("backward");
-                            }
-                            sensorRecorder.stopEvent.subscribe((args) {
-                              getTTS();
-                            });
-                            start = false;
-                            setState(() {});
-                          }
-                        },
-                        shape: CircleBorder(
-                          side: BorderSide(
-                            width: 10,
-                            color: cs.background,
-                          ),
-                        ),
-                        fillColor: const Color.fromRGBO(255, 220, 212, 1),
-                        padding: const EdgeInsets.all(87),
-                        elevation: 0,
-                        highlightElevation: 0,
-                        child: Text(
-                          start ? "Start" : "Running",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ),
+                      start
+                          ? RawMaterialButton(
+                              onPressed: () async {
+                                if (start) {
+                                  if (widget.direction == 'Forward') {
+                                    sensorRecorder =
+                                        ReactiveSensorRecorder("forward");
+                                  } else if (widget.direction == 'Right') {
+                                    sensorRecorder =
+                                        ReactiveSensorRecorder("right");
+                                  } else if (widget.direction == 'Left') {
+                                    sensorRecorder =
+                                        ReactiveSensorRecorder("left");
+                                  } else if (widget.direction == 'Backward') {
+                                    sensorRecorder =
+                                        ReactiveSensorRecorder("backward");
+                                  }
+                                  sensorRecorder.stopEvent.subscribe((args) {
+                                    getTTS();
+                                  });
+                                  start = false;
+                                  setState(() {});
+                                }
+                              },
+                              shape: CircleBorder(
+                                side: BorderSide(
+                                  width: 10,
+                                  color: cs.background,
+                                ),
+                              ),
+                              fillColor: const Color.fromRGBO(255, 220, 212, 1),
+                              padding: const EdgeInsets.all(87),
+                              elevation: 0,
+                              highlightElevation: 0,
+                              child: Text(
+                                start ? "Start" : "Running",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.black54,
+                                ),
+                              ))
+                          : AnimatedBuilder(
+                              animation: animation_controller,
+                              builder: (context, child) {
+                                PatientAngle pa =
+                                    PatientAngle(widget.direction);
+                                double angle = pa.angle;
+                                return Transform.rotate(
+                                  // angle: animation_controller.value * 2 * pi,
+                                  angle: angle,
+                                  child: child,
+                                );
+                              },
+                              child: const Icon(
+                                Icons.angle,
+                                color: Colors.black,
+                                size: 180,
+                              )
+                              // child: FlutterLogo(size: 200),
+                              ),
                     ],
                   ),
                 ),

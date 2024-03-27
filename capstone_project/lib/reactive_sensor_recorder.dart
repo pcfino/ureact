@@ -131,7 +131,7 @@ class ReactiveSensorRecorder {
         }
         angleMetTime += 1;
       } else {
-        player.play(AssetSource(failureSoundPath));
+        //player.play(AssetSource(failureSoundPath));
         angleMetTime = 0;
       }
       angleMeet([_accX, _accY, _accZ]);
@@ -252,9 +252,9 @@ class ReactiveSensorRecorder {
               (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'forward') {
       // Inititally 45 + 8
-      minAngle = -11; //45 + 7;
+      minAngle = -16; //45 + 7;
       // Initially 45 + 10
-      maxAngle = -7; //45 + 11;
+      maxAngle = -12; //45 + 11;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ /
           sqrt((_init_accX * _init_accX) +

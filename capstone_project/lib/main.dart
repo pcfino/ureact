@@ -3,25 +3,18 @@ import 'package:capstone_project/home_page.dart';
 import 'package:capstone_project/sign_up_page.dart';
 import 'package:capstone_project/api/login_api.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(const MaterialApp(
+      home: MyApp(),
+    ));
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-      ),
-      home: App(),
-    );
-  }
+  State<MyApp> createState() => App();
 }
 
-class App extends StatelessWidget {
-  App({Key? key}) : super(key: key);
-
+class App extends State<MyApp> {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
@@ -49,14 +42,16 @@ class App extends StatelessWidget {
     return institutions;
   }
 
+  bool hidePassword = true;
+  ColorScheme cs = ColorScheme.fromSeed(seedColor: Colors.red);
+
   @override
   Widget build(BuildContext context) {
     String defaultValue = "University of Utah";
-    ColorScheme cs = Theme.of(context).colorScheme;
     return MaterialApp(
       title: 'Login',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        colorScheme: cs,
         useMaterial3: true,
       ),
       home: Scaffold(
@@ -97,10 +92,13 @@ class App extends StatelessWidget {
                   onChanged: (value) {
                     defaultValue = value!;
                   },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      //borderSide: BorderSide.none,
+                    ),
                     labelText: "Institution",
-                    contentPadding: EdgeInsets.all(11),
+                    contentPadding: const EdgeInsets.all(11),
                   ),
                 ),
               ),
@@ -110,20 +108,52 @@ class App extends StatelessWidget {
                   controller: _username,
                   decoration: InputDecoration(
                     labelText: 'Username',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
                     prefixIcon: const Icon(Icons.person),
                     prefixIconColor: cs.primary,
+                    fillColor: const Color.fromARGB(255, 240, 240, 240),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.all(45),
                   ),
                 ),
+              ),
+              const Divider(
+                color: Colors.transparent,
               ),
               Expanded(
                 flex: 2,
                 child: TextField(
-                  obscureText: true,
+                  obscureText: hidePassword,
                   controller: _password,
                   decoration: InputDecoration(
                     labelText: 'Password',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
                     prefixIcon: const Icon(Icons.lock),
                     prefixIconColor: cs.primary,
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (hidePassword) {
+                              hidePassword = false;
+                            } else {
+                              hidePassword = true;
+                            }
+                          });
+                        },
+                        icon: hidePassword
+                            ? const Icon(Icons.visibility)
+                            : const Icon(Icons.visibility_off)),
+                    fillColor: const Color.fromARGB(255, 240, 240, 240),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.all(45),
                   ),
                 ),
               ),

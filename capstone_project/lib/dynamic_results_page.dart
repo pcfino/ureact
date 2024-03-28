@@ -2,6 +2,7 @@
 import 'package:capstone_project/tests_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 
 class DynamicResultsPage extends StatefulWidget {
   const DynamicResultsPage({
@@ -86,10 +87,8 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
               leading: BackButton(onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => TestsPage(
-                      tID: widget.tID,
-                    ),
+                  SlideRightRoute(
+                    page: TestsPage(tID: widget.tID),
                   ),
                 );
               }),

@@ -4,6 +4,7 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:event/event.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class AccelerometerData {
   late final List<double> x;
@@ -111,36 +112,26 @@ class ReactiveSensorRecorder {
 
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
+    final AudioPlayer player = AudioPlayer();
+    const successSoundPath = "sounds/Success.mp3";
+    const failureSoundPath = "sounds/Failure.mp3";
 
     //starts a sequence that checks for the angle of patient
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),
         (preTimer) async {
       if (_ready) {
-        //print(angleMetTime);
         // After 3 seconds in correct position
         if (angleMetTime == 150) {
-          FlutterRingtonePlayer.play(
-            android: AndroidSounds.notification,
-            ios: IosSounds.chime,
-            looping: false, // Android only - API >= 28
-            volume: 0.8, // Android only - API >= 28
-            asAlarm: false, // Android only - all APIs
-          );
+          player.stop();
           startRecording();
           _running = true;
           preTimer.cancel();
-          //print('cancel');
-        } else if (angleMetTime % 50 == 0) {
-          FlutterRingtonePlayer.play(
-            android: AndroidSounds.notification,
-            ios: IosSounds.electronic,
-            looping: false, // Android only - API >= 28
-            volume: 0.8, // Android only - API >= 28
-            asAlarm: false, // Android only - all APIs
-          );
+        } else {
+          player.play(AssetSource(successSoundPath));
         }
         angleMetTime += 1;
       } else {
+        //player.play(AssetSource(failureSoundPath));
         angleMetTime = 0;
       }
       angleMeet([_accX, _accY, _accZ]);
@@ -261,9 +252,9 @@ class ReactiveSensorRecorder {
               (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'forward') {
       // Inititally 45 + 8
-      minAngle = -11; //45 + 7;
+      minAngle = -16; //45 + 7;
       // Initially 45 + 10
-      maxAngle = -7; //45 + 11;
+      maxAngle = -12; //45 + 11;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ /
           sqrt((_init_accX * _init_accX) +

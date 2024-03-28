@@ -24,28 +24,28 @@ from collections import OrderedDict
 #For Cognito Implementation
 import cognito
 
-# client = botocore.session.get_session().create_client('secretsmanager')
-# cache_config = SecretCacheConfig()
-# cache = SecretCache( config = cache_config, client = client)
-# secret = cache.get_secret_string('prod/kines')
-# CONFID = json.loads(secret)
-# # database connection
-# def connectSql():
-#     mydb = connector.connect(
-#     host=CONFID['host'],
-#     user=CONFID['username'],
-#     password=CONFID['password'],
-#     database=CONFID['dbName']
-#     )
-#     return mydb
+client = botocore.session.get_session().create_client('secretsmanager')
+cache_config = SecretCacheConfig()
+cache = SecretCache( config = cache_config, client = client)
+secret = cache.get_secret_string('prod/kines')
+CONFID = json.loads(secret)
+# database connection
+def connectSql():
+    mydb = connector.connect(
+    host=CONFID['host'],
+    user=CONFID['username'],
+    password=CONFID['password'],
+    database=CONFID['dbName']
+    )
+    return mydb
 
 app = Flask(__name__)
 app.json.sort_keys = False # make the order same as construction 
 
-# import boto3
+import boto3
 
-# client_idp = boto3.client('cognito-idp')
-# CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = "secret")
+client_idp = boto3.client('cognito-idp')
+CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = "secret")
 
 print("Server has started: ")
 # ctrl-shift U - uppercase

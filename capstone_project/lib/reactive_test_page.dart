@@ -90,7 +90,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     SensorRecorderResults? sensorData;
     try {
       sensorData = sensorRecorder.endRecording();
-      print(sensorData.accData.x.length);
+      //print(sensorData.accData.x.length);
       var decodedData = await runReactiveTestScript({
         'dataAcc': sensorData.formattedAccData(),
         'dataRot': sensorData.formattedGyrData(),
@@ -99,6 +99,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
       });
 
       timeToStab = decodedData['TTS'];
+      //Output to Consol for testing purposes TODO: REMOVE LATER
       print(timeToStab);
       nextTest();
     } catch (e) {

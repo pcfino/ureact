@@ -81,6 +81,7 @@ class ReactiveSensorRecorder {
   late StreamSubscription<GyroscopeEvent> _gyroscopeStreamEvent;
   late StreamSubscription<AccelerometerEvent> _accelerometerStreamEvent;
   late Event stopEvent;
+  late AudioPlayer player;
 
   /*
   *Iintializes the Sensor Recorder
@@ -117,7 +118,7 @@ class ReactiveSensorRecorder {
 
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
-    final AudioPlayer player = AudioPlayer();
+    player = AudioPlayer();
     const successSoundPath = "sounds/Success.mp3";
     const failureSoundPath = "sounds/Failure.mp3";
 
@@ -125,9 +126,8 @@ class ReactiveSensorRecorder {
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),
         (preTimer) async {
       if (_ready) {
-        // After 3 seconds in correct position
-        if (angleMetTime == 150) {
-          player.stop();
+        // After 2 seconds in correct position
+        if (angleMetTime == 100) {
           startRecording();
           _running = true;
           preTimer.cancel();
@@ -217,6 +217,7 @@ class ReactiveSensorRecorder {
       // motionless threshold, keep the counter at 0
       if (!dropped && norm > motionlessThreshold) {
         dropped = true;
+        player.stop();
       } else if (dropped && norm < motionlessThreshold) {
         counter++;
         if (counter == 100) {
@@ -258,15 +259,15 @@ class ReactiveSensorRecorder {
     //Added 5 degrees to each to match what was working with forward
     if (_testDirection == 'backward') {
       // Initially 6
-      minAngle = 6; 
+      minAngle = 6;
       // Inititally 8
-      maxAngle = 9; 
+      maxAngle = 9;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ /
           sqrt((_init_accX * _init_accX) +
               (_init_accY * _init_accY) +
               (_init_accZ * _init_accZ)));
-    //During Meeting we found that around -16 was the angle we needed
+      //During Meeting we found that around -16 was the angle we needed
     } else if (_testDirection == 'forward') {
       // Inititally 8
       minAngle = -10; //45 + 7; //-16 to -12 worked well with peter in the room
@@ -277,7 +278,6 @@ class ReactiveSensorRecorder {
           sqrt((_init_accX * _init_accX) +
               (_init_accY * _init_accY) +
               (_init_accZ * _init_accZ)));
-    
     } else if (_testDirection == 'right') {
       minAngle = -7;
       maxAngle = -5;

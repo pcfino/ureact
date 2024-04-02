@@ -936,7 +936,7 @@ if __name__ == "__main__":
     # if result.returncode == 0:
     # move inside the if when trying to run tests first
     print("All tests passed. Starting the server...")
-    serve(app, host="0.0.0.0", port=8111)
+    serve(app, host="0.0.0.0", port=8000)
     # else:
         # Tests failed
         # print("Some tests failed. The server will not start.")

@@ -172,7 +172,7 @@ class App extends State<MyApp> {
                     onPressed: () async {
                       dynamic loggedIn = await logInUser();
                       if (context.mounted && loggedIn['status'] != 'error') {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const HomePage(),
@@ -207,7 +207,7 @@ class App extends State<MyApp> {
           surfaceTintColor: cs.background,
           child: TextButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const SignUpPage(),

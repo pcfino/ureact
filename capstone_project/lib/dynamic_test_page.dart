@@ -181,7 +181,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
           actions: <Widget>[
             TextButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => TestsPage(
@@ -297,7 +297,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                               if (duration == 0) {
                                 throwTestError();
                               } else if (widget.trialNumber == 1) {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
@@ -317,7 +317,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   ),
                                 );
                               } else if (widget.trialNumber == 2) {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
@@ -452,7 +452,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                         turningSpeed,
                                         mlSway);
                                 if (createdDynamic != null && context.mounted) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => DynamicResultsPage(

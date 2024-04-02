@@ -1,6 +1,7 @@
 import json
 import datetime
 import numpy as np
+import math
 from scipy import signal
 from flask import Flask, jsonify, request, Response
 from mysql import connector
@@ -705,15 +706,17 @@ def sway():
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
 
+    dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
+
     Fc = 3.5
 
     # Filters[data] data using butterworth filter with specified [order] order,
     # [Fc] cuttoff frequency and [Fs] sampling frequency.
 
     [b,a] = signal.butter(4,(Fc/(fs/2)))
-    Sway_ml = signal.filtfilt(b,a, dataAcc[2])/9.81 # z-direction
-    Sway_ap = signal.filtfilt(b,a, dataAcc[1])/9.81 # y-direction
-    Sway_v = signal.filtfilt(b,a, dataAcc[0])/9.81 # x-direction
+    Sway_ml = signal.filtfilt(b,a, dataAcc[2]) / 9.81 # z-direction
+    Sway_ap = signal.filtfilt(b,a, dataAcc[1]) / 9.81 # y-direction
+    Sway_v = signal.filtfilt(b,a, dataAcc[0]) / 9.81 # x-direction
 
     rms_ml = rms(Sway_ml)
     rms_ap = rms(Sway_ap)
@@ -729,6 +732,9 @@ def tandemGait():
 
     # find the beginning and end
     peaks, _ = signal.find_peaks(dataRot[2], height=0.1)
+
+    dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
+
     begin = peaks[0]
     end = peaks[len(peaks)-1]
 
@@ -738,6 +744,7 @@ def tandemGait():
     peakTurnsLoc, _ = signal.find_peaks(dataRot[2])
     peakTurns = list(map(lambda x: dataRot[2][x], peakTurnsLoc))
     maxTurn = max(peakTurns)
+
     maxTurnIndex = peakTurns.index(maxTurn)
     
     # find closest right and left
@@ -754,7 +761,7 @@ def tandemGait():
     returningX = dataRot[0][valueRight:end+1]
 
     duration = (end - begin) / fs
-    turningSpeed = maxTurn * 180 / np.pi
+    turningSpeed = maxTurn * 180.0 / np.pi
 
     return jsonify(rmsMlGoing = rms(goingZ), rmsApGoing = rms(goingX), rmsMlReturn = rms(returningZ), rmsApReturn = rms(returningX), duration = duration, turningSpeed = turningSpeed)
 
@@ -773,6 +780,110 @@ def rms(arr):
      
     #Calculate Root
     return np.sqrt(mean)
+
+def alignData(dataRot, dataAcc, fs):
+    gR = resample(dataRot, 180 / np.pi)
+    accR = resample(dataAcc, 1)
+
+    acceleration, q = rotateAcc(accR, fs * 2)
+    rotation = rotateVec(gR, q)
+
+    rotation = np.array(rotation) * np.pi / 180.0
+    acceleration = np.array(acceleration) * 9.807
+
+    return rotation, acceleration
+
+def resample(data, coeff):
+    gr = [0] * 3 
+    gr[0] = list(map(lambda x: x * coeff, signal.resample(data[0], len(data[0]))))
+    gr[1] = list(map(lambda x: x * coeff, signal.resample(data[1], len(data[1]))))
+    gr[2] = list(map(lambda x: x * coeff, signal.resample(data[2], len(data[2]))))
+
+    return gr
+
+def rotateAcc(acc, t):
+    acc = np.array(acc)
+    avgAcc = [0] * 3 
+    avgAcc[0] = sum(acc[0][0:t]) / t
+    avgAcc[1] = sum(acc[1][0:t]) / t
+    avgAcc[2] = sum(acc[2][0:t]) / t
+
+    avgNorm = pow(pow(avgAcc[0], 2) + pow(avgAcc[1], 2) + pow(avgAcc[2], 2), 0.5)
+
+    v = [0, 0, avgNorm]
+    normV = pow(pow(v[0], 2) + pow(v[1], 2) + pow(v[2], 2), 0.5)
+    u = np.cross(avgAcc, v)
+    normU = pow(pow(u[0], 2) + pow(u[1], 2) + pow(u[2], 2), 0.5)
+    u = list(map(lambda x: x / normU, u))
+    
+    theta = math.acos(np.dot(avgAcc, v) / (avgNorm * normV))
+    
+    q0 = [math.cos(theta/2)]
+    q123 = list(map(lambda x: math.sin(theta/2) * x, u))
+
+    q = q0 + q123
+
+    return rotateVec(acc, q), q
+
+def rotateVec(v, q):
+    v = np.array(v)
+    q = np.array(q)
+
+    if np.size(q) == 4 and np.size(v) == 3:
+        vr = MultiplyQuaternions(q, np.insert(v, 0, 0))
+        vr = MultiplyQuaternions(vr, np.insert(-v[1:], 0, v[0]))
+        return [vr[1], vr[2], vr[3]]
+    
+    vr = MultiplyQuaternions(q, np.insert(v, 0, np.zeros(len(v[0])), 0))
+    vr = MultiplyQuaternions(vr, np.insert(-q[1:], 0, q[0]))
+
+    return [vr[1], vr[2], vr[3]]
+
+def MultiplyQuaternions(q0,q1):
+    if (np.size(q0) == 4 and np.size(q1) == 4):
+        qr = [0] * 4;
+        qr[0] = q0[0]*q1[0] - q0[1]*q1[1] - q0[2]*q1[2] - q0[3]*q1[3];
+        qr[1] = q0[0]*q1[1] + q0[1]*q1[0] + q0[2]*q1[3] - q0[3]*q1[2];
+        qr[2] = q0[0]*q1[2] - q0[1]*q1[3] + q0[2]*q1[0] + q0[3]*q1[1];
+        qr[3] = q0[0]*q1[3] + q0[1]*q1[2] - q0[2]*q1[1] + q0[3]*q1[0];
+        return qr
+    
+    if np.size(q0) == 4:
+        if np.shape(q1)[0] != 4:
+            q1 = np.transpose(q1)
+        qr = np.zeros((len(q1), len(q1[0])))
+        for c1 in  range(len(q1[0])):
+            qr[0][c1] = q0[0]*q1[0][c1] - q0[1]*q1[1][c1] - q0[2]*q1[2][c1] - q0[3]*q1[3][c1]
+            qr[1][c1] = q0[0]*q1[1][c1] + q0[1]*q1[0][c1] + q0[2]*q1[3][c1] - q0[3]*q1[2][c1]
+            qr[2][c1] = q0[0]*q1[2][c1] - q0[1]*q1[3][c1] + q0[2]*q1[0][c1] + q0[3]*q1[1][c1]
+            qr[3][c1] = q0[0]*q1[3][c1] + q0[1]*q1[2][c1] - q0[2]*q1[1][c1] + q0[3]*q1[0][c1]      
+        return qr
+    
+    if np.size(q1) == 4:
+        if np.shape(q0)[0] != 4:
+            q0 = np.transpose(q0)
+        qr = np.zeros((len(q0), len(q0[0])))
+        for c1 in range(len(q0[0])):
+            qr[0][c1] = q0[0][c1]*q1[0] - q0[1][c1]*q1[1] - q0[2][c1]*q1[2] - q0[3][c1]*q1[3]
+            qr[1][c1] = q0[0][c1]*q1[1] + q0[1][c1]*q1[0] + q0[2][c1]*q1[3] - q0[3][c1]*q1[2]
+            qr[2][c1] = q0[0][c1]*q1[2] - q0[1][c1]*q1[3] + q0[2][c1]*q1[0] + q0[3][c1]*q1[1]
+            qr[3][c1] = q0[0][c1]*q1[3] + q0[1][c1]*q1[2] - q0[2][c1]*q1[1] + q0[3][c1]*q1[0]
+        return qr
+    
+    if len(q0) != 4:
+        q0 = np.transpose(q0)
+
+    if len(q1) != 4:
+        q1 = np.transpose(q1)
+
+    qr = np.zeros(len(q0))
+    for c1 in range(len(q0)):
+        qr[0][c1] = q0[0][c1]*q1[0][c1] - q0[1][c1]*q1[1][c1] - q0[2][c1]*q1[2][c1] - q0[3][c1]*q1[3][c1];
+        qr[1][c1] = q0[0][c1]*q1[1][c1] + q0[1][c1]*q1[0][c1] + q0[2][c1]*q1[3][c1] - q0[3][c1]*q1[2][c1];
+        qr[2][c1] = q0[0][c1]*q1[2][c1] - q0[1][c1]*q1[3][c1] + q0[2][c1]*q1[0][c1] + q0[3][c1]*q1[1][c1];
+        qr[3][c1] = q0[0][c1]*q1[3][c1] + q0[1][c1]*q1[2][c1] - q0[2][c1]*q1[1][c1] + q0[3][c1]*q1[0][c1];  
+
+    return qr
 
 # --------------------------------------------------------------- Login ----------------------------------------------------------
 @app.route('/signUp', methods=['POST'])

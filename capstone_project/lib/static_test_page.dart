@@ -199,6 +199,136 @@ class _StaticTestPage extends State<StaticTestPage> {
     setState(() {});
   }
 
+  void restart() {
+    if (timer != null) {
+      timer!.cancel();
+    }
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => widget,
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+      ),
+    );
+  }
+
+  void skip() async {
+    if (widget.stance == "Two Leg Stance (Solid)") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StaticTestPage(
+            stance: "Single Leg Stance (Solid)",
+            tID: widget.tID,
+            tlSolidML: widget.tlSolidML,
+            tlFoamML: widget.tlFoamML,
+            slSolidML: widget.slSolidML,
+            slFoamML: widget.slFoamML,
+            tandSolidML: widget.tandSolidML,
+            tandFoamML: widget.tandFoamML,
+          ),
+        ),
+      );
+    } else if (widget.stance == "Single Leg Stance (Solid)") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StaticTestPage(
+            stance: "Tandem Stance (Solid)",
+            tID: widget.tID,
+            tlSolidML: widget.tlSolidML,
+            tlFoamML: widget.tlFoamML,
+            slSolidML: widget.slSolidML,
+            slFoamML: widget.slFoamML,
+            tandSolidML: widget.tandSolidML,
+            tandFoamML: widget.tandFoamML,
+          ),
+        ),
+      );
+    } else if (widget.stance == "Tandem Stance (Solid)") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StaticTestPage(
+            stance: "Two Leg Stance (Foam)",
+            tID: widget.tID,
+            tlSolidML: widget.tlSolidML,
+            tlFoamML: widget.tlFoamML,
+            slSolidML: widget.slSolidML,
+            slFoamML: widget.slFoamML,
+            tandSolidML: widget.tandSolidML,
+            tandFoamML: widget.tandFoamML,
+          ),
+        ),
+      );
+    } else if (widget.stance == "Two Leg Stance (Foam)") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StaticTestPage(
+            stance: "Single Leg Stance (Foam)",
+            tID: widget.tID,
+            tlSolidML: widget.tlSolidML,
+            tlFoamML: widget.tlFoamML,
+            slSolidML: widget.slSolidML,
+            slFoamML: widget.slFoamML,
+            tandSolidML: widget.tandSolidML,
+            tandFoamML: widget.tandFoamML,
+          ),
+        ),
+      );
+    } else if (widget.stance == "Single Leg Stance (Foam)") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StaticTestPage(
+            stance: "Tandem Stance (Foam)",
+            tID: widget.tID,
+            tlSolidML: widget.tlSolidML,
+            tlFoamML: widget.tlFoamML,
+            slSolidML: widget.slSolidML,
+            slFoamML: widget.slFoamML,
+            tandSolidML: widget.tandSolidML,
+            tandFoamML: widget.tandFoamML,
+          ),
+        ),
+      );
+    } else if (widget.stance == "Tandem Stance (Foam)") {
+      Static? createdStatic = await createStaticTest(0);
+      if (createdStatic != null && context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StaticResultsPage(
+              tID: widget.tID,
+              tlSolidML: widget.tlSolidML,
+              tlFoamML: widget.tlFoamML,
+              slSolidML: widget.slSolidML,
+              slFoamML: widget.slFoamML,
+              tandSolidML: widget.tandSolidML,
+              tandFoamML: 0.0,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void cancel() {
+    if (timer != null) {
+      timer!.cancel();
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TestsPage(
+          tID: widget.tID,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ColorScheme cs = Theme.of(context).colorScheme;
@@ -206,44 +336,34 @@ class _StaticTestPage extends State<StaticTestPage> {
     return MaterialApp(
       title: 'Static',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        colorScheme: cs,
         useMaterial3: true,
       ),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text('Static'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.restart_alt),
-            onPressed: () {
-              if (timer != null) {
-                timer!.cancel();
-              }
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation1, animation2) => widget,
-                  transitionDuration: Duration.zero,
-                  reverseTransitionDuration: Duration.zero,
-                ),
-              );
-            },
+          backgroundColor: cs.primary.withOpacity(0.1),
+          scrolledUnderElevation: 0,
+          title: const Text(
+            'Static',
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                if (timer != null) {
-                  timer!.cancel();
-                }
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TestsPage(
-                      tID: widget.tID,
-                    ),
-                  ),
-                );
+                restart();
+              },
+              child: const Text('Restart'),
+            ),
+            TextButton(
+              onPressed: () {
+                skip();
+              },
+              child: const Text('Skip'),
+            ),
+            TextButton(
+              onPressed: () {
+                cancel();
               },
               child: const Text('Cancel'),
             )
@@ -258,48 +378,47 @@ class _StaticTestPage extends State<StaticTestPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Center(
-                        child: Text(
-                          'Directions',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const Divider(color: Colors.transparent),
+                      const Text(
+                        'Directions',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '1. Attach phone on lumbar spine',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '2. Press the start button',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '3. On the start chime, take the stance denoted below',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '4. Stand for 30 seconds until you hear the end chime',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '5. Repeat for 3 stances',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                     ],
@@ -313,7 +432,7 @@ class _StaticTestPage extends State<StaticTestPage> {
                         child: Text(
                           widget.stance,
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -332,31 +451,31 @@ class _StaticTestPage extends State<StaticTestPage> {
                               color: cs.background,
                             ),
                           ),
-                          fillColor: const Color.fromRGBO(255, 220, 212, 1),
+                          fillColor: cs.primary.withOpacity(0.1),
                           padding: const EdgeInsets.all(87),
                           elevation: 0,
                           highlightElevation: 0,
-                          child: const Text(
+                          child: Text(
                             'Start',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: Colors.black54,
+                              color: cs.secondary,
                             ),
                           ),
                         ),
                       if (timer != null)
-                        const CircularCountDownTimer(
+                        CircularCountDownTimer(
                           width: 200,
                           height: 200,
                           duration: 30,
-                          fillColor: Colors.black54,
+                          fillColor: cs.secondary,
                           ringColor: Colors.transparent,
-                          backgroundColor: Color.fromRGBO(255, 220, 212, 1),
+                          backgroundColor: cs.primary.withOpacity(0.1),
                           textStyle: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 25,
-                            color: Colors.black45,
+                            color: cs.secondary,
                           ),
                           strokeCap: StrokeCap.round,
                           strokeWidth: 10,

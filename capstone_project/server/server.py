@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request, Response
 from mysql import connector
 from waitress import serve
 from collections import OrderedDict
+import subprocess
 # pip install numpy
 # pip install scipy
 # pip install flask
@@ -17,11 +18,10 @@ from collections import OrderedDict
 
 # needed to set up a secret key for my user
 # needed to run aws configure
-# import botocore 
-# import botocore.session 
-# from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
+import botocore 
+import botocore.session 
+from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
 
-#For Cognito Implementation
 import cognito
 
 client = botocore.session.get_session().create_client('secretsmanager')
@@ -39,15 +39,18 @@ def connectSql():
     )
     return mydb
 
+cognitoSecret =CONFID['cognito_secret']
+
 app = Flask(__name__)
 app.json.sort_keys = False # make the order same as construction 
 
 import boto3
 
 client_idp = boto3.client('cognito-idp')
-CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = "secret")
+CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = cognitoSecret)
 
-print("Server has started: ")
+currentUser = None
+
 # ctrl-shift U - uppercase
 
 # --------------------------------------------------------------- PATIENT ---------------------------------------------------------------
@@ -186,7 +189,6 @@ def updatePatientHelper(data):
     sql += " WHERE pID=" + str(data['pID'])
     return sql
 
-
 @app.route('/mysql/deletePatient', methods=['DELETE'])
 def deletePatient():
     if request.method == 'DELETE':
@@ -209,7 +211,6 @@ def deletePatient():
         else:
             # make sure you pass in a valid pID
             return jsonify({"Status": False})
-
 
 # --------------------------------------------------------------- INCIDENT --------------------------------------------------------------
 @app.route('/mysql/getIncident', methods=['GET'])
@@ -533,6 +534,79 @@ def createStaticTest():
         "tandSolidML": data['tandSolidML'], "tandFoamML": data['tandFoamML'], "tID": data['tID']}
         return jsonify(returnRTest)
 
+# --------------------------------------------------------------- IMU DATA ---------------------------------------------------------------------
+@app.route('/mysql/insertIMU', methods=['POST'])
+def insertIMU():
+    if request.method == 'POST':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+
+        id_val = 0
+        type_of_id = ""
+        data = request.json
+        # Check if the "id" field is present
+        if "dID" in data:
+            id_val = data["dID"]
+            type_of_id = "dID"
+        elif "rID" in data:
+            id_val = data["rID"]
+            type_of_id = "rID"
+        elif "sID" in data:
+            id_val = data["sID"]
+            type_of_id = "sID"
+        else:
+            return jsonify({"Status": False})
+
+        sql = "INSERT INTO IMUData (imuData, " + type_of_id + ") VALUES (%s, %s)"
+        imu_json = {key: data[key] for key in ['dataAcc', 'dataRot', 'fps']}
+        imu_json_str = json.dumps(imu_json)
+        val = [imu_json_str, id_val]
+
+        try:
+            mycursor.execute(sql, val)
+            mydb.commit()
+        except connector.Error as err:
+            print("MySQL Cursor Error:", err)
+            return jsonify({"Status": False})
+
+        
+        return jsonify({"Status": True})
+
+
+
+@app.route('/mysql/getIMU', methods=['GET'])
+def getIMU():
+    if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+
+        data = request.args.get('rID')
+        type_of_id = ""
+        if request.args.get('rID') != None:
+            data = request.args.get('rID')
+            type_of_id = "rID"
+        elif request.args.get('sID') != None:
+            data = request.args.get('sID')
+            type_of_id = "sID"
+        elif request.args.get('dID') != None:
+            data = request.args.get('dID')
+            type_of_id = "dID"
+        else:
+            return jsonify({"Status": False})
+
+        sql = "SELECT * FROM IMUData WHERE " + type_of_id + "=%s"
+        val = [(data)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        returnList = []
+        for x in myresult:
+            parsed_data = json.loads(x[1])
+            returnList.append({"imuID": x[0], "imuData": parsed_data, "dID": x[2], "rID": x[3], "sID": x[4]})
+        return jsonify(returnList)
+
 # --------------------------------------------------------------- EXPORTING ---------------------------------------------------------------------
 
 @app.route('/mysql/exportSinglePatient', methods=['GET'])
@@ -668,8 +742,36 @@ def timeToStability():
     qf = np.logical_and(qaF, qrf)
 
     #find t0
-    peaks, _ = signal.find_peaks(np.flip(accNorm[fs * 3:]), height=14.6)
+    # 14.6
+    # we know that 4 returned 5 peaks
+    # print("accNorm:")
+    # i = len(accNorm) - 1
+    # for val in accNorm:
+    #     print(i, val)
+    #     i -= 1
+    
+    peaks = []
+    height_u = 15.0
+    is_peaks_two = False
+    while True:
+        if height_u < 4.0:
+            break
 
+        peaks, _ = signal.find_peaks(np.flip(accNorm), height=height_u)
+        
+        if len(peaks) == 2:
+            is_peaks_two = True
+            break
+
+        height_u -= 0.1
+
+    if is_peaks_two is False:
+        peaks = [peaks[0], peaks[-1]]
+
+    # THIS SHOULD PRINT THE PEAKS WE JUST GOT FROM THIS DATA
+    # print(accNorm[len(accNorm) - peaks[0] - 1], accNorm[len(accNorm) - peaks[-1] - 1])
+
+    # extract peaks
     movementF = peaks[-1]
     flipQf = qf[::-1]
 
@@ -906,20 +1008,24 @@ def confirmSignUp():
     return jsonify(status = success)
 
 @app.route('/signIn', methods=['POST'])
-def signIp():
+def signIn():
     userName = request.json.get('userName')
     password = request.json.get('password')
     accessToken = CIPW.start_sign_in(user_name= userName, password= password)
+    currentUser = accessToken
     #what is the token for?
     return jsonify(status = accessToken)
+
+@app.route('/signOut', methods=['POST'])
+def signOut():
+    currUserToken = request.json.get('token')
+    status = CIPW.log_out(currUserToken)
+    #CIPW.log_out(currentUser)
+    return jsonify(status = status)
 
 @app.route('/getUsers', methods=['GET'])
 def getUsers():
     return jsonify(CIPW.list_users())
-
-
-
-
 
 # --------------------------------------------------------------- SERVER ----------------------------------------------------------------
 
@@ -934,7 +1040,17 @@ def getUsers():
 # python -m pip install waitress
 
 if __name__ == "__main__":
+    # Run the tests
+    # result = subprocess.run(['python3', '-m', 'unittest', 'test_server.py'])
+
+    # Check the return code of the test execution
+    # if result.returncode == 0:
+    # move inside the if when trying to run tests first
+    print("All tests passed. Starting the server...")
     serve(app, host="0.0.0.0", port=8000)
+    # else:
+        # Tests failed
+        # print("Some tests failed. The server will not start.")
 
 
 # CHANGE THE DAMN PORT BACK TO 8000 for updating this

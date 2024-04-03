@@ -364,6 +364,22 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
                                   });
                                   start = false;
                                   setState(() {});
+                                  setState(() {
+                                    if (patientAngle.angle <
+                                        animation_controller.value) {
+                                      animation_controller.value -=
+                                          (animation_controller.value -
+                                                  patientAngle.angle) *
+                                              10;
+                                    } else if (patientAngle.angle >
+                                        animation_controller.value) {
+                                      animation_controller.value +=
+                                          (patientAngle.angle -
+                                                  animation_controller.value) *
+                                              10;
+                                    }
+                                    patientAngleColor = patientAngle.color;
+                                  });
                                 }
                               },
                               shape: CircleBorder(
@@ -392,21 +408,6 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
                                 // patientAngleColor = pa.color;
                                 print("p Angle is: " +
                                     patientAngle.angle.toString());
-                                setState(() {
-                                  if (patientAngle.angle <
-                                      animation_controller.value) {
-                                    animation_controller.value -=
-                                        (animation_controller.value -
-                                                patientAngle.angle) *
-                                            10;
-                                  } else if (patientAngle.angle >
-                                      animation_controller.value) {
-                                    animation_controller.value +=
-                                        (patientAngle.angle -
-                                                animation_controller.value) *
-                                            10;
-                                  }
-                                });
                                 return Transform.rotate(
                                   angle: animation_controller.value,
                                   // angle: animation_controller.value * 2 * pi,
@@ -453,8 +454,10 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
 
     timeToStab = 0;
-    patientAngle = PatientAngle(widget.direction);
-    patientAngleColor = Color.fromRGBO(255, 220, 212, 1);
+    setState(() {
+      patientAngle = PatientAngle(widget.direction);
+      patientAngleColor = Color.fromRGBO(255, 220, 212, 1);
+    });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }
 }

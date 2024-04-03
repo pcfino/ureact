@@ -15,18 +15,6 @@ class AccelerometerData {
   }
 }
 
-class GyroscopeData {
-  late final List<double> x;
-  late final List<double> y;
-  late final List<double> z;
-
-  GyroscopeData() {
-    x = <double>[];
-    y = <double>[];
-    z = <double>[];
-  }
-}
-
 class PatientAngle {
   late double angle = 0.0;
   late Color color = Color.fromRGBO(255, 220, 212, 1);

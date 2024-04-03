@@ -34,13 +34,6 @@ class ReactiveTestPage extends StatefulWidget {
 }
 
 class _ReactiveTestPage extends State<ReactiveTestPage> {
-  // @override
-  // void dispose() {
-  //   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-  //   super.dispose();
-  // }
-
   late double timeToStab;
   late ReactiveSensorRecorder sensorRecorder;
 
@@ -185,6 +178,98 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     }
   }
 
+  void skip() async {
+    if (!start) {
+      sensorRecorder.endSensors();
+      sensorRecorder.cancelPreTimer();
+      if (sensorRecorder.getRunning()) {
+        sensorRecorder.endRecording();
+      }
+    }
+    if (widget.direction == "Right") {
+      List<double> vals = [
+        widget.forward,
+        widget.left,
+        widget.right,
+        widget.backward
+      ];
+      vals.sort();
+      // Check - do we want to just take the median of nonzero values?
+      double median = (vals[1] + vals[2]) / 2;
+      Reactive? createdReactive =
+          await createReactiveTest(double.parse(median.toStringAsFixed(2)));
+      if (createdReactive != null && context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReactiveTestResultsPage(
+              forward: widget.forward,
+              left: widget.left,
+              right: widget.right,
+              backward: widget.backward,
+              median: double.parse(median.toStringAsFixed(2)),
+              tID: widget.tID,
+            ),
+          ),
+        );
+      }
+    } else {
+      String nextDir = "";
+      if (widget.direction == "Forward") {
+        nextDir = "Backward";
+      } else if (widget.direction == "Backward") {
+        nextDir = "Left";
+      } else if (widget.direction == "Left") {
+        nextDir = "Right";
+      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReactiveTestPage(
+            direction: nextDir,
+            forward: widget.forward,
+            left: widget.left,
+            right: widget.right,
+            backward: widget.backward,
+            tID: widget.tID,
+          ),
+        ),
+      );
+    }
+  }
+
+  void restart() {
+    try {
+      if (!start) {
+        sensorRecorder.endSensors();
+        sensorRecorder.cancelPreTimer();
+        if (sensorRecorder.getRunning()) {
+          sensorRecorder.endRecording();
+        }
+        start = true;
+        setState(() {});
+      }
+    } catch (e) {
+      throwTestError();
+    }
+  }
+
+  void cancel() {
+    if (!start) {
+      sensorRecorder.endSensors();
+      sensorRecorder.cancelPreTimer();
+      if (sensorRecorder.getRunning()) {
+        sensorRecorder.endRecording();
+      }
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TestsPage(tID: widget.tID),
+      ),
+    );
+  }
+
   Future<dynamic> createReactiveTest(double median) async {
     try {
       dynamic jsonReactive = await createReactive({
@@ -211,50 +296,38 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     return MaterialApp(
       title: "Reactive",
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        colorScheme: cs,
         useMaterial3: true,
       ),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text("Reactive"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.restart_alt),
-            onPressed: () {
-              try {
-                if (!start) {
-                  sensorRecorder.endSensors();
-                  sensorRecorder.cancelPreTimer();
-                  if (sensorRecorder.getRunning()) {
-                    sensorRecorder.endRecording();
-                  }
-                  start = true;
-                  setState(() {});
-                }
-              } catch (e) {
-                throwTestError();
-              }
-            },
+          backgroundColor: cs.primary.withOpacity(0.1),
+          scrolledUnderElevation: 0,
+          title: const Text(
+            "Reactive",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
+          //centerTitle: false,
           actions: <Widget>[
             TextButton(
-                onPressed: () {
-                  if (!start) {
-                    sensorRecorder.endSensors();
-                    sensorRecorder.cancelPreTimer();
-                    if (sensorRecorder.getRunning()) {
-                      sensorRecorder.endRecording();
-                    }
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TestsPage(tID: widget.tID),
-                    ),
-                  );
-                },
-                child: const Text('Cancel'))
+              onPressed: () {
+                restart();
+              },
+              child: const Text('Restart'),
+            ),
+            TextButton(
+              onPressed: () {
+                skip();
+              },
+              child: const Text('Skip'),
+            ),
+            TextButton(
+              onPressed: () {
+                cancel();
+              },
+              child: const Text('Cancel'),
+            ),
           ],
         ),
         body: SingleChildScrollView(
@@ -267,55 +340,54 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Center(
-                        child: Text(
-                          'Directions',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const Divider(color: Colors.transparent),
+                      const Text(
+                        'Directions',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '1. Attach phone to lumbar spine',
-                          style: TextStyle(fontSize: 20),
+                          '1. Attach phone on patient\'s lumbar spine',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '2. Press the start button',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '3. Lean participant until you hear the chime',
-                          style: TextStyle(fontSize: 20),
+                          '3. Lean patient until you hear the chime',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '4. Hold participant steady and release after 2-5 seconds',
-                          style: TextStyle(fontSize: 20),
+                          '4. Release patient when chime stops',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '5. Press the end test button once the participant has regained their balance',
-                          style: TextStyle(fontSize: 20),
+                          '5. Direct patient to stay still for 1 second after regaining stability',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '6. Repeat for each direction',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                     ],
@@ -329,7 +401,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                         child: Text(
                           'Lean ${widget.direction}',
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -364,16 +436,16 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                             color: cs.background,
                           ),
                         ),
-                        fillColor: const Color.fromRGBO(255, 220, 212, 1),
+                        fillColor: cs.primary.withOpacity(0.1),
                         padding: const EdgeInsets.all(87),
                         elevation: 0,
                         highlightElevation: 0,
                         child: Text(
-                          start ? "Start" : "Running",
-                          style: const TextStyle(
+                          start ? 'Start' : 'Running',
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Colors.black54,
+                            color: cs.secondary,
                           ),
                         ),
                       ),

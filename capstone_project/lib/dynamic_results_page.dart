@@ -79,50 +79,49 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
           dividerColor: Colors.transparent,
           highlightColor: Colors.white,
         ),
-        home: Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              title: const Text('Test Results'),
-              centerTitle: true,
-              leading: BackButton(onPressed: () {
-                Navigator.push(
-                  context,
-                  SlideRightRoute(
-                    page: TestsPage(tID: widget.tID),
-                  ),
-                );
-              }),
-            ),
-            body: SingleChildScrollView(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Administered by Cannon Rudd',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+        home: GestureDetector(
+          onPanUpdate: (details) {
+            // Swiping in right direction.
+            if (details.delta.dx > 0) {
+              Navigator.pushReplacement(
+                context,
+                SlideRightRoute(
+                  page: TestsPage(tID: widget.tID),
+                ),
+              );
+            }
+          },
+          child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              appBar: AppBar(
+                title: const Text('Test Results'),
+                centerTitle: true,
+                leading: BackButton(onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    SlideRightRoute(
+                      page: TestsPage(tID: widget.tID),
+                    ),
+                  );
+                }),
+              ),
+              body: SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Administered by Cannon Rudd',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const Divider(
-                        thickness: 0.5,
-                        color: Colors.transparent,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 1,
-                              blurRadius: 15,
-                            ),
-                          ],
+                        const Divider(
+                          thickness: 0.5,
+                          color: Colors.transparent,
                         ),
                         padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
                         child: Column(
@@ -337,7 +336,11 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
-                            ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               ListTile(
                                 title: const Text('Duration (ms)'),
@@ -365,22 +368,9 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                             ],
                           ),
                         ),
-                      ),
-                      const Divider(
-                        color: Colors.transparent,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                          color: const Color.fromRGBO(255, 220, 212, 1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 15,
-                            ),
-                          ],
+                        const Divider(
+                          thickness: 0.5,
+                          color: Colors.transparent,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(4),
@@ -418,23 +408,43 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                      const Divider(
-                        color: Colors.transparent,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                          color: const Color.fromRGBO(255, 220, 212, 1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 15,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: ExpansionTile(
+                              title: const Text(
+                                'Trial 1',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              children: [
+                                ListTile(
+                                  title: const Text('Duration'),
+                                  trailing: Text(
+                                    widget.t1Duration.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                ListTile(
+                                  title: const Text('Turn Speed'),
+                                  trailing: Text(
+                                    widget.t1TurnSpeed.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                ListTile(
+                                  title: const Text(
+                                    'ML Sway',
+                                  ),
+                                  trailing: Text(
+                                    widget.t1MLSway.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(4),
@@ -472,12 +482,103 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                               ),
                             ],
                           ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: ExpansionTile(
+                              title: const Text(
+                                'Trial 2',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              children: [
+                                ListTile(
+                                  title: const Text('Duration'),
+                                  trailing: Text(
+                                    widget.t2Duration.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                ListTile(
+                                  title: const Text('Turn Speed'),
+                                  trailing: Text(
+                                    widget.t2TurnSpeed.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                ListTile(
+                                  title: const Text(
+                                    'ML Sway',
+                                  ),
+                                  trailing: Text(
+                                    widget.t2MLSway.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                        const Divider(
+                          color: Colors.transparent,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
+                            color: const Color.fromRGBO(255, 220, 212, 1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 15,
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: ExpansionTile(
+                              title: const Text(
+                                'Trial 3',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              children: [
+                                ListTile(
+                                  title: const Text('Duration'),
+                                  trailing: Text(
+                                    widget.t3Duration.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                ListTile(
+                                  title: const Text('Turn Speed'),
+                                  trailing: Text(
+                                    widget.t3TurnSpeed.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                ListTile(
+                                  title: const Text(
+                                    'ML Sway',
+                                  ),
+                                  trailing: Text(
+                                    widget.t3MLSway.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )));
+              )),
+        ));
   }
 }

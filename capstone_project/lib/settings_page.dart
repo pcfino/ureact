@@ -1,4 +1,5 @@
 import 'package:capstone_project/home_page.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -19,82 +20,95 @@ class _SettingsPage extends State<SettingsPage> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Settings'),
-          centerTitle: true,
-          leading: BackButton(onPressed: () {
-            Navigator.push(
+      home: GestureDetector(
+        onPanUpdate: (details) {
+          // Swiping in right direction.
+          if (details.delta.dx > 0) {
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
+              SlideRightRoute(
+                page: const HomePage(),
               ),
             );
-          }),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                const Row(
-                  children: [
-                    Expanded(
-                      child: Icon(
-                        Icons.account_circle_outlined,
-                        color: Colors.black,
-                        size: 100.0,
-                      ),
-                    ),
-                  ],
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Settings'),
+            centerTitle: true,
+            leading: BackButton(onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                SlideRightRoute(
+                  page: const HomePage(),
                 ),
-                const Row(children: [
-                  Expanded(
-                    child: Text(
-                      "Cannon Rudd",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ]),
-                const Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "jamessmith@email.com",
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  ],
-                ),
-                Expanded(
-                  child: ListView(
+              );
+            }),
+          ),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  const Row(
                     children: [
-                      SwitchListTile(
-                        title: const Text("Dark Mode"),
-                        shape: const Border(
-                          bottom: BorderSide(
-                            color: Colors.grey,
-                            width: 1,
-                          ),
+                      Expanded(
+                        child: Icon(
+                          Icons.account_circle_outlined,
+                          color: Colors.black,
+                          size: 100.0,
                         ),
-                        value: darkMode,
-                        onChanged: (bool value) {
-                          setState(() {
-                            darkMode = value;
-                          });
-                        },
-                      ),
-                      const ListTile(
-                        title: Text("Sign Out"),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const Row(children: [
+                    Expanded(
+                      child: Text(
+                        "Cannon Rudd",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ]),
+                  const Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "jamessmith@email.com",
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    ],
+                  ),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        SwitchListTile(
+                          title: const Text("Dark Mode"),
+                          shape: const Border(
+                            bottom: BorderSide(
+                              color: Colors.grey,
+                              width: 1,
+                            ),
+                          ),
+                          value: darkMode,
+                          onChanged: (bool value) {
+                            setState(() {
+                              darkMode = value;
+                            });
+                          },
+                        ),
+                        const ListTile(
+                          title: Text("Sign Out"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

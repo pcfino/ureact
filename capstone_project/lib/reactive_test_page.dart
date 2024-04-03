@@ -108,7 +108,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     if (timeToStab == 0) {
       throwTestError();
     } else if (widget.direction == 'Forward') {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
@@ -122,7 +122,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         ),
       );
     } else if (widget.direction == 'Backward') {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
@@ -136,7 +136,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         ),
       );
     } else if (widget.direction == 'Left') {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
@@ -161,7 +161,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
       Reactive? createdReactive =
           await createReactiveTest(double.parse(median.toStringAsFixed(2)));
       if (createdReactive != null && context.mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => ReactiveTestResultsPage(

@@ -258,9 +258,9 @@ class ReactiveSensorRecorder {
     //Added 5 degrees to each to match what was working with forward
     if (_testDirection == 'backward') {
       // Initially 6
-      minAngle = 11; 
+      minAngle = 6; 
       // Inititally 8
-      maxAngle = 13; 
+      maxAngle = 9; 
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ /
           sqrt((_init_accX * _init_accX) +
@@ -269,23 +269,24 @@ class ReactiveSensorRecorder {
     //During Meeting we found that around -16 was the angle we needed
     } else if (_testDirection == 'forward') {
       // Inititally 8
-      minAngle = -16; //45 + 7; //-16 to -12 worked well with peter in the room
+      minAngle = -10; //45 + 7; //-16 to -12 worked well with peter in the room
       // Initially 10
-      maxAngle = -12; //45 + 11;
+      maxAngle = -8; //45 + 11;
       radAngle = acos(z / sqrt((x * x) + (y * y) + (z * z)));
       initAngle = acos(_init_accZ /
           sqrt((_init_accX * _init_accX) +
               (_init_accY * _init_accY) +
               (_init_accZ * _init_accZ)));
+    
     } else if (_testDirection == 'right') {
-      minAngle = -12;
-      maxAngle = -8;
+      minAngle = -7;
+      maxAngle = -5;
       radAngle = atan(x / sqrt((y * y) + (z * z)));
       initAngle = atan(_init_accX /
           sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
     } else if (_testDirection == 'left') {
-      minAngle = 8;
-      maxAngle = 12;
+      minAngle = 5;
+      maxAngle = 7;
       radAngle = atan(x / sqrt((y * y) + (z * z)));
       initAngle = atan(_init_accX /
           sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));

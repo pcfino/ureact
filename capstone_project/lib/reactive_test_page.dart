@@ -35,7 +35,7 @@ class ReactiveTestPage extends StatefulWidget {
 }
 
 class _ReactiveTestPage extends State<ReactiveTestPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   // @override
   // void dispose() {
   //   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -45,6 +45,8 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
 
   late double timeToStab;
   late ReactiveSensorRecorder sensorRecorder;
+  late PatientAngle patientAngle;
+  late Color patientAngleColor;
 
   void throwTestError() {
     showDialog<void>(
@@ -202,9 +204,9 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
   }
 
   TextEditingController startButton = TextEditingController();
-  late final AnimationController animation_controller =
-      AnimationController(vsync: this, duration: const Duration(minutes: 1))
-        ..repeat();
+  late final AnimationController animation_controller = AnimationController(
+      vsync: this, duration: const Duration(seconds: 1), value: 0)
+    ..repeat();
 
   bool start = true;
 
@@ -385,22 +387,50 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
                           : AnimatedBuilder(
                               animation: animation_controller,
                               builder: (context, child) {
-                                PatientAngle pa =
-                                    PatientAngle(widget.direction);
-                                double angle = pa.angle;
+                                // PatientAngle pa =
+                                //     PatientAngle(widget.direction);
+                                // patientAngleColor = pa.color;
+                                print("p Angle is: " +
+                                    patientAngle.angle.toString());
+                                setState(() {
+                                  if (patientAngle.angle <
+                                      animation_controller.value) {
+                                    animation_controller.value -=
+                                        (animation_controller.value -
+                                                patientAngle.angle) *
+                                            10;
+                                  } else if (patientAngle.angle >
+                                      animation_controller.value) {
+                                    animation_controller.value +=
+                                        (patientAngle.angle -
+                                                animation_controller.value) *
+                                            10;
+                                  }
+                                });
                                 return Transform.rotate(
+                                  angle: animation_controller.value,
                                   // angle: animation_controller.value * 2 * pi,
-                                  angle: angle,
+                                  // angle: pa.angle.isNaN ? 0 : pa.angle,
+                                  // angle: animation_controller.value +
+                                  //     (pa.angle.isNaN ? 0 : pa.angle) * 2,
                                   child: child,
                                 );
                               },
-                              child: const Icon(
-                                Icons.angle,
-                                color: Colors.black,
-                                size: 180,
-                              )
-                              // child: FlutterLogo(size: 200),
-                              ),
+                              child: RawMaterialButton(
+                                onPressed: () {},
+                                shape: CircleBorder(
+                                  side: BorderSide(
+                                    width: 10,
+                                    color: cs.background,
+                                  ),
+                                ),
+                                fillColor: patientAngleColor,
+                                child: const Icon(
+                                  Icons.boy,
+                                  color: Colors.black,
+                                  size: 100,
+                                ),
+                              )),
                     ],
                   ),
                 ),
@@ -423,7 +453,8 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
 
     timeToStab = 0;
-
+    patientAngle = PatientAngle(widget.direction);
+    patientAngleColor = Color.fromRGBO(255, 220, 212, 1);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }
 }

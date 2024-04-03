@@ -289,10 +289,6 @@ class ReactiveSensorRecorder {
     maxAngle = maxAngle * pi / 180;
 
     if (radAngle >= initAngle + minAngle && radAngle <= initAngle + maxAngle) {
-      print("TRUE");
-      print("radAngle:" + radAngle.toString());
-      print("maxAngle:" + initAngle.toString() + maxAngle.toString());
-      print("minAngle:" + initAngle.toString() + minAngle.toString());
       _ready = true;
     } else {
       _ready = false;

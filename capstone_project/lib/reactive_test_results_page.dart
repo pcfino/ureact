@@ -115,10 +115,6 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                             style: const TextStyle(fontSize: 15),
                           ),
                         ),
-                        trailing: Text(
-                          "${widget.median * 1000} ms",
-                          style: const TextStyle(fontSize: 15),
-                        ),
                       ),
                     ),
                     const Divider(
@@ -152,9 +148,71 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                             style: const TextStyle(fontSize: 15),
                           ),
                         ),
-                        trailing: Text(
-                          "${widget.forward * 1000} ms",
-                          style: const TextStyle(fontSize: 15),
+                      ),
+                    ),
+                    const Divider(
+                      color: Colors.transparent,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
+                        color: const Color.fromRGBO(255, 220, 212, 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 15,
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: ListTile(
+                          title: const Text(
+                            'Right',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          trailing: Text(
+                            widget.right.toString(),
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Divider(
+                      color: Colors.transparent,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
+                        color: const Color.fromRGBO(255, 220, 212, 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 15,
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: ListTile(
+                          title: const Text(
+                            'Left',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          trailing: Text(
+                            widget.left.toString(),
+                            style: const TextStyle(fontSize: 15),
+                          ),
                         ),
                       ),
                     ),
@@ -188,74 +246,6 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                             widget.backward.toString(),
                             style: const TextStyle(fontSize: 15),
                           ),
-                        ),
-                        trailing: Text(
-                          "${widget.backward * 1000} ms",
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(
-                    color: Colors.transparent,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      color: const Color.fromRGBO(255, 220, 212, 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 15,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: ListTile(
-                        title: const Text(
-                          'Left',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        trailing: Text(
-                          "${widget.left * 1000} ms",
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(
-                    color: Colors.transparent,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      color: const Color.fromRGBO(255, 220, 212, 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 15,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: ListTile(
-                        title: const Text(
-                          'Right',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        trailing: Text(
-                          "${widget.right * 1000} ms",
-                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ),

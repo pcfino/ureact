@@ -436,6 +436,7 @@ def createTest():
         data = request.json
         sql = "INSERT INTO Test (tName, tDate, tNotes, iID) VALUES(%s, %s, %s, %s)"
         val = (data['tName'], data['tDate'], data['tNotes'], data['iID'])
+        # print(data["tDate"], "this is tdate")
         mycursor.execute(sql, val)
         mydb.commit()
 
@@ -570,7 +571,6 @@ def insertIMU():
             print("MySQL Cursor Error:", err)
             return jsonify({"Status": False})
 
-        
         return jsonify({"Status": True})
 
 
@@ -729,6 +729,7 @@ def timeToStability():
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
+    print(fs)
 
     accNorm = np.linalg.norm(dataAcc, axis=0)
     rotNorm = np.linalg.norm(dataRot, axis=0)
@@ -804,6 +805,7 @@ def timeToStability():
 
 @app.route('/sway', methods=['POST'])
 def sway():
+    # static - stand still
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
@@ -823,14 +825,20 @@ def sway():
     rms_ml = rms(Sway_ml)
     rms_ap = rms(Sway_ap)
     rms_v = rms(Sway_v)
+    # print("right before the return in sway")
 
     return jsonify(rmsMl = rms_ml, rmsAp = rms_ap, rmsV = rms_v)
 
 @app.route('/tandemGait', methods=['POST'])
 def tandemGait():
+    # dynamic - walking
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
+    timeStamp = request.json.get('timeStamps')
+    # print("DataRot 0:", dataRot[0])
+    # print("DataRot 1:", dataRot[1])
+    # print("DataRot 2:", dataRot[2])
 
     # find the beginning and end
     peaks, _ = signal.find_peaks(dataRot[2], height=0.1)
@@ -840,7 +848,11 @@ def tandemGait():
     begin = peaks[0]
     end = peaks[len(peaks)-1]
 
-    duration = (end - begin) / fs
+    duration = (timeStamp[end] - timeStamp[begin]) / 1000
+    # print("duration as it was:", duration)
+    # print("updated maybe to seconds (durr/1000):", duration / 1000)
+    # print("timestamp end:", timeStamp[end], "timestamp 0:", timeStamp[0])
+    # print("begin:", begin, "end:", end)
     
     # find global minima - peak turn
     peakTurnsLoc, _ = signal.find_peaks(dataRot[2])
@@ -862,8 +874,9 @@ def tandemGait():
     goingX = dataRot[0][begin:valueLeft+1]
     returningX = dataRot[0][valueRight:end+1]
 
-    duration = (end - begin) / fs
     turningSpeed = maxTurn * 180.0 / np.pi
+
+    # print("right before the return in dynamic")
 
     return jsonify(rmsMlGoing = rms(goingZ), rmsApGoing = rms(goingX), rmsMlReturn = rms(returningZ), rmsApReturn = rms(returningX), duration = duration, turningSpeed = turningSpeed)
 
@@ -943,11 +956,11 @@ def rotateVec(v, q):
 
 def MultiplyQuaternions(q0,q1):
     if (np.size(q0) == 4 and np.size(q1) == 4):
-        qr = [0] * 4;
-        qr[0] = q0[0]*q1[0] - q0[1]*q1[1] - q0[2]*q1[2] - q0[3]*q1[3];
-        qr[1] = q0[0]*q1[1] + q0[1]*q1[0] + q0[2]*q1[3] - q0[3]*q1[2];
-        qr[2] = q0[0]*q1[2] - q0[1]*q1[3] + q0[2]*q1[0] + q0[3]*q1[1];
-        qr[3] = q0[0]*q1[3] + q0[1]*q1[2] - q0[2]*q1[1] + q0[3]*q1[0];
+        qr = [0] * 4
+        qr[0] = q0[0]*q1[0] - q0[1]*q1[1] - q0[2]*q1[2] - q0[3]*q1[3]
+        qr[1] = q0[0]*q1[1] + q0[1]*q1[0] + q0[2]*q1[3] - q0[3]*q1[2]
+        qr[2] = q0[0]*q1[2] - q0[1]*q1[3] + q0[2]*q1[0] + q0[3]*q1[1]
+        qr[3] = q0[0]*q1[3] + q0[1]*q1[2] - q0[2]*q1[1] + q0[3]*q1[0]
         return qr
     
     if np.size(q0) == 4:

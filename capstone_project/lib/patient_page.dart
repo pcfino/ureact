@@ -1,8 +1,6 @@
-import 'package:capstone_project/models/test.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-// import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
 import 'package:capstone_project/create_incident_page.dart';
@@ -100,17 +98,21 @@ class _PatientPage extends State<PatientPage> {
       'Incident Date/Time',
       'Condition',
       'Reactive MTime',
+      'fTime',
+      'bTime',
+      'lTime',
+      'rTime',
       'Static TL Solid ML',
       'Static TL Foam ML',
-      // 'Dynamic T1 Duration',
-      // 'Dynamic T1 TurnSpeed',
-      // 'Dynamic T1 ML Sway',
-      // 'Dynamic T2 Duration',
-      // 'Dynamic T2 TurnSpeed',
-      // 'Dynamic T2 ML Sway',
-      // 'Dynamic T3 Duration',
-      // 'Dynamic T3 TurnSpeed',
-      // 'Dynamic T3 ML Sway',
+      'Dynamic T1 Duration',
+      'Dynamic T1 TurnSpeed',
+      'Dynamic T1 ML Sway',
+      'Dynamic T2 Duration',
+      'Dynamic T2 TurnSpeed',
+      'Dynamic T2 ML Sway',
+      'Dynamic T3 Duration',
+      'Dynamic T3 TurnSpeed',
+      'Dynamic T3 ML Sway',
       'dMax',
       'dMin',
       'dMean',
@@ -145,21 +147,25 @@ class _PatientPage extends State<PatientPage> {
             for (var test in tests) {
               bool hasData = false;
               double? reactiveMTime;
+              double? fTime;
+              double? bTime;
+              double? lTime;
+              double? rTime;
 
               double? staticTLSolidML;
               double? staticTLFoamML;
 
-              // double? dynamicT1Duration;
-              // double? dynamicT1TurnSpeed;
-              // double? dynamicT1MLSway;
+              double? dynamicT1Duration;
+              double? dynamicT1TurnSpeed;
+              double? dynamicT1MLSway;
 
-              // double? dynamicT2Duration;
-              // double? dynamicT2TurnSpeed;
-              // double? dynamicT2MLSway;
+              double? dynamicT2Duration;
+              double? dynamicT2TurnSpeed;
+              double? dynamicT2MLSway;
 
-              // double? dynamicT3Duration;
-              // double? dynamicT3TurnSpeed;
-              // double? dynamicT3MLSway;
+              double? dynamicT3Duration;
+              double? dynamicT3TurnSpeed;
+              double? dynamicT3MLSway;
 
               double? dMax;
               double? dMin;
@@ -178,6 +184,10 @@ class _PatientPage extends State<PatientPage> {
               if (test.containsKey('reactive')) {
                 if (test['reactive'].length != 0) {
                   reactiveMTime = test['reactive']['mTime'];
+                  fTime = test['reactive']['fTime'];
+                  bTime = test['reactive']['bTime'];
+                  lTime = test['reactive']['lTime'];
+                  rTime = test['reactive']['rTime'];
                   hasData = true;
                 }
               }
@@ -192,17 +202,17 @@ class _PatientPage extends State<PatientPage> {
               // Get dynamic test data
               else if (test.containsKey('dynamic')) {
                 if (test['dynamic'].length != 0) {
-                  // dynamicT1Duration = test['dynamic']['t1Duration'];
-                  // dynamicT1TurnSpeed = test['dynamic']['t1TurnSpeed'];
-                  // dynamicT1MLSway = test['dynamic']['t1MLSway'];
+                  dynamicT1Duration = test['dynamic']['t1Duration'];
+                  dynamicT1TurnSpeed = test['dynamic']['t1TurnSpeed'];
+                  dynamicT1MLSway = test['dynamic']['t1MLSway'];
 
-                  // dynamicT2Duration = test['dynamic']['t2Duration'];
-                  // dynamicT2TurnSpeed = test['dynamic']['t2TurnSpeed'];
-                  // dynamicT2MLSway = test['dynamic']['t2MLSway'];
+                  dynamicT2Duration = test['dynamic']['t2Duration'];
+                  dynamicT2TurnSpeed = test['dynamic']['t2TurnSpeed'];
+                  dynamicT2MLSway = test['dynamic']['t2MLSway'];
 
-                  // dynamicT3Duration = test['dynamic']['t3Duration'];
-                  // dynamicT3TurnSpeed = test['dynamic']['t3TurnSpeed'];
-                  // dynamicT3MLSway = test['dynamic']['t3MLSway'];
+                  dynamicT3Duration = test['dynamic']['t3Duration'];
+                  dynamicT3TurnSpeed = test['dynamic']['t3TurnSpeed'];
+                  dynamicT3MLSway = test['dynamic']['t3MLSway'];
 
                   dMax = test['dynamic']['dMax'];
                   dMin = test['dynamic']['dMin'];
@@ -232,17 +242,21 @@ class _PatientPage extends State<PatientPage> {
                   incident['iDate'],
                   incident['iNotes'],
                   reactiveMTime,
+                  fTime,
+                  bTime,
+                  lTime,
+                  rTime,
                   staticTLSolidML,
                   staticTLFoamML,
-                  // dynamicT1Duration,
-                  // dynamicT1TurnSpeed,
-                  // dynamicT1MLSway,
-                  // dynamicT2Duration,
-                  // dynamicT2TurnSpeed,
-                  // dynamicT2MLSway,
-                  // dynamicT3Duration,
-                  // dynamicT3TurnSpeed,
-                  // dynamicT3MLSway,
+                  dynamicT1Duration,
+                  dynamicT1TurnSpeed,
+                  dynamicT1MLSway,
+                  dynamicT2Duration,
+                  dynamicT2TurnSpeed,
+                  dynamicT2MLSway,
+                  dynamicT3Duration,
+                  dynamicT3TurnSpeed,
+                  dynamicT3MLSway,
                   dMax,
                   dMin,
                   dMean,

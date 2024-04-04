@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:capstone_project/reactive_test_results_page.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/models/reactive.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'reactive_sensor_recorder.dart';
 import 'dart:async';
 import 'api/test_api.dart';
@@ -36,17 +37,11 @@ class ReactiveTestPage extends StatefulWidget {
 
 class _ReactiveTestPage extends State<ReactiveTestPage>
     with TickerProviderStateMixin {
-  // @override
-  // void dispose() {
-  //   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-  //   super.dispose();
-  // }
-
   late double timeToStab;
   late ReactiveSensorRecorder sensorRecorder;
   late PatientAngle patientAngle;
   late Color patientAngleColor;
+  late StreamSubscription<AccelerometerEvent> _accelerometerStreamEvent;
 
   void throwTestError() {
     showDialog<void>(
@@ -212,6 +207,14 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
 
   @override
   Widget build(BuildContext context) {
+    if (patientAngle.angle < animation_controller.value) {
+      animation_controller.value -=
+          (animation_controller.value - patientAngle.angle) * 10;
+    } else if (patientAngle.angle > animation_controller.value) {
+      animation_controller.value +=
+          (patientAngle.angle - animation_controller.value) * 10;
+    }
+    patientAngleColor = patientAngle.color;
     ColorScheme cs = Theme.of(context).colorScheme;
     return MaterialApp(
       title: "Reactive",
@@ -364,22 +367,6 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
                                   });
                                   start = false;
                                   setState(() {});
-                                  setState(() {
-                                    if (patientAngle.angle <
-                                        animation_controller.value) {
-                                      animation_controller.value -=
-                                          (animation_controller.value -
-                                                  patientAngle.angle) *
-                                              10;
-                                    } else if (patientAngle.angle >
-                                        animation_controller.value) {
-                                      animation_controller.value +=
-                                          (patientAngle.angle -
-                                                  animation_controller.value) *
-                                              10;
-                                    }
-                                    patientAngleColor = patientAngle.color;
-                                  });
                                 }
                               },
                               shape: CircleBorder(
@@ -403,17 +390,10 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
                           : AnimatedBuilder(
                               animation: animation_controller,
                               builder: (context, child) {
-                                // PatientAngle pa =
-                                //     PatientAngle(widget.direction);
-                                // patientAngleColor = pa.color;
                                 print("p Angle is: " +
                                     patientAngle.angle.toString());
                                 return Transform.rotate(
                                   angle: animation_controller.value,
-                                  // angle: animation_controller.value * 2 * pi,
-                                  // angle: pa.angle.isNaN ? 0 : pa.angle,
-                                  // angle: animation_controller.value +
-                                  //     (pa.angle.isNaN ? 0 : pa.angle) * 2,
                                   child: child,
                                 );
                               },
@@ -454,10 +434,29 @@ class _ReactiveTestPage extends State<ReactiveTestPage>
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
 
     timeToStab = 0;
-    setState(() {
-      patientAngle = PatientAngle(widget.direction);
-      patientAngleColor = Color.fromRGBO(255, 220, 212, 1);
+    double _init_accX = double.nan;
+    double _init_accY = double.nan;
+    double _init_accZ = double.nan;
+    _accelerometerStreamEvent = accelerometerEventStream().listen((event) {
+      setState(() {
+        if (_init_accX.isNaN) {
+          _init_accX = event.y;
+          _init_accY = event.x;
+          _init_accZ = event.z;
+        }
+        patientAngle = PatientAngle(widget.direction, event.y, event.x, event.z,
+            _init_accX, _init_accY, _init_accZ);
+        patientAngleColor = Color.fromRGBO(255, 220, 212, 1);
+      });
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
+  }
+
+  @override
+  void dispose() {
+    // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    _accelerometerStreamEvent.cancel();
+
+    super.dispose();
   }
 }

@@ -19,9 +19,9 @@ class PatientAngle {
   late double angle = 0.0;
   late Color color = Color.fromRGBO(255, 220, 212, 1);
 
-  double _accX = 0.0;
-  double _accY = 0.0;
-  double _accZ = 0.0;
+  // double _accX = 0.0;
+  // double _accY = 0.0;
+  // double _accZ = 0.0;
 
   double _init_accX = double.nan;
   double _init_accY = double.nan;
@@ -29,27 +29,34 @@ class PatientAngle {
 
   String _testDirection = '';
 
-  late StreamSubscription<AccelerometerEvent> _accelerometerStreamEvent;
+  // late StreamSubscription<AccelerometerEvent> _accelerometerStreamEvent;
 
-  PatientAngle(String testDirection) {
+  PatientAngle(String testDirection, double x, double y, double z,
+      double init_x, double init_y, double init_z) {
     _testDirection = testDirection;
+    // if (_init_accX.isNaN) {
+    _init_accX = init_x;
+    _init_accY = init_y;
+    _init_accZ = init_z;
+    // }
+    angleMeet([x, y, z]);
 
-    _accelerometerStreamEvent = accelerometerEventStream().listen((event) {
-      _accX = event.y;
-      _accY = event.x;
-      _accZ = event.z;
-      if (_init_accX.isNaN) {
-        _init_accX = event.y;
-        _init_accY = event.x;
-        _init_accZ = event.z;
-      }
-      angleMeet([_accX, _accY, _accZ]);
-    });
+    // _accelerometerStreamEvent = accelerometerEventStream().listen((event) {
+    //   _accX = event.y;
+    //   _accY = event.x;
+    //   _accZ = event.z;
+    //   if (_init_accX.isNaN) {
+    //     _init_accX = event.y;
+    //     _init_accY = event.x;
+    //     _init_accZ = event.z;
+    //   }
+    //   angleMeet([_accX, _accY, _accZ]);
+    // });
   }
 
-  void endSensors() {
-    _accelerometerStreamEvent.cancel();
-  }
+  // void endSensors() {
+  //   _accelerometerStreamEvent.cancel();
+  // }
 
   ///Takes in a set of cords for this time stamp.
   ///Checks if the angle has been met.
@@ -99,7 +106,6 @@ class PatientAngle {
 
     minAngle = minAngle * pi / 180;
     maxAngle = maxAngle * pi / 180;
-    // print("rad angle is: " + radAngle.toString());
 
     angle = radAngle;
 
@@ -109,7 +115,5 @@ class PatientAngle {
         radAngle < initAngle + minAngle) {
       color = Colors.yellow;
     }
-
-    // print("angle is:" + angle.toString());
   }
 }

@@ -61,7 +61,6 @@ void exportPatientData(int pID) async {
   String fileName = "";
   List<List<dynamic>> rows = [];
 
-  // List<dynamic> colHeaders = rows[0];
   Map<String, dynamic> json = await getPatientData(pID);
   Map<int, Map<String, dynamic>> processedJson = {};
 

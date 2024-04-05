@@ -66,9 +66,9 @@ class _StaticTestPage extends State<StaticTestPage> {
         "tlSolidML": widget.tlSolidML,
         "tlFoamML": widget.tlFoamML,
         "slSolidML": widget.slSolidML,
-        "slFoamML": double.parse(dataML.toStringAsFixed(2)),
+        "slFoamML": widget.slFoamML,
         "tandSolidML": widget.tandSolidML,
-        "tandFoamML": widget.tandFoamML,
+        "tandFoamML": double.parse(dataML.toStringAsFixed(2)),
         "tID": widget.tID,
       });
       Static staticTest = Static.fromJson(jsonStatic);

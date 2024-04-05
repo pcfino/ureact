@@ -274,9 +274,9 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     try {
       dynamic jsonReactive = await createReactive({
         "fTime": widget.forward,
-        "rTime": widget.right,
+        "rTime": timeToStab,
         "lTime": widget.left,
-        "bTime": timeToStab,
+        "bTime": widget.backward,
         "mTime": median,
         "tID": widget.tID,
       });

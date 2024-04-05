@@ -782,13 +782,14 @@ def rms(arr):
 #Signs up a user in thier selected orginization using cognito user pools
 @app.route('/signUp', methods=['POST'])
 def signUp():
+    authToken = request.json.get('authToken')
     userName = request.json.get('userName')
     password = request.json.get('password')
     email = request.json.get('email')
     firstName = request.json.get('firstName')
     lastName = request.json.get('lastName')
     success = CIPW.sign_up_user(user_name= userName, user_email= email, 
-                                password= password, first_name=firstName, last_Name = lastName)
+                                password= password, first_name=firstName, last_Name = lastName, auth_token = authToken)
     #thinking about how to evaluate return -- if false then we need to confirm sign up
     return jsonify(status = success)
 
@@ -814,6 +815,13 @@ def signIp():
 def getUsers():
     return jsonify(CIPW.list_users())
 
+@app.route('/getUsersNames', methods=['GET'])
+def getUserNames():
+    results = []
+    for user in CIPW.list_users():
+        results.append(user["Attributes"]["name"])
+    return jsonify(results)
+
 #Gets a list of all Orginizations
 @app.route('/getOrgNames', methods=['GET'])
 def getAllOrgNames():
@@ -834,6 +842,7 @@ def getAllOrgNames():
 #sets the current working orginization
 @app.route('/setOrginization', methods=['POST'])
 def setOrg():
+    global CIPW
     orgName = request.json.get('orgName')
     # connection to database
     mydb = connectSql()
@@ -852,8 +861,26 @@ def setOrg():
         return jsonify(status = 'not found', orgID = 0)
     
     #if the orginization exists it sets the current orginization to that one
-    userPoolId = str(myresult[1]);
-    CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = userPoolId, client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = cognitoSecret)
+    userPoolId = str(myresult[1])
+    clientId = str(myresult[4])
+    clientName = str(myresult[3])
+
+    #Secrets manager that holds app secret
+    secret_name = "prod/Orgs"
+    region_name = "us-west-1"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    #Get the value of the secret
+    secret_value_response = client.get_secret_value(SecretId=secret_name)
+    cognitoSecret = secret_value_response[clientName]
+
+    CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = userPoolId, client_id= clientId, client_secret = cognitoSecret)
 
     return jsonify(status = 'succsess', orgID = myresult[0])
 

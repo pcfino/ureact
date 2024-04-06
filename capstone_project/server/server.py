@@ -779,10 +779,13 @@ def rms(arr):
 
 # --------------------------------------------------------------- Login ----------------------------------------------------------
 
+
 #Signs up a user in thier selected orginization using cognito user pools
 @app.route('/signUp', methods=['POST'])
 def signUp():
     authToken = request.json.get('authToken')
+    if authToken is None:
+        authToken = ""
     userName = request.json.get('userName')
     password = request.json.get('password')
     email = request.json.get('email')
@@ -819,7 +822,9 @@ def getUsers():
 def getUserNames():
     results = []
     for user in CIPW.list_users():
-        results.append(user["Attributes"]["name"])
+        for attr in user["Attributes"]:
+            if attr["Name"] == "name":
+                results.append(attr["Value"])
     return jsonify(results)
 
 #Gets a list of all Orginizations
@@ -855,12 +860,13 @@ def setOrg():
 
     returnList = []
     #checks if the orginization exists
-    if myresult != [] or len(myresult) == 0:
+    if len(myresult) != 1:
         #default to test group
         CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = 'us-west-1_zdY5m4TBN', client_id= '4i7eebuhb2feg2kl01lub9e3uv', client_secret = cognitoSecret)
         return jsonify(status = 'not found', orgID = 0)
     
     #if the orginization exists it sets the current orginization to that one
+    myresult = myresult[0]
     userPoolId = str(myresult[1])
     clientId = str(myresult[4])
     clientName = str(myresult[3])
@@ -878,12 +884,11 @@ def setOrg():
 
     #Get the value of the secret
     secret_value_response = client.get_secret_value(SecretId=secret_name)
-    cognitoSecret = secret_value_response[clientName]
+    cognitoSecretNew = json.loads(secret_value_response["SecretString"])[clientName]
 
-    CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = userPoolId, client_id= clientId, client_secret = cognitoSecret)
+    CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = userPoolId, client_id= clientId, client_secret = cognitoSecretNew)
 
     return jsonify(status = 'succsess', orgID = myresult[0])
-
 
 
 

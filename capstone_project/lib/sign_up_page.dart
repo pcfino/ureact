@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:capstone_project/home_page.dart';
 import 'package:capstone_project/api/login_api.dart';
 import 'package:capstone_project/slide_right_transition.dart';
+import 'package:capstone_project/confirmation_code_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -364,7 +365,13 @@ class _SignUpPage extends State<SignUpPage> {
                                   "An account with this username already exists";
                               error = true;
                             } else if (signedUp['status'] == false) {
-                              confirmationCodeAlert();
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ConfirmationCodePage(
+                                      username: _username.text),
+                                ),
+                              );
                             }
                           }
                         } else {

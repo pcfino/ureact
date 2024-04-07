@@ -1,11 +1,13 @@
 import json
 import datetime
 import numpy as np
+import math
 from scipy import signal
 from flask import Flask, jsonify, request, Response
 from mysql import connector
 from waitress import serve
 from collections import OrderedDict
+import subprocess
 # pip install numpy
 # pip install scipy
 # pip install flask
@@ -16,11 +18,10 @@ from collections import OrderedDict
 
 # needed to set up a secret key for my user
 # needed to run aws configure
-# import botocore 
-# import botocore.session 
-# from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
+import botocore 
+import botocore.session 
+from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
 
-#For Cognito Implementation
 import cognito
 
 client = botocore.session.get_session().create_client('secretsmanager')
@@ -188,7 +189,6 @@ def updatePatientHelper(data):
     sql += " WHERE pID=" + str(data['pID'])
     return sql
 
-
 @app.route('/mysql/deletePatient', methods=['DELETE'])
 def deletePatient():
     if request.method == 'DELETE':
@@ -211,7 +211,6 @@ def deletePatient():
         else:
             # make sure you pass in a valid pID
             return jsonify({"Status": False})
-
 
 # --------------------------------------------------------------- INCIDENT --------------------------------------------------------------
 @app.route('/mysql/getIncident', methods=['GET'])
@@ -535,6 +534,79 @@ def createStaticTest():
         "tandSolidML": data['tandSolidML'], "tandFoamML": data['tandFoamML'], "tID": data['tID']}
         return jsonify(returnRTest)
 
+# --------------------------------------------------------------- IMU DATA ---------------------------------------------------------------------
+@app.route('/mysql/insertIMU', methods=['POST'])
+def insertIMU():
+    if request.method == 'POST':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+
+        id_val = 0
+        type_of_id = ""
+        data = request.json
+        # Check if the "id" field is present
+        if "dID" in data:
+            id_val = data["dID"]
+            type_of_id = "dID"
+        elif "rID" in data:
+            id_val = data["rID"]
+            type_of_id = "rID"
+        elif "sID" in data:
+            id_val = data["sID"]
+            type_of_id = "sID"
+        else:
+            return jsonify({"Status": False})
+
+        sql = "INSERT INTO IMUData (imuData, " + type_of_id + ") VALUES (%s, %s)"
+        imu_json = {key: data[key] for key in ['dataAcc', 'dataRot', 'fps']}
+        imu_json_str = json.dumps(imu_json)
+        val = [imu_json_str, id_val]
+
+        try:
+            mycursor.execute(sql, val)
+            mydb.commit()
+        except connector.Error as err:
+            print("MySQL Cursor Error:", err)
+            return jsonify({"Status": False})
+
+        
+        return jsonify({"Status": True})
+
+
+
+@app.route('/mysql/getIMU', methods=['GET'])
+def getIMU():
+    if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+
+        data = request.args.get('rID')
+        type_of_id = ""
+        if request.args.get('rID') != None:
+            data = request.args.get('rID')
+            type_of_id = "rID"
+        elif request.args.get('sID') != None:
+            data = request.args.get('sID')
+            type_of_id = "sID"
+        elif request.args.get('dID') != None:
+            data = request.args.get('dID')
+            type_of_id = "dID"
+        else:
+            return jsonify({"Status": False})
+
+        sql = "SELECT * FROM IMUData WHERE " + type_of_id + "=%s"
+        val = [(data)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        returnList = []
+        for x in myresult:
+            parsed_data = json.loads(x[1])
+            returnList.append({"imuID": x[0], "imuData": parsed_data, "dID": x[2], "rID": x[3], "sID": x[4]})
+        return jsonify(returnList)
+
 # --------------------------------------------------------------- EXPORTING ---------------------------------------------------------------------
 
 @app.route('/mysql/exportSinglePatient', methods=['GET'])
@@ -670,8 +742,36 @@ def timeToStability():
     qf = np.logical_and(qaF, qrf)
 
     #find t0
-    peaks, _ = signal.find_peaks(np.flip(accNorm[fs * 3:]), height=14.6)
+    # 14.6
+    # we know that 4 returned 5 peaks
+    # print("accNorm:")
+    # i = len(accNorm) - 1
+    # for val in accNorm:
+    #     print(i, val)
+    #     i -= 1
+    
+    peaks = []
+    height_u = 15.0
+    is_peaks_two = False
+    while True:
+        if height_u < 4.0:
+            break
 
+        peaks, _ = signal.find_peaks(np.flip(accNorm), height=height_u)
+        
+        if len(peaks) == 2:
+            is_peaks_two = True
+            break
+
+        height_u -= 0.1
+
+    if is_peaks_two is False:
+        peaks = [peaks[0], peaks[-1]]
+
+    # THIS SHOULD PRINT THE PEAKS WE JUST GOT FROM THIS DATA
+    # print(accNorm[len(accNorm) - peaks[0] - 1], accNorm[len(accNorm) - peaks[-1] - 1])
+
+    # extract peaks
     movementF = peaks[-1]
     flipQf = qf[::-1]
 
@@ -708,15 +808,17 @@ def sway():
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
 
+    dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
+
     Fc = 3.5
 
     # Filters[data] data using butterworth filter with specified [order] order,
     # [Fc] cuttoff frequency and [Fs] sampling frequency.
 
     [b,a] = signal.butter(4,(Fc/(fs/2)))
-    Sway_ml = signal.filtfilt(b,a, dataAcc[2])/9.81 # z-direction
-    Sway_ap = signal.filtfilt(b,a, dataAcc[1])/9.81 # y-direction
-    Sway_v = signal.filtfilt(b,a, dataAcc[0])/9.81 # x-direction
+    Sway_ml = signal.filtfilt(b,a, dataAcc[2]) / 9.81 # z-direction
+    Sway_ap = signal.filtfilt(b,a, dataAcc[1]) / 9.81 # y-direction
+    Sway_v = signal.filtfilt(b,a, dataAcc[0]) / 9.81 # x-direction
 
     rms_ml = rms(Sway_ml)
     rms_ap = rms(Sway_ap)
@@ -732,6 +834,9 @@ def tandemGait():
 
     # find the beginning and end
     peaks, _ = signal.find_peaks(dataRot[2], height=0.1)
+
+    dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
+
     begin = peaks[0]
     end = peaks[len(peaks)-1]
 
@@ -741,6 +846,7 @@ def tandemGait():
     peakTurnsLoc, _ = signal.find_peaks(dataRot[2])
     peakTurns = list(map(lambda x: dataRot[2][x], peakTurnsLoc))
     maxTurn = max(peakTurns)
+
     maxTurnIndex = peakTurns.index(maxTurn)
     
     # find closest right and left
@@ -757,7 +863,7 @@ def tandemGait():
     returningX = dataRot[0][valueRight:end+1]
 
     duration = (end - begin) / fs
-    turningSpeed = maxTurn * 180 / np.pi
+    turningSpeed = maxTurn * 180.0 / np.pi
 
     return jsonify(rmsMlGoing = rms(goingZ), rmsApGoing = rms(goingX), rmsMlReturn = rms(returningZ), rmsApReturn = rms(returningX), duration = duration, turningSpeed = turningSpeed)
 
@@ -776,6 +882,110 @@ def rms(arr):
      
     #Calculate Root
     return np.sqrt(mean)
+
+def alignData(dataRot, dataAcc, fs):
+    gR = resample(dataRot, 180 / np.pi)
+    accR = resample(dataAcc, 1)
+
+    acceleration, q = rotateAcc(accR, fs * 2)
+    rotation = rotateVec(gR, q)
+
+    rotation = np.array(rotation) * np.pi / 180.0
+    acceleration = np.array(acceleration) * 9.807
+
+    return rotation, acceleration
+
+def resample(data, coeff):
+    gr = [0] * 3 
+    gr[0] = list(map(lambda x: x * coeff, signal.resample(data[0], len(data[0]))))
+    gr[1] = list(map(lambda x: x * coeff, signal.resample(data[1], len(data[1]))))
+    gr[2] = list(map(lambda x: x * coeff, signal.resample(data[2], len(data[2]))))
+
+    return gr
+
+def rotateAcc(acc, t):
+    acc = np.array(acc)
+    avgAcc = [0] * 3 
+    avgAcc[0] = sum(acc[0][0:t]) / t
+    avgAcc[1] = sum(acc[1][0:t]) / t
+    avgAcc[2] = sum(acc[2][0:t]) / t
+
+    avgNorm = pow(pow(avgAcc[0], 2) + pow(avgAcc[1], 2) + pow(avgAcc[2], 2), 0.5)
+
+    v = [0, 0, avgNorm]
+    normV = pow(pow(v[0], 2) + pow(v[1], 2) + pow(v[2], 2), 0.5)
+    u = np.cross(avgAcc, v)
+    normU = pow(pow(u[0], 2) + pow(u[1], 2) + pow(u[2], 2), 0.5)
+    u = list(map(lambda x: x / normU, u))
+    
+    theta = math.acos(np.dot(avgAcc, v) / (avgNorm * normV))
+    
+    q0 = [math.cos(theta/2)]
+    q123 = list(map(lambda x: math.sin(theta/2) * x, u))
+
+    q = q0 + q123
+
+    return rotateVec(acc, q), q
+
+def rotateVec(v, q):
+    v = np.array(v)
+    q = np.array(q)
+
+    if np.size(q) == 4 and np.size(v) == 3:
+        vr = MultiplyQuaternions(q, np.insert(v, 0, 0))
+        vr = MultiplyQuaternions(vr, np.insert(-v[1:], 0, v[0]))
+        return [vr[1], vr[2], vr[3]]
+    
+    vr = MultiplyQuaternions(q, np.insert(v, 0, np.zeros(len(v[0])), 0))
+    vr = MultiplyQuaternions(vr, np.insert(-q[1:], 0, q[0]))
+
+    return [vr[1], vr[2], vr[3]]
+
+def MultiplyQuaternions(q0,q1):
+    if (np.size(q0) == 4 and np.size(q1) == 4):
+        qr = [0] * 4;
+        qr[0] = q0[0]*q1[0] - q0[1]*q1[1] - q0[2]*q1[2] - q0[3]*q1[3];
+        qr[1] = q0[0]*q1[1] + q0[1]*q1[0] + q0[2]*q1[3] - q0[3]*q1[2];
+        qr[2] = q0[0]*q1[2] - q0[1]*q1[3] + q0[2]*q1[0] + q0[3]*q1[1];
+        qr[3] = q0[0]*q1[3] + q0[1]*q1[2] - q0[2]*q1[1] + q0[3]*q1[0];
+        return qr
+    
+    if np.size(q0) == 4:
+        if np.shape(q1)[0] != 4:
+            q1 = np.transpose(q1)
+        qr = np.zeros((len(q1), len(q1[0])))
+        for c1 in  range(len(q1[0])):
+            qr[0][c1] = q0[0]*q1[0][c1] - q0[1]*q1[1][c1] - q0[2]*q1[2][c1] - q0[3]*q1[3][c1]
+            qr[1][c1] = q0[0]*q1[1][c1] + q0[1]*q1[0][c1] + q0[2]*q1[3][c1] - q0[3]*q1[2][c1]
+            qr[2][c1] = q0[0]*q1[2][c1] - q0[1]*q1[3][c1] + q0[2]*q1[0][c1] + q0[3]*q1[1][c1]
+            qr[3][c1] = q0[0]*q1[3][c1] + q0[1]*q1[2][c1] - q0[2]*q1[1][c1] + q0[3]*q1[0][c1]      
+        return qr
+    
+    if np.size(q1) == 4:
+        if np.shape(q0)[0] != 4:
+            q0 = np.transpose(q0)
+        qr = np.zeros((len(q0), len(q0[0])))
+        for c1 in range(len(q0[0])):
+            qr[0][c1] = q0[0][c1]*q1[0] - q0[1][c1]*q1[1] - q0[2][c1]*q1[2] - q0[3][c1]*q1[3]
+            qr[1][c1] = q0[0][c1]*q1[1] + q0[1][c1]*q1[0] + q0[2][c1]*q1[3] - q0[3][c1]*q1[2]
+            qr[2][c1] = q0[0][c1]*q1[2] - q0[1][c1]*q1[3] + q0[2][c1]*q1[0] + q0[3][c1]*q1[1]
+            qr[3][c1] = q0[0][c1]*q1[3] + q0[1][c1]*q1[2] - q0[2][c1]*q1[1] + q0[3][c1]*q1[0]
+        return qr
+    
+    if len(q0) != 4:
+        q0 = np.transpose(q0)
+
+    if len(q1) != 4:
+        q1 = np.transpose(q1)
+
+    qr = np.zeros(len(q0))
+    for c1 in range(len(q0)):
+        qr[0][c1] = q0[0][c1]*q1[0][c1] - q0[1][c1]*q1[1][c1] - q0[2][c1]*q1[2][c1] - q0[3][c1]*q1[3][c1];
+        qr[1][c1] = q0[0][c1]*q1[1][c1] + q0[1][c1]*q1[0][c1] + q0[2][c1]*q1[3][c1] - q0[3][c1]*q1[2][c1];
+        qr[2][c1] = q0[0][c1]*q1[2][c1] - q0[1][c1]*q1[3][c1] + q0[2][c1]*q1[0][c1] + q0[3][c1]*q1[1][c1];
+        qr[3][c1] = q0[0][c1]*q1[3][c1] + q0[1][c1]*q1[2][c1] - q0[2][c1]*q1[1][c1] + q0[3][c1]*q1[0][c1];  
+
+    return qr
 
 # --------------------------------------------------------------- Login ----------------------------------------------------------
 
@@ -806,14 +1016,21 @@ def confirmSignUp():
 
 #signs the user in to thier selected orginization
 @app.route('/signIn', methods=['POST'])
-def signIp():
+def signIn():
     userName = request.json.get('userName')
     password = request.json.get('password')
     accessToken = CIPW.start_sign_in(user_name= userName, password= password)
+    currentUser = accessToken
     #what is the token for?
     return jsonify(status = accessToken)
 
-#Gets all users within a selected orginization
+@app.route('/signOut', methods=['POST'])
+def signOut():
+    currUserToken = request.json.get('token')
+    status = CIPW.log_out(currUserToken)
+    #CIPW.log_out(currentUser)
+    return jsonify(status = status)
+
 @app.route('/getUsers', methods=['GET'])
 def getUsers():
     return jsonify(CIPW.list_users())
@@ -905,7 +1122,17 @@ def setOrg():
 # python -m pip install waitress
 
 if __name__ == "__main__":
+    # Run the tests
+    # result = subprocess.run(['python3', '-m', 'unittest', 'test_server.py'])
+
+    # Check the return code of the test execution
+    # if result.returncode == 0:
+    # move inside the if when trying to run tests first
+    print("All tests passed. Starting the server...")
     serve(app, host="0.0.0.0", port=8000)
+    # else:
+        # Tests failed
+        # print("Some tests failed. The server will not start.")
 
 
 # CHANGE THE DAMN PORT BACK TO 8000 for updating this

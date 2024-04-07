@@ -84,7 +84,7 @@ class _HomePage extends State<HomePage> {
                       color: Colors.black,
                     ),
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const SettingsPage(),
@@ -125,85 +125,60 @@ class _HomePage extends State<HomePage> {
                         constraints: const BoxConstraints(
                           maxHeight: 40,
                         ),
+                        fillColor: const Color.fromARGB(255, 240, 240, 240),
                         filled: true,
-                        fillColor: Colors.white10,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none,
                         ),
                       ),
                     ),
                   ),
                   Expanded(
-                      flex: 10,
-                      child: AzListView(
-                        data: updateList(patients, search.text)
-                            .map((e) => AzItem(
-                                name: "${e.lastName}, ${e.firstName}",
-                                tag: e.firstName[0].toUpperCase()))
-                            .toList(),
-                        itemCount: updateList(patients, search.text).length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final patientName =
-                              updateList(patients, search.text)[index];
-                          return Column(
-                            children: [
-                              ListTile(
-                                title: Text(
-                                    "${patientName.lastName}, ${patientName.firstName}"),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          PatientPage(pID: patientName.pID),
-                                    ),
-                                  );
-                                },
-                              ),
-                              if (index !=
-                                  updateList(patients, search.text).length - 1)
-                                const Divider(
-                                  color: Colors.grey,
-                                  height: 1,
-                                  thickness: 0.5,
-                                  endIndent: 30,
-                                )
-                            ],
-                          );
-                        },
-                      )
-                      // ListView.separated(
-                      //   controller: scrollController,
-                      //   //padding: const EdgeInsets.all(8.0),
-                      //   itemCount: updateList(patients, search.text).length,
-                      //   itemBuilder: (BuildContext context, int index) {
-                      //     return ListTile(
-                      //       title: Text(
-                      //           "${updateList(patients, search.text)[index].lastName}, ${updateList(patients, search.text)[index].firstName}"),
-                      //       //subtitle: Text(incidents[index].iDate),
-                      //       onTap: () {
-                      //         Navigator.push(
-                      //           context,
-                      //           MaterialPageRoute(
-                      //             builder: (context) => PatientPage(
-                      //                 pID:
-                      //                     updateList(patients, search.text)[index]
-                      //                         .pID),
-                      //           ),
-                      //         );
-                      //       },
-                      //     );
-                      //   },
-                      //   separatorBuilder: (context, index) {
-                      //     return const Divider();
-                      //   },
-                      // ),
-                      ),
+                    flex: 10,
+                    child: AzListView(
+                      data: updateList(patients, search.text)
+                          .map((e) => AzItem(
+                              name: "${e.lastName}, ${e.firstName}",
+                              tag: e.firstName[0].toUpperCase()))
+                          .toList(),
+                      itemCount: updateList(patients, search.text).length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final patientName =
+                            updateList(patients, search.text)[index];
+                        return Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                  "${patientName.lastName}, ${patientName.firstName}"),
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PatientPage(pID: patientName.pID),
+                                  ),
+                                );
+                              },
+                            ),
+                            if (index !=
+                                updateList(patients, search.text).length - 1)
+                              const Divider(
+                                color: Colors.grey,
+                                height: 1,
+                                thickness: 0.5,
+                                endIndent: 30,
+                              )
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ]),
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const CreatePatientPage(),

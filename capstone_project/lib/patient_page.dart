@@ -14,6 +14,7 @@ import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/patient_api.dart';
 import 'package:capstone_project/api/export_api.dart' as export_api;
+import 'package:capstone_project/slide_right_transition.dart';
 
 class PatientPage extends StatefulWidget {
   const PatientPage({super.key, required this.pID});
@@ -55,7 +56,7 @@ class _PatientPage extends State<PatientPage> {
       bool deleted = await delete(pID);
       if (deleted) {
         setState(() {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => const HomePage(),
@@ -352,100 +353,166 @@ class _PatientPage extends State<PatientPage> {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
               useMaterial3: true,
             ),
-            home: Scaffold(
-              appBar: AppBar(
-                title: const Text('Patient'),
-                centerTitle: true,
-                leading: BackButton(onPressed: () {
-                  Navigator.push(
+            home: GestureDetector(
+              onPanUpdate: (details) {
+                // Swiping in right direction.
+                if (details.delta.dx > 0) {
+                  Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
+                    SlideRightRoute(
+                      page: const HomePage(),
                     ),
                   );
-                }),
-                actions: <Widget>[
-                  if (editMode)
-                    IconButton(
-                      icon: const Icon(
-                        Icons.delete_outline,
+                }
+              },
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text('Patient'),
+                  centerTitle: true,
+                  leading: BackButton(onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      SlideRightRoute(
+                        page: const HomePage(),
                       ),
-                      onPressed: () {
-                        deletePatient(patient!.pID);
-                      },
-                    ),
-                  TextButton(
-                    onPressed: () {
-                      if (!editMode) {
-                        setState(() {
-                          mode = 'Save';
-                          editMode = true;
-                        });
-                      } else if (editMode) {
-                        editMode = false;
-
-                        var updatePatient = {
-                          "firstName": firstName.text,
-                          "lastName": lastName.text,
-                          "dOB": dOB.text,
-                          "height": feet * 12 + inches,
-                          "weight": weight,
-                          "sport": sport.text,
-                          "gender": gen,
-                          "thirdPartyID": thirdPartyID.text
-                        };
-                        setState(() {
-                          mode = 'Edit';
-                          savePatient(updatePatient);
-                        });
-                      }
-                    },
-                    child: Text(mode),
-                  ),
-                ],
-              ),
-              body: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (!editMode)
-                        TextField(
-                          textCapitalization: TextCapitalization.words,
-                          readOnly: !editMode,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            labelText: "Name *",
-                            contentPadding: EdgeInsets.all(11),
-                          ),
-                          controller: fullName,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    );
+                  }),
+                  actions: <Widget>[
+                    if (editMode)
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete_outline,
                         ),
-                      if (editMode)
+                        onPressed: () {
+                          deletePatient(patient!.pID);
+                        },
+                      ),
+                    TextButton(
+                      onPressed: () {
+                        if (!editMode) {
+                          setState(() {
+                            mode = 'Save';
+                            editMode = true;
+                          });
+                        } else if (editMode) {
+                          editMode = false;
+
+                          var updatePatient = {
+                            "firstName": firstName.text,
+                            "lastName": lastName.text,
+                            "dOB": dOB.text,
+                            "height": feet * 12 + inches,
+                            "weight": weight,
+                            "sport": sport.text,
+                            "gender": gen,
+                            "thirdPartyID": thirdPartyID.text
+                          };
+                          setState(() {
+                            mode = 'Edit';
+                            savePatient(updatePatient);
+                          });
+                        }
+                      },
+                      child: Text(mode),
+                    ),
+                  ],
+                ),
+                body: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!editMode)
+                          TextField(
+                            textCapitalization: TextCapitalization.words,
+                            readOnly: !editMode,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              labelText: "Name *",
+                              contentPadding: EdgeInsets.all(11),
+                            ),
+                            controller: fullName,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        if (editMode)
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: TextField(
+                                  textCapitalization: TextCapitalization.words,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    labelText: "First *",
+                                    contentPadding: EdgeInsets.all(11),
+                                  ),
+                                  controller: firstName,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: TextField(
+                                  textCapitalization: TextCapitalization.words,
+                                  readOnly: !editMode,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    labelText: "Last *",
+                                    contentPadding: EdgeInsets.all(11),
+                                  ),
+                                  controller: lastName,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         Row(
                           children: [
                             Expanded(
                               flex: 1,
                               child: TextField(
-                                textCapitalization: TextCapitalization.words,
+                                readOnly: !editMode,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide.none,
                                   ),
-                                  labelText: "First *",
+                                  labelText: "DOB *",
                                   contentPadding: EdgeInsets.all(11),
                                 ),
-                                controller: firstName,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                controller: dOB,
+                                onTap: () async {
+                                  if (editMode) {
+                                    DateTime? selectedDate =
+                                        await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime.now(),
+                                    );
+                                    if (selectedDate != null) {
+                                      setState(() {
+                                        dOB.text =
+                                            "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
+                                      });
+                                    }
+                                  }
+                                },
                               ),
                             ),
                             Expanded(
@@ -457,369 +524,317 @@ class _PatientPage extends State<PatientPage> {
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide.none,
                                   ),
-                                  labelText: "Last *",
+                                  labelText: "Sport",
                                   contentPadding: EdgeInsets.all(11),
                                 ),
-                                controller: lastName,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                controller: sport,
                               ),
                             ),
                           ],
                         ),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: TextField(
-                              readOnly: !editMode,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                ),
-                                labelText: "DOB *",
-                                contentPadding: EdgeInsets.all(11),
-                              ),
-                              controller: dOB,
-                              onTap: () async {
-                                if (editMode) {
-                                  DateTime? selectedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(1900),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (selectedDate != null) {
-                                    setState(() {
-                                      dOB.text =
-                                          "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
-                                    });
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                controller: heightController,
+                                onTap: () {
+                                  if (editMode) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    showCupertinoModalPopup(
+                                      context: context,
+                                      builder: (context) => Container(
+                                        height: 300,
+                                        color: Colors.white,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 3,
+                                              child: CupertinoPicker(
+                                                scrollController:
+                                                    FixedExtentScrollController(
+                                                        initialItem: feet),
+                                                itemExtent: 32.0,
+                                                onSelectedItemChanged:
+                                                    (int index) {
+                                                  setState(() {
+                                                    feet = index;
+                                                    heightController.text =
+                                                        "$feet' $inches\"";
+                                                  });
+                                                },
+                                                children:
+                                                    List.generate(12, (index) {
+                                                  return Center(
+                                                    child: Text('$index'),
+                                                  );
+                                                }),
+                                              ),
+                                            ),
+                                            const Expanded(
+                                              flex: 1,
+                                              child: Center(
+                                                child: Text(
+                                                  'ft',
+                                                  style: TextStyle(
+                                                    decoration:
+                                                        TextDecoration.none,
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 3,
+                                              child: CupertinoPicker(
+                                                scrollController:
+                                                    FixedExtentScrollController(
+                                                        initialItem: inches),
+                                                itemExtent: 32.0,
+                                                onSelectedItemChanged:
+                                                    (int index) {
+                                                  setState(() {
+                                                    inches = index;
+                                                    heightController.text =
+                                                        "$feet' $inches\"";
+                                                  });
+                                                },
+                                                children:
+                                                    List.generate(12, (index) {
+                                                  return Center(
+                                                    child: Text('$index'),
+                                                  );
+                                                }),
+                                              ),
+                                            ),
+                                            const Expanded(
+                                              flex: 2,
+                                              child: Center(
+                                                child: Text(
+                                                  'inches',
+                                                  style: TextStyle(
+                                                    decoration:
+                                                        TextDecoration.none,
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
                                   }
-                                }
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: TextField(
-                              textCapitalization: TextCapitalization.words,
-                              readOnly: !editMode,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
+                                },
+                                readOnly: !editMode,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  labelText: "Height",
+                                  contentPadding: EdgeInsets.all(11),
                                 ),
-                                labelText: "Sport",
-                                contentPadding: EdgeInsets.all(11),
                               ),
-                              controller: sport,
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: TextField(
-                              controller: heightController,
-                              onTap: () {
-                                if (editMode) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  showCupertinoModalPopup(
-                                    context: context,
-                                    builder: (context) => Container(
-                                      height: 300,
-                                      color: Colors.white,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 3,
-                                            child: CupertinoPicker(
-                                              scrollController:
-                                                  FixedExtentScrollController(
-                                                      initialItem: feet),
-                                              itemExtent: 32.0,
-                                              onSelectedItemChanged:
-                                                  (int index) {
-                                                setState(() {
-                                                  feet = index;
-                                                  heightController.text =
-                                                      "$feet' $inches\"";
-                                                });
-                                              },
-                                              children:
-                                                  List.generate(12, (index) {
-                                                return Center(
-                                                  child: Text('$index'),
-                                                );
-                                              }),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                onTap: () {
+                                  if (editMode) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    showCupertinoModalPopup(
+                                      context: context,
+                                      builder: (context) => Container(
+                                        height: 300,
+                                        color: Colors.white,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 3,
+                                              child: CupertinoPicker(
+                                                scrollController:
+                                                    FixedExtentScrollController(
+                                                        initialItem: weight),
+                                                itemExtent: 32.0,
+                                                onSelectedItemChanged:
+                                                    (int index) {
+                                                  setState(() {
+                                                    weight = (index);
+                                                    weightController.text =
+                                                        "$weight lbs";
+                                                  });
+                                                },
+                                                children:
+                                                    List.generate(500, (index) {
+                                                  return Center(
+                                                    child: Text('$index'),
+                                                  );
+                                                }),
+                                              ),
                                             ),
-                                          ),
-                                          const Expanded(
-                                            flex: 1,
-                                            child: Center(
-                                              child: Text(
-                                                'ft',
-                                                style: TextStyle(
-                                                  decoration:
-                                                      TextDecoration.none,
-                                                  fontSize: 16,
-                                                  color: Colors.black,
+                                            const Expanded(
+                                              flex: 1,
+                                              child: Center(
+                                                child: Text(
+                                                  'lbs',
+                                                  style: TextStyle(
+                                                    decoration:
+                                                        TextDecoration.none,
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            flex: 3,
-                                            child: CupertinoPicker(
-                                              scrollController:
-                                                  FixedExtentScrollController(
-                                                      initialItem: inches),
-                                              itemExtent: 32.0,
-                                              onSelectedItemChanged:
-                                                  (int index) {
-                                                setState(() {
-                                                  inches = index;
-                                                  heightController.text =
-                                                      "$feet' $inches\"";
-                                                });
-                                              },
-                                              children:
-                                                  List.generate(12, (index) {
-                                                return Center(
-                                                  child: Text('$index'),
-                                                );
-                                              }),
-                                            ),
-                                          ),
-                                          const Expanded(
-                                            flex: 2,
-                                            child: Center(
-                                              child: Text(
-                                                'inches',
-                                                style: TextStyle(
-                                                  decoration:
-                                                      TextDecoration.none,
-                                                  fontSize: 16,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }
-                              },
-                              readOnly: !editMode,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
+                                    );
+                                  }
+                                },
+                                readOnly: !editMode,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  labelText: "Weight",
+                                  contentPadding: EdgeInsets.all(11),
                                 ),
-                                labelText: "Height",
-                                contentPadding: EdgeInsets.all(11),
+                                controller: weightController,
                               ),
                             ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField(
+                                //disabledHint: Text(gen),
+                                value: gen,
+                                items: const [
+                                  DropdownMenuItem<String>(
+                                    value: 'M',
+                                    child: Text('M'),
+                                  ),
+                                  DropdownMenuItem<String>(
+                                    value: 'F',
+                                    child: Text('F'),
+                                  ),
+                                  DropdownMenuItem<String>(
+                                    value: 'Other',
+                                    child: Text('Other'),
+                                  ),
+                                  DropdownMenuItem<String>(
+                                    value: '',
+                                    child: Text(''),
+                                  )
+                                ],
+                                onChanged: editMode
+                                    ? (String? value) {
+                                        setState(() {
+                                          gen = value!;
+                                        });
+                                      }
+                                    : null,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  labelText: "Gender",
+                                  contentPadding: EdgeInsets.all(11),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                readOnly: !editMode,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  labelText: "3rd Party ID",
+                                  contentPadding: EdgeInsets.all(11),
+                                ),
+                                controller: thirdPartyID,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Text(
+                          'Incidents',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: TextField(
-                              onTap: () {
-                                if (editMode) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  showCupertinoModalPopup(
-                                    context: context,
-                                    builder: (context) => Container(
-                                      height: 300,
-                                      color: Colors.white,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 3,
-                                            child: CupertinoPicker(
-                                              scrollController:
-                                                  FixedExtentScrollController(
-                                                      initialItem: weight),
-                                              itemExtent: 32.0,
-                                              onSelectedItemChanged:
-                                                  (int index) {
-                                                setState(() {
-                                                  weight = (index);
-                                                  weightController.text =
-                                                      "$weight lbs";
-                                                });
-                                              },
-                                              children:
-                                                  List.generate(500, (index) {
-                                                return Center(
-                                                  child: Text('$index'),
-                                                );
-                                              }),
-                                            ),
-                                          ),
-                                          const Expanded(
-                                            flex: 1,
-                                            child: Center(
-                                              child: Text(
-                                                'lbs',
-                                                style: TextStyle(
-                                                  decoration:
-                                                      TextDecoration.none,
-                                                  fontSize: 16,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                        ),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey,
+                        ),
+                        Expanded(
+                          child: ListView.separated(
+                            itemCount: incidents!.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                title: Text(incidents![index].iName),
+                                subtitle: Text(incidents![index].iDate),
+                                onTap: () {
+                                  if (!editMode) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => IncidentPage(
+                                            iID: incidents![index].iID),
                                       ),
-                                    ),
-                                  );
-                                }
-                              },
-                              readOnly: !editMode,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                ),
-                                labelText: "Weight",
-                                contentPadding: EdgeInsets.all(11),
-                              ),
-                              controller: weightController,
-                            ),
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return const Divider();
+                            },
                           ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField(
-                              //disabledHint: Text(gen),
-                              value: gen,
-                              items: const [
-                                DropdownMenuItem<String>(
-                                  value: 'M',
-                                  child: Text('M'),
-                                ),
-                                DropdownMenuItem<String>(
-                                  value: 'F',
-                                  child: Text('F'),
-                                ),
-                                DropdownMenuItem<String>(
-                                  value: 'Other',
-                                  child: Text('Other'),
-                                ),
-                                DropdownMenuItem<String>(
-                                  value: '',
-                                  child: Text(''),
-                                )
-                              ],
-                              onChanged: editMode
-                                  ? (String? value) {
-                                      setState(() {
-                                        gen = value!;
-                                      });
-                                    }
-                                  : null,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                ),
-                                labelText: "Gender",
-                                contentPadding: EdgeInsets.all(11),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: TextField(
-                              readOnly: !editMode,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                ),
-                                labelText: "3rd Party ID",
-                                contentPadding: EdgeInsets.all(11),
-                              ),
-                              controller: thirdPartyID,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Text(
-                        'Incidents',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      const Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: Colors.grey,
-                      ),
-                      Expanded(
-                        child: ListView.separated(
-                          itemCount: incidents!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListTile(
-                              title: Text(incidents![index].iName),
-                              subtitle: Text(incidents![index].iDate),
-                              onTap: () {
-                                if (!editMode) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => IncidentPage(
-                                          iID: incidents![index].iID),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return const Divider();
-                          },
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreateIncidentPage(
-                        pID: patient!.pID,
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateIncidentPage(
+                          pID: patient!.pID,
+                        ),
                       ),
-                    ),
-                  );
-                },
-                child: const Icon(Icons.add),
+                    );
+                  },
+                  child: const Icon(Icons.add),
+                ),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.endContained,
+                bottomNavigationBar: BottomAppBar(
+                    surfaceTintColor: Colors.white,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              exportPatientData();
+                            },
+                            child: const Text('Export Data')),
+                      ],
+                    )),
               ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.endContained,
-              bottomNavigationBar: BottomAppBar(
-                  surfaceTintColor: Colors.white,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            exportPatientData();
-                          },
-                          child: const Text('Export Data')),
-                    ],
-                  )),
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {

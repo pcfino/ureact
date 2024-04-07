@@ -89,6 +89,63 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     );
   }
 
+  void skip() async {
+    if (widget.trialNumber == 3) {
+      Dynamic? createdDynamic = await createDynamicTest(0, 0, 0);
+      if (createdDynamic != null && context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DynamicResultsPage(
+              t1Duration: createdDynamic.t1Duration,
+              t1TurnSpeed: createdDynamic.t1TurnSpeed,
+              t1MLSway: createdDynamic.t1MLSway,
+              t2Duration: createdDynamic.t2Duration,
+              t2TurnSpeed: createdDynamic.t2TurnSpeed,
+              t2MLSway: createdDynamic.t2MLSway,
+              t3Duration: createdDynamic.t3Duration,
+              t3TurnSpeed: createdDynamic.t3TurnSpeed,
+              t3MLSway: createdDynamic.t3MLSway,
+              dMax: createdDynamic.dMax,
+              dMin: createdDynamic.dMin,
+              dMean: createdDynamic.dMean,
+              dMedian: createdDynamic.dMedian,
+              tsMax: createdDynamic.tsMax,
+              tsMin: createdDynamic.tsMin,
+              tsMean: createdDynamic.tsMean,
+              tsMedian: createdDynamic.tsMedian,
+              mlMax: createdDynamic.mlMax,
+              mlMin: createdDynamic.mlMin,
+              mlMean: createdDynamic.mlMean,
+              mlMedian: createdDynamic.mlMedian,
+              tID: widget.tID,
+            ),
+          ),
+        );
+      }
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DynamicTestPage(
+            trialNumber: widget.trialNumber + 1,
+            tID: widget.tID,
+            start: true,
+            t1Duration: widget.t1Duration,
+            t1TurnSpeed: widget.t1TurnSpeed,
+            t1MLSway: widget.t1MLSway,
+            t2Duration: widget.t2Duration,
+            t2TurnSpeed: widget.t2TurnSpeed,
+            t2MLSway: widget.t2MLSway,
+            t3Duration: widget.t1Duration,
+            t3TurnSpeed: widget.t1TurnSpeed,
+            t3MLSway: widget.t1MLSway,
+          ),
+        ),
+      );
+    }
+  }
+
   Future<dynamic> getDynamicData() async {
     var sensorData = sensorRecorder!.endRecording();
 
@@ -102,21 +159,80 @@ class _DynamicTestPage extends State<DynamicTestPage> {
   }
 
   Future<dynamic> createDynamicTest(
-      double dMax,
-      double dMin,
-      double dMean,
-      double dMedian,
-      double tsMax,
-      double tsMin,
-      double tsMean,
-      double tsMedian,
-      double mlMax,
-      double mlMin,
-      double mlMean,
-      double mlMedian,
-      double t3Duration,
-      double t3TurnSpeed,
-      double t3MLSway) async {
+      double duration, double turningSpeed, double mlSway) async {
+    // Values for duration
+    double dMax = max(widget.t1Duration, max(widget.t2Duration, duration));
+    double dMin = min(widget.t1Duration, min(widget.t2Duration, duration));
+    double dMean = double.parse(
+        ((widget.t1Duration + widget.t2Duration + duration) / 3)
+            .toStringAsFixed(3));
+    double dMedian;
+    if ((widget.t1Duration <= widget.t2Duration) &&
+        (widget.t2Duration <= duration)) {
+      dMedian = widget.t2Duration;
+    } else if ((widget.t1Duration <= duration) &&
+        (duration <= widget.t2Duration)) {
+      dMedian = duration;
+    } else if ((widget.t2Duration <= widget.t1Duration) &&
+        (widget.t1Duration <= duration)) {
+      dMedian = widget.t1Duration;
+    } else if ((widget.t2Duration <= duration) &&
+        (duration <= widget.t1Duration)) {
+      dMedian = duration;
+    } else if ((duration <= widget.t1Duration) &&
+        (widget.t1Duration <= widget.t2Duration)) {
+      dMedian = widget.t1Duration;
+    }
+    dMedian = widget.t2Duration;
+
+    // Values for turning speed
+    double tsMax =
+        max(widget.t1TurnSpeed, max(widget.t2TurnSpeed, turningSpeed));
+    double tsMin =
+        min(widget.t1TurnSpeed, min(widget.t2TurnSpeed, turningSpeed));
+    double tsMean = double.parse(
+        ((widget.t1TurnSpeed + widget.t2TurnSpeed + turningSpeed) / 3)
+            .toStringAsFixed(3));
+    double tsMedian;
+    if ((widget.t1TurnSpeed <= widget.t2TurnSpeed) &&
+        (widget.t2TurnSpeed <= turningSpeed)) {
+      tsMedian = widget.t2TurnSpeed;
+    } else if ((widget.t1TurnSpeed <= turningSpeed) &&
+        (turningSpeed <= widget.t2TurnSpeed)) {
+      tsMedian = turningSpeed;
+    } else if ((widget.t2TurnSpeed <= widget.t1TurnSpeed) &&
+        (widget.t1TurnSpeed <= turningSpeed)) {
+      tsMedian = widget.t1TurnSpeed;
+    } else if ((widget.t2TurnSpeed <= turningSpeed) &&
+        (turningSpeed <= widget.t1TurnSpeed)) {
+      tsMedian = turningSpeed;
+    } else if ((turningSpeed <= widget.t1TurnSpeed) &&
+        (widget.t1TurnSpeed <= widget.t2TurnSpeed)) {
+      tsMedian = widget.t1TurnSpeed;
+    }
+    tsMedian = widget.t2TurnSpeed;
+
+    // Values for ML
+    double mlMax = max(widget.t1MLSway, max(widget.t2MLSway, mlSway));
+    double mlMin = min(widget.t1MLSway, min(widget.t2MLSway, mlSway));
+    double mlMean = double.parse(
+        ((widget.t1MLSway + widget.t2MLSway + mlSway) / 3).toStringAsFixed(3));
+    double mlMedian;
+    if ((widget.t1MLSway <= widget.t2MLSway) && (widget.t2MLSway <= mlSway)) {
+      mlMedian = widget.t2MLSway;
+    } else if ((widget.t1MLSway <= mlSway) && (mlSway <= widget.t2MLSway)) {
+      mlMedian = mlSway;
+    } else if ((widget.t2MLSway <= widget.t1MLSway) &&
+        (widget.t1MLSway <= mlSway)) {
+      mlMedian = widget.t1MLSway;
+    } else if ((widget.t2MLSway <= mlSway) && (mlSway <= widget.t1MLSway)) {
+      mlMedian = mlSway;
+    } else if ((mlSway <= widget.t1MLSway) &&
+        (widget.t1MLSway <= widget.t2MLSway)) {
+      mlMedian = widget.t1MLSway;
+    }
+    mlMedian = widget.t2MLSway;
+
     try {
       dynamic jsonDynamic = await createDynamic({
         "tID": widget.tID,
@@ -126,9 +242,9 @@ class _DynamicTestPage extends State<DynamicTestPage> {
         "t2Duration": widget.t2Duration,
         "t2TurnSpeed": widget.t2TurnSpeed,
         "t2MLSway": widget.t2MLSway,
-        "t3Duration": t3Duration,
-        "t3TurnSpeed": t3TurnSpeed,
-        "t3MLSway": t3MLSway,
+        "t3Duration": duration,
+        "t3TurnSpeed": turningSpeed,
+        "t3MLSway": mlSway,
         "dMax": dMax,
         "dMin": dMin,
         "dMean": dMean,
@@ -156,41 +272,52 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     return MaterialApp(
       title: 'Dynamic',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        colorScheme: cs,
         useMaterial3: true,
       ),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text('Dynamic'),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.restart_alt),
-            onPressed: () {
-              widget.start = true;
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  pageBuilder: (context, animation1, animation2) => widget,
-                  transitionDuration: Duration.zero,
-                  reverseTransitionDuration: Duration.zero,
-                ),
-              );
-            },
+          backgroundColor: cs.primary.withOpacity(0.1),
+          scrolledUnderElevation: 0,
+          title: const Text(
+            'Dynamic',
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           actions: <Widget>[
             TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TestsPage(
-                        tID: widget.tID,
-                      ),
+              onPressed: () {
+                widget.start = true;
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) => widget,
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                );
+              },
+              child: const Text('Restart'),
+            ),
+            TextButton(
+              onPressed: () {
+                skip();
+              },
+              child: const Text('Skip'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TestsPage(
+                      tID: widget.tID,
                     ),
-                  );
-                },
-                child: const Text('Cancel'))
+                  ),
+                );
+              },
+              child: const Text('Cancel'),
+            ),
           ],
         ),
         body: SingleChildScrollView(
@@ -203,55 +330,56 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Center(
-                        child: Text(
-                          'Directions',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const Divider(
+                        color: Colors.transparent,
+                      ),
+                      const Text(
+                        'Directions',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '1. Attach phone on lumbar spine',
-                          style: TextStyle(fontSize: 20),
+                          '1. Attach phone on patient\'s lumbar spine',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '2. Press the start button',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '3. Walk heel-to-toe quickly to the end of the tape',
-                          style: TextStyle(fontSize: 20),
+                          '3. Walk heel-to-toe quickly to the end of the tape (3 meters)',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '4. Turn around and come back as fast as you can',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '5. Do not separate your feet or step off the line',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '6. Repeat for 3 trials',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                     ],
@@ -265,7 +393,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                         child: Text(
                           'Trial ${widget.trialNumber}',
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -297,7 +425,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                               if (duration == 0) {
                                 throwTestError();
                               } else if (widget.trialNumber == 1) {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
@@ -317,7 +445,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   ),
                                 );
                               } else if (widget.trialNumber == 2) {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
@@ -337,146 +465,35 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   ),
                                 );
                               } else if (widget.trialNumber == 3) {
-                                // Values for duration
-                                double dMax = max(widget.t1Duration,
-                                    max(widget.t2Duration, duration));
-                                double dMin = min(widget.t1Duration,
-                                    min(widget.t2Duration, duration));
-                                double dMean = double.parse(
-                                    ((widget.t1Duration +
-                                                widget.t2Duration +
-                                                duration) /
-                                            3)
-                                        .toStringAsFixed(3));
-                                double dMedian;
-                                if ((widget.t1Duration <= widget.t2Duration) &&
-                                    (widget.t2Duration <= duration)) {
-                                  dMedian = widget.t2Duration;
-                                } else if ((widget.t1Duration <= duration) &&
-                                    (duration <= widget.t2Duration)) {
-                                  dMedian = duration;
-                                } else if ((widget.t2Duration <=
-                                        widget.t1Duration) &&
-                                    (widget.t1Duration <= duration)) {
-                                  dMedian = widget.t1Duration;
-                                } else if ((widget.t2Duration <= duration) &&
-                                    (duration <= widget.t1Duration)) {
-                                  dMedian = duration;
-                                } else if ((duration <= widget.t1Duration) &&
-                                    (widget.t1Duration <= widget.t2Duration)) {
-                                  dMedian = widget.t1Duration;
-                                }
-                                dMedian = widget.t2Duration;
-
-                                // Values for turning speed
-                                double tsMax = max(widget.t1TurnSpeed,
-                                    max(widget.t2TurnSpeed, turningSpeed));
-                                double tsMin = min(widget.t1TurnSpeed,
-                                    min(widget.t2TurnSpeed, turningSpeed));
-                                double tsMean = double.parse(
-                                    ((widget.t1TurnSpeed +
-                                                widget.t2TurnSpeed +
-                                                turningSpeed) /
-                                            3)
-                                        .toStringAsFixed(3));
-                                double tsMedian;
-                                if ((widget.t1TurnSpeed <=
-                                        widget.t2TurnSpeed) &&
-                                    (widget.t2TurnSpeed <= turningSpeed)) {
-                                  tsMedian = widget.t2TurnSpeed;
-                                } else if ((widget.t1TurnSpeed <=
-                                        turningSpeed) &&
-                                    (turningSpeed <= widget.t2TurnSpeed)) {
-                                  tsMedian = turningSpeed;
-                                } else if ((widget.t2TurnSpeed <=
-                                        widget.t1TurnSpeed) &&
-                                    (widget.t1TurnSpeed <= turningSpeed)) {
-                                  tsMedian = widget.t1TurnSpeed;
-                                } else if ((widget.t2TurnSpeed <=
-                                        turningSpeed) &&
-                                    (turningSpeed <= widget.t1TurnSpeed)) {
-                                  tsMedian = turningSpeed;
-                                } else if ((turningSpeed <=
-                                        widget.t1TurnSpeed) &&
-                                    (widget.t1TurnSpeed <=
-                                        widget.t2TurnSpeed)) {
-                                  tsMedian = widget.t1TurnSpeed;
-                                }
-                                tsMedian = widget.t2TurnSpeed;
-
-                                // Values for ML
-                                double mlMax = max(widget.t1MLSway,
-                                    max(widget.t2MLSway, mlSway));
-                                double mlMin = min(widget.t1MLSway,
-                                    min(widget.t2MLSway, mlSway));
-                                double mlMean = double.parse(((widget.t1MLSway +
-                                            widget.t2MLSway +
-                                            mlSway) /
-                                        3)
-                                    .toStringAsFixed(3));
-                                double mlMedian;
-                                if ((widget.t1MLSway <= widget.t2MLSway) &&
-                                    (widget.t2MLSway <= mlSway)) {
-                                  mlMedian = widget.t2MLSway;
-                                } else if ((widget.t1MLSway <= mlSway) &&
-                                    (mlSway <= widget.t2MLSway)) {
-                                  mlMedian = mlSway;
-                                } else if ((widget.t2MLSway <=
-                                        widget.t1MLSway) &&
-                                    (widget.t1MLSway <= mlSway)) {
-                                  mlMedian = widget.t1MLSway;
-                                } else if ((widget.t2MLSway <= mlSway) &&
-                                    (mlSway <= widget.t1MLSway)) {
-                                  mlMedian = mlSway;
-                                } else if ((mlSway <= widget.t1MLSway) &&
-                                    (widget.t1MLSway <= widget.t2MLSway)) {
-                                  mlMedian = widget.t1MLSway;
-                                }
-                                mlMedian = widget.t2MLSway;
-
                                 Dynamic? createdDynamic =
                                     await createDynamicTest(
-                                        dMax,
-                                        dMin,
-                                        dMean,
-                                        dMedian,
-                                        tsMax,
-                                        tsMin,
-                                        tsMean,
-                                        tsMedian,
-                                        mlMax,
-                                        mlMin,
-                                        mlMean,
-                                        mlMedian,
-                                        duration,
-                                        turningSpeed,
-                                        mlSway);
+                                        duration, turningSpeed, mlSway);
                                 if (createdDynamic != null && context.mounted) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => DynamicResultsPage(
-                                        t1Duration: widget.t1Duration,
-                                        t1TurnSpeed: widget.t1TurnSpeed,
-                                        t1MLSway: widget.t1MLSway,
-                                        t2Duration: widget.t2Duration,
-                                        t2TurnSpeed: widget.t2TurnSpeed,
-                                        t2MLSway: widget.t2MLSway,
-                                        t3Duration: duration,
-                                        t3TurnSpeed: turningSpeed,
-                                        t3MLSway: mlSway,
-                                        dMax: dMax,
-                                        dMin: dMin,
-                                        dMean: dMean,
-                                        dMedian: dMedian,
-                                        tsMax: tsMax,
-                                        tsMin: tsMin,
-                                        tsMean: tsMean,
-                                        tsMedian: tsMedian,
-                                        mlMax: mlMax,
-                                        mlMin: mlMin,
-                                        mlMean: mlMean,
-                                        mlMedian: mlMedian,
+                                        t1Duration: createdDynamic.t1Duration,
+                                        t1TurnSpeed: createdDynamic.t1TurnSpeed,
+                                        t1MLSway: createdDynamic.t1MLSway,
+                                        t2Duration: createdDynamic.t2Duration,
+                                        t2TurnSpeed: createdDynamic.t2TurnSpeed,
+                                        t2MLSway: createdDynamic.t2MLSway,
+                                        t3Duration: createdDynamic.t3Duration,
+                                        t3TurnSpeed: createdDynamic.t3TurnSpeed,
+                                        t3MLSway: createdDynamic.t3MLSway,
+                                        dMax: createdDynamic.dMax,
+                                        dMin: createdDynamic.dMin,
+                                        dMean: createdDynamic.dMean,
+                                        dMedian: createdDynamic.dMedian,
+                                        tsMax: createdDynamic.tsMax,
+                                        tsMin: createdDynamic.tsMin,
+                                        tsMean: createdDynamic.tsMean,
+                                        tsMedian: createdDynamic.tsMedian,
+                                        mlMax: createdDynamic.mlMax,
+                                        mlMin: createdDynamic.mlMin,
+                                        mlMean: createdDynamic.mlMean,
+                                        mlMedian: createdDynamic.mlMedian,
                                         tID: widget.tID,
                                       ),
                                     ),
@@ -492,7 +509,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                             color: cs.background,
                           ),
                         ),
-                        fillColor: const Color.fromRGBO(255, 220, 212, 1),
+                        fillColor: cs.primary.withOpacity(0.1),
                         padding: const EdgeInsets.all(87),
                         elevation: 0,
                         highlightElevation: 0,

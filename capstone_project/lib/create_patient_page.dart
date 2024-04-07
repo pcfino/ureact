@@ -88,12 +88,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
           title: const Text('Create Patient'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
-            );
+            Navigator.pop(context);
           }),
           actions: <Widget>[
             TextButton(
@@ -105,12 +100,14 @@ class _CreatePatientPage extends State<CreatePatientPage> {
                 } else {
                   Patient? createdPatient = await createPatient();
                   if (createdPatient != null && context.mounted) {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            PatientPage(pID: createdPatient.pID),
+                        builder: (context) => PatientPage(
+                          pID: createdPatient.pID,
+                        ),
                       ),
+                      result: true,
                     );
                   }
                 }

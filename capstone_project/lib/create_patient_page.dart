@@ -46,7 +46,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Required fields must have a vlue'),
+                Text('Required fields must have a value'),
               ],
             ),
           ),

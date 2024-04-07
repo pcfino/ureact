@@ -315,7 +315,7 @@ class _PatientPage extends State<PatientPage> {
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Required fields must have a vlue'),
+                Text('Required fields must have a value'),
               ],
             ),
           ),
@@ -841,8 +841,8 @@ class _PatientPage extends State<PatientPage> {
                 onPressed: () {
                   Navigator.pushReplacement(
                       context,
-                      SlideRightRoute(
-                        page: CreateIncidentPage(
+                      MaterialPageRoute(
+                        builder: (context) => CreateIncidentPage(
                           pID: patient!.pID,
                         ),
                       ));

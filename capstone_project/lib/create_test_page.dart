@@ -33,6 +33,33 @@ class _CreateTestPage extends State<CreateTestPage> {
     }
   }
 
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a value'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   final TextEditingController date = TextEditingController();
   final TextEditingController notes = TextEditingController();
 
@@ -80,14 +107,18 @@ class _CreateTestPage extends State<CreateTestPage> {
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                Test? createdTest = await createTest();
-                if (createdTest != null && context.mounted) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TestsPage(tID: createdTest.tID),
-                    ),
-                  );
+                if (date.text == "") {
+                  throwError();
+                } else {
+                  Test? createdTest = await createTest();
+                  if (createdTest != null && context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TestsPage(tID: createdTest.tID),
+                      ),
+                    );
+                  }
                 }
               },
               child: const Text('Save'),
@@ -141,6 +172,7 @@ class _CreateTestPage extends State<CreateTestPage> {
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                   child: TextField(
+                    readOnly: true,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(
                         borderSide: BorderSide.none,

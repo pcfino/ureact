@@ -1,5 +1,6 @@
 import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/patient_page.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
@@ -41,6 +42,33 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
     }
   }
 
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a value'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -56,25 +84,29 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
           leading: BackButton(onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => PatientPage(pID: widget.pID),
+              SlideRightRoute(
+                page: PatientPage(pID: widget.pID),
               ),
             );
           }),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                // Call createIncident and wait for it to complete
-                Incident? createdIncident = await createIncident();
-                if (createdIncident != null && context.mounted) {
-                  // Navigate to IncidentPage only if incident is successfully created
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          IncidentPage(iID: createdIncident.iID),
-                    ),
-                  );
+                if (_date.text == "") {
+                  throwError();
+                } else {
+                  // Call createIncident and wait for it to complete
+                  Incident? createdIncident = await createIncident();
+                  if (createdIncident != null && context.mounted) {
+                    // Navigate to IncidentPage only if incident is successfully created
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            IncidentPage(iID: createdIncident.iID),
+                      ),
+                    );
+                  }
                 }
               },
               child: const Text("Save"),
@@ -116,6 +148,7 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                 child: TextField(
+                  readOnly: true,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,

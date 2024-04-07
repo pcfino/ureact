@@ -50,6 +50,33 @@ class _IncidentPage extends State<IncidentPage> {
     }
   }
 
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a value'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget incidentPageContent(context, Incident incident) {
     _date.text = incident.iDate.toString();
     _notes.text = incident.iNotes!;
@@ -84,8 +111,8 @@ class _IncidentPage extends State<IncidentPage> {
                   delete(incident.iID);
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => IncidentPage(iID: widget.iID),
+                    SlideRightRoute(
+                      page: PatientPage(pID: incident.pID),
                     ),
                   );
                 },
@@ -98,18 +125,22 @@ class _IncidentPage extends State<IncidentPage> {
                     editMode = true;
                   });
                 } else if (editMode) {
-                  editMode = false;
+                  if (_date.text == "") {
+                    throwError();
+                  } else {
+                    editMode = false;
 
-                  var saveIncident = {
-                    "iName": selectedValue,
-                    "iDate": _date.text,
-                    "iNotes": _notes.text,
-                    "pID": incident.pID
-                  };
-                  setState(() {
-                    mode = 'Edit';
-                    updateIncident(incident.iID, saveIncident);
-                  });
+                    var saveIncident = {
+                      "iName": selectedValue,
+                      "iDate": _date.text,
+                      "iNotes": _notes.text,
+                      "pID": incident.pID
+                    };
+                    setState(() {
+                      mode = 'Edit';
+                      updateIncident(incident.iID, saveIncident);
+                    });
+                  }
                 }
               },
               child: Text(mode),
@@ -152,7 +183,7 @@ class _IncidentPage extends State<IncidentPage> {
                 color: Colors.transparent,
               ),
               TextField(
-                readOnly: !editMode,
+                readOnly: true,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,

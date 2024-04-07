@@ -51,6 +51,33 @@ class _TestsPage extends State<TestsPage> {
     }
   }
 
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a value'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(value: "Acute", child: Text("Acute")),
@@ -120,17 +147,25 @@ class _TestsPage extends State<TestsPage> {
                       ),
                       onPressed: () {
                         //delete(incident.iID);
-                        Navigator.pop(context);
-                        // TODO: get incident to navigate back to a fresh copy without the test that was just deleted
+                        Navigator.pushReplacement(
+                          context,
+                          SlideRightRoute(
+                            page: IncidentPage(iID: test!.iID),
+                          ),
+                        );
                       },
                     ),
                   TextButton(
                     onPressed: () {
                       setState(() {
                         if (editMode) {
-                          editMode = false;
-                          mode = 'Edit';
-                          //savePatient(patient);
+                          if (_date.text == "") {
+                            throwError();
+                          } else {
+                            editMode = false;
+                            mode = 'Edit';
+                            //savePatient(patient);
+                          }
                         } else if (!editMode) {
                           editMode = true;
                           mode = 'Save';
@@ -207,7 +242,7 @@ class _TestsPage extends State<TestsPage> {
                     Container(
                       margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                       child: TextField(
-                        readOnly: !editMode,
+                        readOnly: true,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,

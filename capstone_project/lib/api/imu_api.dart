@@ -3,7 +3,9 @@ import 'dart:convert';
 
 /// get IMU data from the database
 ///
-/// @param patientId: id of the patient
+/// @param rId: id of the test
+/// @param sId: id of the test
+/// @param dId: id of the test
 ///
 /// @return Json object with the IMU Data
 Future getIMU(int? rID, int? sID, int? dID) async {
@@ -29,7 +31,7 @@ Future getIMU(int? rID, int? sID, int? dID) async {
 
 /// insert IMU data to the database
 ///
-/// @param patientId: id of the patient
+/// @param imuInfo: imu info for the test
 ///
 /// @return Json object with the patient infomation
 Future insertIMU(Map imuInfo) async {

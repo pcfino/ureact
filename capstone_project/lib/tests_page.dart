@@ -264,11 +264,12 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         ReactiveTestResultsPage(
-                                      backward: test!.reactiveTest!.bTime,
-                                      forward: test!.reactiveTest!.fTime,
-                                      left: test!.reactiveTest!.lTime,
-                                      right: test!.reactiveTest!.rTime,
-                                      median: test!.reactiveTest!.mTime,
+                                      backward:
+                                          test!.reactiveTest!.bTime * 1000,
+                                      forward: test!.reactiveTest!.fTime * 1000,
+                                      left: test!.reactiveTest!.lTime * 1000,
+                                      right: test!.reactiveTest!.rTime * 1000,
+                                      median: test!.reactiveTest!.mTime * 1000,
                                       tID: test!.tID,
                                     ),
                                   ),

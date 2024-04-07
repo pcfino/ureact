@@ -150,26 +150,44 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         ),
       );
     } else if (widget.direction == 'Right') {
-      List<double> vals = [
-        widget.forward,
-        widget.left,
-        timeToStab,
-        widget.backward
-      ];
+      List<double> vals = List.empty(growable: true);
+      // Check for cases when test is skipped
+      if (widget.forward != 0) {
+        vals.add(widget.forward);
+      }
+      if (widget.backward != 0) {
+        vals.add(widget.backward);
+      }
+      if (widget.left != 0) {
+        vals.add(widget.left);
+      }
+      if (widget.right != 0) {
+        vals.add(widget.right);
+      }
+
       vals.sort();
-      double median = (vals[1] + vals[2]) / 2;
-      Reactive? createdReactive =
-          await createReactiveTest(double.parse(median.toStringAsFixed(2)));
+      double median = 0;
+      if (vals.length == 4) {
+        median = (vals[1] + vals[2]) / 2;
+      } else if (vals.length == 3) {
+        median = vals[1];
+      } else if (vals.length == 2) {
+        median = (vals[0] + vals[1]) / 2;
+      } else {
+        median = vals[0];
+      }
+      double normMedian = double.parse(median.toStringAsFixed(2));
+      Reactive? createdReactive = await createReactiveTest(normMedian);
       if (createdReactive != null && context.mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => ReactiveTestResultsPage(
-              forward: widget.forward,
-              left: widget.left,
-              right: timeToStab,
-              backward: widget.backward,
-              median: double.parse(median.toStringAsFixed(2)),
+              forward: widget.forward * 1000,
+              left: widget.left * 1000,
+              right: timeToStab * 1000,
+              backward: widget.backward * 1000,
+              median: normMedian * 1000,
               tID: widget.tID,
             ),
           ),

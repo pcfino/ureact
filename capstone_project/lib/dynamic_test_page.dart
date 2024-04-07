@@ -73,14 +73,9 @@ class _DynamicTestPage extends State<DynamicTestPage> {
               child: const Text('Try again'),
               onPressed: () {
                 widget.start = true;
-                Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation1, animation2) => widget,
-                    transitionDuration: Duration.zero,
-                    reverseTransitionDuration: Duration.zero,
-                  ),
-                );
+                sensorRecorder = null;
+                Navigator.of(context).pop();
+                setState(() {});
               },
             ),
           ],

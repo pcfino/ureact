@@ -81,7 +81,8 @@ class _StaticTestPage extends State<StaticTestPage> {
   Future stopRecording() async {
     timer!.cancel();
     dynamic dataML = await getStaticData();
-
+    double mlSway = double.parse(dataML.toStringAsFixed(5));
+    print(mlSway);
     if (context.mounted) {
       if (widget.stance == "Two Leg Stance (Solid)") {
         Navigator.pushReplacement(
@@ -90,7 +91,7 @@ class _StaticTestPage extends State<StaticTestPage> {
             builder: (context) => StaticTestPage(
               stance: "Single Leg Stance (Solid)",
               tID: widget.tID,
-              tlSolidML: double.parse(dataML.toStringAsFixed(2)),
+              tlSolidML: mlSway,
               tlFoamML: widget.tlFoamML,
               slSolidML: widget.slSolidML,
               slFoamML: widget.slFoamML,
@@ -108,7 +109,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
               tlFoamML: widget.tlFoamML,
-              slSolidML: double.parse(dataML.toStringAsFixed(2)),
+              slSolidML: mlSway,
               slFoamML: widget.slFoamML,
               tandSolidML: widget.tandSolidML,
               tandFoamML: widget.tandFoamML,
@@ -126,7 +127,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               tlFoamML: widget.tlFoamML,
               slSolidML: widget.slSolidML,
               slFoamML: widget.slFoamML,
-              tandSolidML: double.parse(dataML.toStringAsFixed(2)),
+              tandSolidML: mlSway,
               tandFoamML: widget.tandFoamML,
             ),
           ),
@@ -139,7 +140,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               stance: "Single Leg Stance (Foam)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
-              tlFoamML: double.parse(dataML.toStringAsFixed(2)),
+              tlFoamML: mlSway,
               slSolidML: widget.slSolidML,
               slFoamML: widget.slFoamML,
               tandSolidML: widget.tandSolidML,
@@ -157,26 +158,26 @@ class _StaticTestPage extends State<StaticTestPage> {
               tlSolidML: widget.tlSolidML,
               tlFoamML: widget.tlFoamML,
               slSolidML: widget.slSolidML,
-              slFoamML: double.parse(dataML.toStringAsFixed(2)),
+              slFoamML: mlSway,
               tandSolidML: widget.tandSolidML,
               tandFoamML: widget.tandFoamML,
             ),
           ),
         );
       } else if (widget.stance == "Tandem Stance (Foam)") {
-        Static? createdStatic = await createStaticTest(dataML);
+        Static? createdStatic = await createStaticTest(mlSway);
         if (createdStatic != null && context.mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => StaticResultsPage(
                 tID: widget.tID,
-                tlSolidML: widget.tlSolidML,
-                tlFoamML: widget.tlFoamML,
-                slSolidML: widget.slSolidML,
-                slFoamML: widget.slFoamML,
-                tandSolidML: widget.tandSolidML,
-                tandFoamML: double.parse(dataML.toStringAsFixed(2)),
+                tlSolidML: widget.tlSolidML * 100,
+                tlFoamML: widget.tlFoamML * 100,
+                slSolidML: widget.slSolidML * 100,
+                slFoamML: widget.slFoamML * 100,
+                tandSolidML: widget.tandSolidML * 100,
+                tandFoamML: mlSway * 100,
               ),
             ),
           );
@@ -307,7 +308,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               slSolidML: widget.slSolidML,
               slFoamML: widget.slFoamML,
               tandSolidML: widget.tandSolidML,
-              tandFoamML: 0.0,
+              tandFoamML: widget.tandFoamML,
             ),
           ),
         );

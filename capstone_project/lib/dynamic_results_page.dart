@@ -85,7 +85,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
               title: const Text('Test Results'),
               centerTitle: true,
               leading: BackButton(onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   SlideRightRoute(
                     page: TestsPage(tID: widget.tID),
@@ -185,7 +185,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 const Expanded(
                                   flex: 3,
                                   child: Text(
-                                    "Duration",
+                                    "Duration (ms)",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
@@ -229,7 +229,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 const Expanded(
                                   flex: 3,
                                   child: Text(
-                                    "Turn Speed",
+                                    "Turn Speed (deg/s)",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
@@ -273,7 +273,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 const Expanded(
                                   flex: 3,
                                   child: Text(
-                                    "ML Sway",
+                                    "ML Sway (cm/s\u00B2)",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
@@ -340,14 +340,14 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                             ),
                             children: [
                               ListTile(
-                                title: const Text('Duration'),
+                                title: const Text('Duration (ms)'),
                                 trailing: Text(
                                   widget.t1Duration.toString(),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
                               ListTile(
-                                title: const Text('Turn Speed'),
+                                title: const Text('Turn Speed (deg/s)'),
                                 trailing: Text(
                                   widget.t1TurnSpeed.toString(),
                                   style: const TextStyle(fontSize: 15),
@@ -355,7 +355,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                               ),
                               ListTile(
                                 title: const Text(
-                                  'ML Sway',
+                                  'ML Sway (cm/s\u00B2)',
                                 ),
                                 trailing: Text(
                                   widget.t1MLSway.toString(),
@@ -394,14 +394,14 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                             ),
                             children: [
                               ListTile(
-                                title: const Text('Duration'),
+                                title: const Text('Duration (ms)'),
                                 trailing: Text(
                                   widget.t2Duration.toString(),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
                               ListTile(
-                                title: const Text('Turn Speed'),
+                                title: const Text('Turn Speed (deg/s)'),
                                 trailing: Text(
                                   widget.t2TurnSpeed.toString(),
                                   style: const TextStyle(fontSize: 15),
@@ -409,7 +409,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                               ),
                               ListTile(
                                 title: const Text(
-                                  'ML Sway',
+                                  'ML Sway (cm/s\u00B2)',
                                 ),
                                 trailing: Text(
                                   widget.t2MLSway.toString(),
@@ -448,14 +448,14 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                             ),
                             children: [
                               ListTile(
-                                title: const Text('Duration'),
+                                title: const Text('Duration (ms)'),
                                 trailing: Text(
                                   widget.t3Duration.toString(),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
                               ListTile(
-                                title: const Text('Turn Speed'),
+                                title: const Text('Turn Speed (deg/s)'),
                                 trailing: Text(
                                   widget.t3TurnSpeed.toString(),
                                   style: const TextStyle(fontSize: 15),
@@ -463,7 +463,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                               ),
                               ListTile(
                                 title: const Text(
-                                  'ML Sway',
+                                  'ML Sway (cm/s\u00B2)',
                                 ),
                                 trailing: Text(
                                   widget.t3MLSway.toString(),

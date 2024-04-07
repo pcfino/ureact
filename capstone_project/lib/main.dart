@@ -44,6 +44,8 @@ class App extends State<MyApp> {
 
   bool hidePassword = true;
   ColorScheme cs = ColorScheme.fromSeed(seedColor: Colors.red);
+  String errorMessage = "";
+  bool error = false;
 
   @override
   Widget build(BuildContext context) {
@@ -157,8 +159,17 @@ class App extends State<MyApp> {
                   ),
                 ),
               ),
-              const Spacer(
-                flex: 1,
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    errorMessage,
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        color: error ? Colors.red : Colors.transparent),
+                  ),
+                ),
               ),
               Expanded(
                 flex: 2,
@@ -171,13 +182,19 @@ class App extends State<MyApp> {
                     ),
                     onPressed: () async {
                       dynamic loggedIn = await logInUser();
-                      if (context.mounted && loggedIn['status'] != 'error') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomePage(),
-                          ),
-                        );
+                      if (context.mounted) {
+                        if (loggedIn['status'] != 'error') {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomePage(),
+                            ),
+                          );
+                        } else {
+                          errorMessage = "Incorrect username or password";
+                          error = true;
+                          setState(() {});
+                        }
                       }
                     },
                     child: const Text('Login'),
@@ -207,7 +224,7 @@ class App extends State<MyApp> {
           surfaceTintColor: cs.background,
           child: TextButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const SignUpPage(),

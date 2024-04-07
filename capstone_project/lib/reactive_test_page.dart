@@ -34,13 +34,6 @@ class ReactiveTestPage extends StatefulWidget {
 }
 
 class _ReactiveTestPage extends State<ReactiveTestPage> {
-  // @override
-  // void dispose() {
-  //   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-  //   super.dispose();
-  // }
-
   late double timeToStab;
   late ReactiveSensorRecorder sensorRecorder;
 
@@ -90,6 +83,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     SensorRecorderResults? sensorData;
     try {
       sensorData = sensorRecorder.endRecording();
+      //print(sensorData.accData.x.length);
       var decodedData = await runReactiveTestScript({
         'dataAcc': sensorData.formattedAccData(),
         'dataRot': sensorData.formattedGyrData(),
@@ -98,6 +92,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
       });
 
       timeToStab = decodedData['TTS'];
+      //Output to Consol for testing purposes TODO: REMOVE LATER
       print(timeToStab);
       nextTest();
     } catch (e) {
@@ -113,7 +108,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     if (timeToStab == 0) {
       throwTestError();
     } else if (widget.direction == 'Forward') {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
@@ -127,7 +122,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         ),
       );
     } else if (widget.direction == 'Backward') {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
@@ -141,7 +136,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         ),
       );
     } else if (widget.direction == 'Left') {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
@@ -155,26 +150,44 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         ),
       );
     } else if (widget.direction == 'Right') {
-      List<double> vals = [
-        widget.forward,
-        widget.left,
-        timeToStab,
-        widget.backward
-      ];
+      List<double> vals = List.empty(growable: true);
+      // Check for cases when test is skipped
+      if (widget.forward != 0) {
+        vals.add(widget.forward);
+      }
+      if (widget.backward != 0) {
+        vals.add(widget.backward);
+      }
+      if (widget.left != 0) {
+        vals.add(widget.left);
+      }
+      if (widget.right != 0) {
+        vals.add(widget.right);
+      }
+
       vals.sort();
-      double median = (vals[1] + vals[2]) / 2;
-      Reactive? createdReactive =
-          await createReactiveTest(double.parse(median.toStringAsFixed(2)));
+      double median = 0;
+      if (vals.length == 4) {
+        median = (vals[1] + vals[2]) / 2;
+      } else if (vals.length == 3) {
+        median = vals[1];
+      } else if (vals.length == 2) {
+        median = (vals[0] + vals[1]) / 2;
+      } else {
+        median = vals[0];
+      }
+      double normMedian = double.parse(median.toStringAsFixed(2));
+      Reactive? createdReactive = await createReactiveTest(normMedian);
       if (createdReactive != null && context.mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => ReactiveTestResultsPage(
-              forward: widget.forward,
-              left: widget.left,
-              right: timeToStab,
-              backward: widget.backward,
-              median: double.parse(median.toStringAsFixed(2)),
+              forward: widget.forward * 1000,
+              left: widget.left * 1000,
+              right: timeToStab * 1000,
+              backward: widget.backward * 1000,
+              median: normMedian * 1000,
               tID: widget.tID,
             ),
           ),
@@ -183,13 +196,105 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     }
   }
 
+  void skip() async {
+    if (!start) {
+      sensorRecorder.endSensors();
+      sensorRecorder.cancelPreTimer();
+      if (sensorRecorder.getRunning()) {
+        sensorRecorder.endRecording();
+      }
+    }
+    if (widget.direction == "Right") {
+      List<double> vals = [
+        widget.forward,
+        widget.left,
+        widget.right,
+        widget.backward
+      ];
+      vals.sort();
+      // Check - do we want to just take the median of nonzero values?
+      double median = (vals[1] + vals[2]) / 2;
+      Reactive? createdReactive =
+          await createReactiveTest(double.parse(median.toStringAsFixed(2)));
+      if (createdReactive != null && context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReactiveTestResultsPage(
+              forward: widget.forward,
+              left: widget.left,
+              right: widget.right,
+              backward: widget.backward,
+              median: double.parse(median.toStringAsFixed(2)),
+              tID: widget.tID,
+            ),
+          ),
+        );
+      }
+    } else {
+      String nextDir = "";
+      if (widget.direction == "Forward") {
+        nextDir = "Backward";
+      } else if (widget.direction == "Backward") {
+        nextDir = "Left";
+      } else if (widget.direction == "Left") {
+        nextDir = "Right";
+      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReactiveTestPage(
+            direction: nextDir,
+            forward: widget.forward,
+            left: widget.left,
+            right: widget.right,
+            backward: widget.backward,
+            tID: widget.tID,
+          ),
+        ),
+      );
+    }
+  }
+
+  void restart() {
+    try {
+      if (!start) {
+        sensorRecorder.endSensors();
+        sensorRecorder.cancelPreTimer();
+        if (sensorRecorder.getRunning()) {
+          sensorRecorder.endRecording();
+        }
+        start = true;
+        setState(() {});
+      }
+    } catch (e) {
+      throwTestError();
+    }
+  }
+
+  void cancel() {
+    if (!start) {
+      sensorRecorder.endSensors();
+      sensorRecorder.cancelPreTimer();
+      if (sensorRecorder.getRunning()) {
+        sensorRecorder.endRecording();
+      }
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TestsPage(tID: widget.tID),
+      ),
+    );
+  }
+
   Future<dynamic> createReactiveTest(double median) async {
     try {
       dynamic jsonReactive = await createReactive({
         "fTime": widget.forward,
-        "rTime": widget.right,
+        "rTime": timeToStab,
         "lTime": widget.left,
-        "bTime": timeToStab,
+        "bTime": widget.backward,
         "mTime": median,
         "tID": widget.tID,
       });
@@ -209,50 +314,38 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     return MaterialApp(
       title: "Reactive",
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        colorScheme: cs,
         useMaterial3: true,
       ),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text("Reactive"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.restart_alt),
-            onPressed: () {
-              try {
-                if (!start) {
-                  sensorRecorder.endSensors();
-                  sensorRecorder.cancelPreTimer();
-                  if (sensorRecorder.getRunning()) {
-                    sensorRecorder.endRecording();
-                  }
-                  start = true;
-                  setState(() {});
-                }
-              } catch (e) {
-                throwTestError();
-              }
-            },
+          backgroundColor: cs.primary.withOpacity(0.1),
+          scrolledUnderElevation: 0,
+          title: const Text(
+            "Reactive",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
+          //centerTitle: false,
           actions: <Widget>[
             TextButton(
-                onPressed: () {
-                  if (!start) {
-                    sensorRecorder.endSensors();
-                    sensorRecorder.cancelPreTimer();
-                    if (sensorRecorder.getRunning()) {
-                      sensorRecorder.endRecording();
-                    }
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TestsPage(tID: widget.tID),
-                    ),
-                  );
-                },
-                child: const Text('Cancel'))
+              onPressed: () {
+                restart();
+              },
+              child: const Text('Restart'),
+            ),
+            TextButton(
+              onPressed: () {
+                skip();
+              },
+              child: const Text('Skip'),
+            ),
+            TextButton(
+              onPressed: () {
+                cancel();
+              },
+              child: const Text('Cancel'),
+            ),
           ],
         ),
         body: SingleChildScrollView(
@@ -265,55 +358,54 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Center(
-                        child: Text(
-                          'Directions',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const Divider(color: Colors.transparent),
+                      const Text(
+                        'Directions',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '1. Attach phone to lumbar spine',
-                          style: TextStyle(fontSize: 20),
+                          '1. Attach phone on patient\'s lumbar spine',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '2. Press the start button',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '3. Lean participant until you hear the chime',
-                          style: TextStyle(fontSize: 20),
+                          '3. Lean patient until you hear the chime',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '4. Hold participant steady and release after 2-5 seconds',
-                          style: TextStyle(fontSize: 20),
+                          '4. Release patient when chime stops',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
-                          '5. Press the end test button once the participant has regained their balance',
-                          style: TextStyle(fontSize: 20),
+                          '5. Direct patient to stay still for 1 second after regaining stability',
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: const Text(
                           '6. Repeat for each direction',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                     ],
@@ -327,7 +419,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                         child: Text(
                           'Lean ${widget.direction}',
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -362,16 +454,16 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                             color: cs.background,
                           ),
                         ),
-                        fillColor: const Color.fromRGBO(255, 220, 212, 1),
+                        fillColor: cs.primary.withOpacity(0.1),
                         padding: const EdgeInsets.all(87),
                         elevation: 0,
                         highlightElevation: 0,
                         child: Text(
-                          start ? "Start" : "Running",
-                          style: const TextStyle(
+                          start ? 'Start' : 'Running',
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Colors.black54,
+                            color: cs.secondary,
                           ),
                         ),
                       ),

@@ -39,7 +39,7 @@ class CognitoIdentityProviderWrapper:
         logger.info("Made secret hash for %s: %s.", user_name, secret_hash)
         return secret_hash
     
-    def sign_up_user(self, user_name, password, user_email, first_name, last_Name):
+    def sign_up_user(self, user_name, password, user_email, first_name, last_Name, auth_token):
         """
         Signs up a new user with Amazon Cognito. This action prompts Amazon Cognito
         to send an email to the specified email address. The email contains a code that
@@ -60,9 +60,10 @@ class CognitoIdentityProviderWrapper:
                 "Username": user_name,
                 "Password": password,
                 "UserAttributes": [{"Name": "email", "Value": user_email},
-                                   {"Name": "name", "Value": first_name}
-                                #    {"Name": "lastName", "Value": last_Name}
+                                   {"Name": "name", "Value": first_name + last_Name}
                                    ],
+                "ValidationData": [{"Name": "loginAuth", "Value": auth_token},
+                                   ]
             }
             if self.client_secret is not None:
                 kwargs["SecretHash"] = self._secret_hash(user_name)
@@ -76,7 +77,7 @@ class CognitoIdentityProviderWrapper:
                 logger.warning(
                     "User %s exists and is %s.", user_name, response["UserStatus"]
                 )
-                confirmed = response["UserStatus"] == "CONFIRMED"
+                confirmed = err.response["Error"]["Message"]
             else:
                 confirmed = err.response["Error"]["Message"]
                 # logger.error(
@@ -108,6 +109,7 @@ class CognitoIdentityProviderWrapper:
                 kwargs["SecretHash"] = self._secret_hash(user_name)
             self.cognito_idp_client.confirm_sign_up(**kwargs)
         except ClientError as err:
+            return False
             logger.error(
                 "Couldn't confirm sign up for %s. Here's why: %s: %s",
                 user_name,
@@ -188,3 +190,18 @@ class CognitoIdentityProviderWrapper:
             raise
         else:
             return users
+
+    def log_out(self, accessToken):
+        """
+        Returns status.
+
+        :param accessToken from login
+        """
+        try:
+            response = self.cognito_idp_client.global_sign_out(AccessToken=accessToken)
+            logOut = response["Users"]
+        except ClientError as err:
+            logOut = err.response["Error"]["Message"]
+            raise
+        else:
+            return logOut

@@ -49,7 +49,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
           title: const Text('Test Results'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               SlideRightRoute(
                 page: TestsPage(tID: widget.tID),
@@ -75,10 +75,24 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                     thickness: 0.5,
                     color: Colors.transparent,
                   ),
+                  const Text(
+                    'Time To Stability',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Divider(
+                    color: Colors.grey,
+                  ),
+                  const Divider(
+                    thickness: 0.5,
+                    color: Colors.transparent,
+                  ),
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      color: Colors.white,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.2),
@@ -98,7 +112,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          widget.median.toString(),
+                          "${widget.median.toInt().toString()} ms",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -130,71 +144,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          widget.forward.toString(),
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(
-                    color: Colors.transparent,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      color: const Color.fromRGBO(255, 220, 212, 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 15,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: ListTile(
-                        title: const Text(
-                          'Right',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        trailing: Text(
-                          widget.right.toString(),
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(
-                    color: Colors.transparent,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      color: const Color.fromRGBO(255, 220, 212, 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 15,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: ListTile(
-                        title: const Text(
-                          'Left',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        trailing: Text(
-                          widget.left.toString(),
+                          "${widget.forward.toInt().toString()} ms",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -226,7 +176,71 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          widget.backward.toString(),
+                          "${widget.backward.toInt().toString()} ms",
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Left',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.left.toInt().toString()} ms",
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Right',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.right.toInt().toString()} ms",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),

@@ -375,13 +375,18 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) => StaticResultsPage(
                                       tID: widget.tID,
-                                      tlSolidML: test!.staticTest!.tlSolidML,
-                                      tlFoamML: test!.staticTest!.tlFoamML,
-                                      slSolidML: test!.staticTest!.slSolidML,
-                                      slFoamML: test!.staticTest!.slSolidML,
+                                      tlSolidML:
+                                          test!.staticTest!.tlSolidML * 100,
+                                      tlFoamML:
+                                          test!.staticTest!.tlFoamML * 100,
+                                      slSolidML:
+                                          test!.staticTest!.slSolidML * 100,
+                                      slFoamML:
+                                          test!.staticTest!.slSolidML * 100,
                                       tandSolidML:
-                                          test!.staticTest!.tandSolidML,
-                                      tandFoamML: test!.staticTest!.tandFoamML,
+                                          test!.staticTest!.tandSolidML * 100,
+                                      tandFoamML:
+                                          test!.staticTest!.tandFoamML * 100,
                                     ),
                                   ),
                                 );

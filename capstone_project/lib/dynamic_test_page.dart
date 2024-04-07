@@ -7,6 +7,7 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
 import 'package:capstone_project/static_dynamic_recorder.dart';
 import 'package:capstone_project/api/test_api.dart';
+import 'package:capstone_project/api/imu_api.dart';
 import 'package:capstone_project/models/dynamic.dart';
 
 class DynamicTestPage extends StatefulWidget {
@@ -339,6 +340,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
         "fps": widget.t3DataFs,
       }
     };
+    dynamic inserted = await insertIMU(imuData);
   }
 
   @override
@@ -554,8 +556,9 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                     await createDynamicTest(
                                         duration, turningSpeed, mlSway);
                                 if (createdDynamic != null && context.mounted) {
-                                  await sendIMU(createdDynamic.dID);
-
+                                  dynamic inserted =
+                                      await sendIMU(createdDynamic.dID);
+                                  print(inserted);
                                   if (context.mounted) {
                                     Navigator.pushReplacement(
                                       context,

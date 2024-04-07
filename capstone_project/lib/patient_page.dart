@@ -63,7 +63,8 @@ class _PatientPage extends State<PatientPage> {
     try {
       bool deleted = await delete(pID);
       if (deleted) {
-        Navigator.pop(context, true);
+        Navigator.pushReplacement(
+            context, SlideRightRoute(page: const HomePage()));
       }
     } catch (e) {
       print("Error deleting patient: $e");
@@ -368,7 +369,7 @@ class _PatientPage extends State<PatientPage> {
   String gen = '';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return FutureBuilder(
       future: future,
       builder: (context, snapshot) {
@@ -389,7 +390,10 @@ class _PatientPage extends State<PatientPage> {
                 title: const Text('Patient'),
                 centerTitle: true,
                 leading: BackButton(onPressed: () {
-                  Navigator.pop(context, true);
+                  Navigator.pushReplacement(
+                    context,
+                    SlideRightRoute(page: const HomePage()),
+                  );
                 }),
                 actions: <Widget>[
                   if (editMode)
@@ -814,9 +818,9 @@ class _PatientPage extends State<PatientPage> {
                             return ListTile(
                               title: Text(incidents![index].iName),
                               subtitle: Text(incidents![index].iDate),
-                              onTap: () {
+                              onTap: () async {
                                 if (!editMode) {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => IncidentPage(
@@ -835,14 +839,13 @@ class _PatientPage extends State<PatientPage> {
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreateIncidentPage(
-                        pID: patient!.pID,
-                      ),
-                    ),
-                  );
+                  Navigator.pushReplacement(
+                      context,
+                      SlideRightRoute(
+                        page: CreateIncidentPage(
+                          pID: patient!.pID,
+                        ),
+                      ));
                 },
                 child: const Icon(Icons.add),
               ),

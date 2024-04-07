@@ -215,7 +215,7 @@ class _StaticTestPage extends State<StaticTestPage> {
 
   void skip() async {
     if (widget.stance == "Two Leg Stance (Solid)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
@@ -231,7 +231,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         ),
       );
     } else if (widget.stance == "Single Leg Stance (Solid)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
@@ -247,7 +247,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         ),
       );
     } else if (widget.stance == "Tandem Stance (Solid)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
@@ -263,7 +263,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         ),
       );
     } else if (widget.stance == "Two Leg Stance (Foam)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
@@ -279,7 +279,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         ),
       );
     } else if (widget.stance == "Single Leg Stance (Foam)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
@@ -297,7 +297,7 @@ class _StaticTestPage extends State<StaticTestPage> {
     } else if (widget.stance == "Tandem Stance (Foam)") {
       Static? createdStatic = await createStaticTest(0);
       if (createdStatic != null && context.mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => StaticResultsPage(
@@ -319,7 +319,7 @@ class _StaticTestPage extends State<StaticTestPage> {
     if (timer != null) {
       timer!.cancel();
     }
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => TestsPage(

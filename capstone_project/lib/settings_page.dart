@@ -25,7 +25,8 @@ class _SettingsPage extends State<SettingsPage> {
           title: const Text('Settings'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+                context, SlideRightRoute(page: const HomePage()));
           }),
         ),
         body: Center(

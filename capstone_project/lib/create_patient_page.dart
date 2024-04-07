@@ -2,6 +2,7 @@
 // import 'dart:io';
 
 import 'package:capstone_project/home_page.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/models/patient.dart';
@@ -88,7 +89,10 @@ class _CreatePatientPage extends State<CreatePatientPage> {
           title: const Text('Create Patient'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              SlideRightRoute(page: const HomePage()),
+            );
           }),
           actions: <Widget>[
             TextButton(

@@ -84,7 +84,7 @@ class _HomePage extends State<HomePage> {
                       color: Colors.black,
                     ),
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const SettingsPage(),
@@ -151,19 +151,14 @@ class _HomePage extends State<HomePage> {
                             ListTile(
                               title: Text(
                                   "${patientName.lastName}, ${patientName.firstName}"),
-                              onTap: () async {
-                                var result = await Navigator.push(
+                              onTap: () {
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         PatientPage(pID: patientName.pID),
                                   ),
                                 );
-                                bool reload = result ?? true;
-                                if (reload) {
-                                  getPatients();
-                                  setState(() {});
-                                }
                               },
                             ),
                             if (index !=
@@ -182,18 +177,13 @@ class _HomePage extends State<HomePage> {
                 ]),
               ),
               floatingActionButton: FloatingActionButton(
-                onPressed: () async {
-                  var result = await Navigator.push(
+                onPressed: () {
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const CreatePatientPage(),
                     ),
                   );
-                  bool reload = result ?? true;
-                  if (reload) {
-                    getPatients();
-                    setState(() {});
-                  }
                 },
                 child: const Icon(Icons.add),
               ),

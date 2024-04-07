@@ -54,7 +54,7 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
           title: const Text('Create Incident'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => PatientPage(pID: widget.pID),
@@ -68,7 +68,7 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
                 Incident? createdIncident = await createIncident();
                 if (createdIncident != null && context.mounted) {
                   // Navigate to IncidentPage only if incident is successfully created
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>

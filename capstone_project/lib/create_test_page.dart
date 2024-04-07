@@ -70,7 +70,7 @@ class _CreateTestPage extends State<CreateTestPage> {
           title: const Text('Create Test'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => IncidentPage(iID: widget.iID),
@@ -82,7 +82,7 @@ class _CreateTestPage extends State<CreateTestPage> {
               onPressed: () async {
                 Test? createdTest = await createTest();
                 if (createdTest != null && context.mounted) {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => TestsPage(tID: createdTest.tID),

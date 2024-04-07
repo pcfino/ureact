@@ -88,7 +88,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     if (widget.trialNumber == 3) {
       Dynamic? createdDynamic = await createDynamicTest(0, 0, 0);
       if (createdDynamic != null && context.mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => DynamicResultsPage(
@@ -119,7 +119,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
         );
       }
     } else {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => DynamicTestPage(
@@ -302,7 +302,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => TestsPage(

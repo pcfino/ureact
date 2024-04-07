@@ -307,30 +307,38 @@ class _TestsPage extends State<TestsPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicResultsPage(
-                                      t1Duration: test!.dynamicTest!.t1Duration,
+                                      t1Duration:
+                                          test!.dynamicTest!.t1Duration * 1000,
                                       t1TurnSpeed:
                                           test!.dynamicTest!.t1TurnSpeed,
-                                      t1MLSway: test!.dynamicTest!.t1MLSway,
-                                      t2Duration: test!.dynamicTest!.t2Duration,
+                                      t1MLSway:
+                                          test!.dynamicTest!.t1MLSway * 100,
+                                      t2Duration:
+                                          test!.dynamicTest!.t2Duration * 1000,
                                       t2TurnSpeed:
                                           test!.dynamicTest!.t2TurnSpeed,
-                                      t2MLSway: test!.dynamicTest!.t2MLSway,
-                                      t3Duration: test!.dynamicTest!.t3Duration,
+                                      t2MLSway:
+                                          test!.dynamicTest!.t2MLSway * 100,
+                                      t3Duration:
+                                          test!.dynamicTest!.t3Duration * 1000,
                                       t3TurnSpeed:
                                           test!.dynamicTest!.t3TurnSpeed,
-                                      t3MLSway: test!.dynamicTest!.t3MLSway,
-                                      dMax: test!.dynamicTest!.dMax,
-                                      dMin: test!.dynamicTest!.dMin,
-                                      dMean: test!.dynamicTest!.dMean,
-                                      dMedian: test!.dynamicTest!.dMedian,
+                                      t3MLSway:
+                                          test!.dynamicTest!.t3MLSway * 100,
+                                      dMax: test!.dynamicTest!.dMax * 1000,
+                                      dMin: test!.dynamicTest!.dMin * 1000,
+                                      dMean: test!.dynamicTest!.dMean * 1000,
+                                      dMedian:
+                                          test!.dynamicTest!.dMedian * 1000,
                                       tsMax: test!.dynamicTest!.tsMax,
                                       tsMin: test!.dynamicTest!.tsMin,
                                       tsMean: test!.dynamicTest!.tsMean,
                                       tsMedian: test!.dynamicTest!.tsMedian,
-                                      mlMax: test!.dynamicTest!.mlMax,
-                                      mlMin: test!.dynamicTest!.mlMin,
-                                      mlMean: test!.dynamicTest!.mlMean,
-                                      mlMedian: test!.dynamicTest!.mlMedian,
+                                      mlMax: test!.dynamicTest!.mlMax * 100,
+                                      mlMin: test!.dynamicTest!.mlMin * 100,
+                                      mlMean: test!.dynamicTest!.mlMean * 100,
+                                      mlMedian:
+                                          test!.dynamicTest!.mlMedian * 100,
                                       tID: widget.tID,
                                     ),
                                   ),

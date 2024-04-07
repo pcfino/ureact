@@ -79,418 +79,405 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
           dividerColor: Colors.transparent,
           highlightColor: Colors.white,
         ),
-        home: GestureDetector(
-          onPanUpdate: (details) {
-            // Swiping in right direction.
-            if (details.delta.dx > 0) {
-              Navigator.pushReplacement(
-                context,
-                SlideRightRoute(
-                  page: TestsPage(tID: widget.tID),
-                ),
-              );
-            }
-          },
-          child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              appBar: AppBar(
-                title: const Text('Test Results'),
-                centerTitle: true,
-                leading: BackButton(onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    SlideRightRoute(
-                      page: TestsPage(tID: widget.tID),
-                    ),
-                  );
-                }),
-              ),
-              body: SingleChildScrollView(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Administered by Cannon Rudd',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+        home: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              title: const Text('Test Results'),
+              centerTitle: true,
+              leading: BackButton(onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  SlideRightRoute(
+                    page: TestsPage(tID: widget.tID),
+                  ),
+                );
+              }),
+            ),
+            body: SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Administered by Cannon Rudd',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const Divider(
-                          thickness: 0.5,
-                          color: Colors.transparent,
+                      ),
+                      const Divider(
+                        thickness: 0.5,
+                        color: Colors.transparent,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 1,
+                              blurRadius: 15,
+                            ),
+                          ],
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(15)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                spreadRadius: 1,
-                                blurRadius: 15,
+                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    "Summary",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    "Max",
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    "Min",
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    "Mean",
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    "Median",
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(
+                              thickness: 0.8,
+                              color: Colors.grey,
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    "Duration (ms)",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.dMax.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.dMin.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.dMean.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.dMedian.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(
+                              thickness: 0.5,
+                              color: Colors.grey,
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    "Turn Speed (deg/s)",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.tsMax.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.tsMin.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.tsMean.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.tsMedian.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(
+                              thickness: 0.5,
+                              color: Colors.grey,
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    "ML Sway (cm/s\u00B2)",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.mlMax.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.mlMin.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.mlMean.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    widget.mlMedian.toString(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(
+                        thickness: 0.5,
+                        color: Colors.transparent,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          color: const Color.fromRGBO(255, 220, 212, 1),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 15,
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: ExpansionTile(
+                            title: const Text(
+                              'Trial 1',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                            ),
                             children: [
-                              const Row(
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      "Summary",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      "Max",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      "Min",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      "Mean",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      "Median",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ],
+                              ListTile(
+                                title: const Text('Duration (ms)'),
+                                trailing: Text(
+                                  widget.t1Duration.toString(),
+                                  style: const TextStyle(fontSize: 15),
+                                ),
                               ),
-                              const Divider(
-                                thickness: 0.8,
-                                color: Colors.grey,
+                              ListTile(
+                                title: const Text('Turn Speed (deg/s)'),
+                                trailing: Text(
+                                  widget.t1TurnSpeed.toString(),
+                                  style: const TextStyle(fontSize: 15),
+                                ),
                               ),
-                              Row(
-                                children: [
-                                  const Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      "Duration (ms)",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.dMax.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.dMin.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.dMean.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.dMedian.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Divider(
-                                thickness: 0.5,
-                                color: Colors.grey,
-                              ),
-                              Row(
-                                children: [
-                                  const Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      "Turn Speed (deg/s)",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.tsMax.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.tsMin.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.tsMean.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.tsMedian.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Divider(
-                                thickness: 0.5,
-                                color: Colors.grey,
-                              ),
-                              Row(
-                                children: [
-                                  const Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      "ML Sway (cm/s\u00B2)",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.mlMax.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.mlMin.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.mlMean.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      widget.mlMedian.toString(),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
+                              ListTile(
+                                title: const Text(
+                                  'ML Sway (cm/s\u00B2)',
+                                ),
+                                trailing: Text(
+                                  widget.t1MLSway.toString(),
+                                  style: const TextStyle(fontSize: 15),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        const Divider(
-                          thickness: 0.5,
-                          color: Colors.transparent,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(15)),
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 15,
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: ExpansionTile(
-                              title: const Text(
-                                'Trial 1',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              children: [
-                                ListTile(
-                                  title: const Text('Duration (ms)'),
-                                  trailing: Text(
-                                    widget.t1Duration.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                ListTile(
-                                  title: const Text('Turn Speed (deg/s)'),
-                                  trailing: Text(
-                                    widget.t1TurnSpeed.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                ListTile(
-                                  title: const Text(
-                                    'ML Sway (cm/s\u00B2)',
-                                  ),
-                                  trailing: Text(
-                                    widget.t1MLSway.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                              ],
+                      ),
+                      const Divider(
+                        color: Colors.transparent,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          color: const Color.fromRGBO(255, 220, 212, 1),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 15,
                             ),
-                          ),
+                          ],
                         ),
-                        const Divider(
-                          color: Colors.transparent,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(15)),
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 15,
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: ExpansionTile(
+                            title: const Text(
+                              'Trial 2',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            children: [
+                              ListTile(
+                                title: const Text('Duration (ms)'),
+                                trailing: Text(
+                                  widget.t2Duration.toString(),
+                                  style: const TextStyle(fontSize: 15),
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text('Turn Speed (deg/s)'),
+                                trailing: Text(
+                                  widget.t2TurnSpeed.toString(),
+                                  style: const TextStyle(fontSize: 15),
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text(
+                                  'ML Sway (cm/s\u00B2)',
+                                ),
+                                trailing: Text(
+                                  widget.t2MLSway.toString(),
+                                  style: const TextStyle(fontSize: 15),
+                                ),
                               ),
                             ],
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: ExpansionTile(
-                              title: const Text(
-                                'Trial 2',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                        ),
+                      ),
+                      const Divider(
+                        color: Colors.transparent,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          color: const Color.fromRGBO(255, 220, 212, 1),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 15,
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: ExpansionTile(
+                            title: const Text(
+                              'Trial 3',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            children: [
+                              ListTile(
+                                title: const Text('Duration (ms)'),
+                                trailing: Text(
+                                  widget.t3Duration.toString(),
+                                  style: const TextStyle(fontSize: 15),
                                 ),
                               ),
-                              children: [
-                                ListTile(
-                                  title: const Text('Duration (ms)'),
-                                  trailing: Text(
-                                    widget.t2Duration.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
+                              ListTile(
+                                title: const Text('Turn Speed (deg/s)'),
+                                trailing: Text(
+                                  widget.t3TurnSpeed.toString(),
+                                  style: const TextStyle(fontSize: 15),
                                 ),
-                                ListTile(
-                                  title: const Text('Turn Speed (deg/s)'),
-                                  trailing: Text(
-                                    widget.t2TurnSpeed.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
+                              ),
+                              ListTile(
+                                title: const Text(
+                                  'ML Sway (cm/s\u00B2)',
                                 ),
-                                ListTile(
-                                  title: const Text(
-                                    'ML Sway (cm/s\u00B2)',
-                                  ),
-                                  trailing: Text(
-                                    widget.t2MLSway.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
+                                trailing: Text(
+                                  widget.t3MLSway.toString(),
+                                  style: const TextStyle(fontSize: 15),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const Divider(
-                          color: Colors.transparent,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(15)),
-                            color: const Color.fromRGBO(255, 220, 212, 1),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 15,
                               ),
                             ],
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: ExpansionTile(
-                              title: const Text(
-                                'Trial 3',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              children: [
-                                ListTile(
-                                  title: const Text('Duration (ms)'),
-                                  trailing: Text(
-                                    widget.t3Duration.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                ListTile(
-                                  title: const Text('Turn Speed (deg/s)'),
-                                  trailing: Text(
-                                    widget.t3TurnSpeed.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                ListTile(
-                                  title: const Text(
-                                    'ML Sway (cm/s\u00B2)',
-                                  ),
-                                  trailing: Text(
-                                    widget.t3MLSway.toString(),
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              )),
-        ));
+              ),
+            )));
   }
 }

@@ -47,7 +47,7 @@ List<dynamic> patientCSVHeader = [
 
 Future<dynamic> getPatientData(int pID) async {
   try {
-    dynamic jsonExport = await export_api.get(pID);
+    dynamic jsonExport = await export_api.exportPatient(pID);
     return jsonExport[0];
   } catch (e) {
     print("Error fetching export data: $e");

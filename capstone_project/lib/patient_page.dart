@@ -36,6 +36,7 @@ class _PatientPage extends State<PatientPage> {
   Future<dynamic> getPatient(int pID) async {
     try {
       var jsonPatient = await get(pID);
+      print(jsonPatient);
       Patient patient = Patient.fromJson(jsonPatient[0]);
       return patient;
     } catch (e) {
@@ -45,7 +46,15 @@ class _PatientPage extends State<PatientPage> {
 
   Future<dynamic> savePatient(Map<String, dynamic> updatePatient) async {
     try {
-      await update(widget.pID, updatePatient);
+      var jsonPatient = await update(widget.pID, updatePatient);
+      patient?.firstName = jsonPatient["firstName"];
+      patient?.lastName = jsonPatient["lastName"];
+      patient?.dOB = jsonPatient["dOB"];
+      patient?.height = jsonPatient["height"];
+      patient?.weight = jsonPatient["weight"];
+      patient?.sport = jsonPatient["sport"];
+      patient?.gender = jsonPatient["gender"];
+      patient?.thirdPartyID = jsonPatient["thirdPartyID"];
     } catch (e) {
       print("Error updating patient: $e");
     }
@@ -305,6 +314,50 @@ class _PatientPage extends State<PatientPage> {
     await exportCSV(csvFile);
   }
 
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a vlue'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void setPatient() {
+    feet = patient!.height! ~/ 12;
+    inches = patient!.height! % 12;
+    incidents = patient!.incidents!;
+    fullName.text = "${patient!.firstName} ${patient!.lastName}";
+    firstName.text = patient!.firstName;
+    lastName.text = patient!.lastName;
+    dOB.text = patient!.dOB!.toString();
+    sport.text = patient!.sport!;
+    weightController.text = "${patient!.weight!} lbs";
+    weight = patient!.weight!;
+    heightController.text = "$feet' $inches\"";
+    gen = patient!.gender!;
+    thirdPartyID.text = patient!.thirdPartyID!;
+    incidents?.sort((a, b) => b.iDate.compareTo(a.iDate));
+  }
+
   final TextEditingController fullName = TextEditingController();
   final TextEditingController firstName = TextEditingController();
   final TextEditingController lastName = TextEditingController();
@@ -332,19 +385,7 @@ class _PatientPage extends State<PatientPage> {
         if (snapshot.hasData) {
           if (patient == null) {
             patient = snapshot.data! as Patient;
-            feet = patient!.height! ~/ 12;
-            inches = patient!.height! % 12;
-            incidents = patient!.incidents!;
-            fullName.text = "${patient!.firstName} ${patient!.lastName}";
-            firstName.text = patient!.firstName;
-            lastName.text = patient!.lastName;
-            dOB.text = patient!.dOB!.toString();
-            sport.text = patient!.sport!;
-            weightController.text = "${patient!.weight!} lbs";
-            weight = patient!.weight!;
-            heightController.text = "$feet' $inches\"";
-            gen = patient!.gender!;
-            thirdPartyID.text = patient!.thirdPartyID!;
+            setPatient();
           }
 
           return MaterialApp(
@@ -388,29 +429,35 @@ class _PatientPage extends State<PatientPage> {
                         },
                       ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (!editMode) {
                           setState(() {
                             mode = 'Save';
                             editMode = true;
                           });
                         } else if (editMode) {
-                          editMode = false;
-
-                          var updatePatient = {
-                            "firstName": firstName.text,
-                            "lastName": lastName.text,
-                            "dOB": dOB.text,
-                            "height": feet * 12 + inches,
-                            "weight": weight,
-                            "sport": sport.text,
-                            "gender": gen,
-                            "thirdPartyID": thirdPartyID.text
-                          };
-                          setState(() {
-                            mode = 'Edit';
-                            savePatient(updatePatient);
-                          });
+                          if (firstName.text == "" ||
+                              lastName.text == "" ||
+                              dOB.text == "") {
+                            throwError();
+                          } else {
+                            editMode = false;
+                            var updatePatient = {
+                              "firstName": firstName.text,
+                              "lastName": lastName.text,
+                              "dOB": dOB.text,
+                              "height": feet * 12 + inches,
+                              "weight": weight,
+                              "sport": sport.text,
+                              "gender": gen,
+                              "thirdPartyID": thirdPartyID.text
+                            };
+                            await savePatient(updatePatient);
+                            setPatient();
+                            setState(() {
+                              mode = 'Edit';
+                            });
+                          }
                         }
                       },
                       child: Text(mode),
@@ -424,22 +471,33 @@ class _PatientPage extends State<PatientPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (!editMode)
-                          TextField(
-                            textCapitalization: TextCapitalization.words,
-                            readOnly: !editMode,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              labelText: "Name *",
-                              contentPadding: EdgeInsets.all(11),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15)),
+                              color: const Color.fromRGBO(255, 220, 212, 1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 1,
+                                  blurRadius: 15,
+                                ),
+                              ],
                             ),
-                            controller: fullName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: ListTile(
+                                title: Text(
+                                  fullName.text,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
+                        const Divider(color: Colors.transparent),
                         if (editMode)
                           Row(
                             children: [
@@ -487,7 +545,7 @@ class _PatientPage extends State<PatientPage> {
                             Expanded(
                               flex: 1,
                               child: TextField(
-                                readOnly: !editMode,
+                                readOnly: true,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide.none,
@@ -778,7 +836,7 @@ class _PatientPage extends State<PatientPage> {
                           color: Colors.grey,
                         ),
                         Expanded(
-                          child: ListView.separated(
+                          child: ListView.builder(
                             itemCount: incidents!.length,
                             itemBuilder: (BuildContext context, int index) {
                               return ListTile(
@@ -796,9 +854,6 @@ class _PatientPage extends State<PatientPage> {
                                   }
                                 },
                               );
-                            },
-                            separatorBuilder: (context, index) {
-                              return const Divider();
                             },
                           ),
                         ),

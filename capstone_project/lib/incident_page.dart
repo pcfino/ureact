@@ -33,7 +33,7 @@ class _IncidentPage extends State<IncidentPage> {
   Future<dynamic> getIncident(int iID) async {
     try {
       dynamic jsonIncident = await get(iID);
-      incident = Incident.fromJson(jsonIncident[0]);
+      Incident incident = Incident.fromJson(jsonIncident[0]);
       return incident;
     } catch (e) {
       print("Error fetching incidents: $e");
@@ -135,68 +135,63 @@ class _IncidentPage extends State<IncidentPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: DropdownButtonFormField(
-                    disabledHint: Text(selectedValue),
-                    value: selectedValue,
-                    items: dropdownItems,
-                    onChanged: editMode
-                        ? (String? value) {
-                            setState(() {
-                              selectedValue = value!;
-                              if (editMode) {
-                                incident.iName = selectedValue;
-                              }
-                            });
-                          }
-                        : null,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: const Color.fromRGBO(255, 220, 212, 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 15,
                       ),
-                      labelText: "Type *",
-                      contentPadding: EdgeInsets.all(11),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: ListTile(
+                      title: Text(
+                        incident.iName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                  child: TextField(
-                    readOnly: !editMode,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      labelText: "Date *",
-                      contentPadding: EdgeInsets.all(11),
+                const Divider(
+                  color: Colors.transparent,
+                ),
+                TextField(
+                  readOnly: !editMode,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
                     ),
-                    controller: _date,
-                    onTap: () async {
-                      if (editMode) {
-                        DateTime? selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime.now(),
-                        );
-                        if (selectedDate != null) {
-                          setState(() {
-                            _date.text =
-                                "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
-                            if (editMode) {
-                              incident.iDate =
-                                  "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
-                            }
-                          });
-                        }
-                      }
-                    },
+                    labelText: "Date *",
+                    contentPadding: EdgeInsets.all(11),
                   ),
+                  controller: _date,
+                  onTap: () async {
+                    if (editMode) {
+                      DateTime? selectedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now(),
+                      );
+                      if (selectedDate != null) {
+                        setState(() {
+                          _date.text =
+                              "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
+                          if (editMode) {
+                            incident.iDate =
+                                "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
+                          }
+                        });
+                      }
+                    }
+                  },
                 ),
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
@@ -233,6 +228,10 @@ class _IncidentPage extends State<IncidentPage> {
                       return ListTile(
                         title: Text(incident.tests![index].tName),
                         subtitle: Text(incident.tests![index].tDate),
+                        // The start indicates this is the most recent baseline and the one that will be used
+                        trailing: index == 0 && incident.iName == "Baseline"
+                            ? const Icon(Icons.star_border)
+                            : null,
                         onTap: () {
                           Navigator.pushReplacement(
                             context,
@@ -254,7 +253,10 @@ class _IncidentPage extends State<IncidentPage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CreateTestPage(iID: widget.iID),
+                  builder: (context) => CreateTestPage(
+                    iID: widget.iID,
+                    name: incident.iName,
+                  ),
                 ),
               );
             },
@@ -291,6 +293,7 @@ class _IncidentPage extends State<IncidentPage> {
           } else {
             if (incident == null) {
               incident = snapshot.data! as Incident;
+              incident?.tests?.sort((a, b) => b.tDate.compareTo(a.tDate));
             }
             return incidentPageContent(context, incident!);
           }

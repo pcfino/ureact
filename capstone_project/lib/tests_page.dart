@@ -158,35 +158,64 @@ class _TestsPage extends State<TestsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        child: DropdownButtonFormField(
-                          value: selectedValue,
-                          items: dropdownItems,
-                          onChanged: editMode
-                              ? (String? value) {
-                                  setState(() {
-                                    selectedValue = value!;
-                                    if (editMode) {
-                                      //incident.iName = selectedValue;
-                                    }
-                                  });
-                                }
-                              : null,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                      if (!editMode || selectedValue == "Baseline")
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
+                            color: const Color.fromRGBO(255, 220, 212, 1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 15,
+                              ),
+                            ],
                           ),
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: ListTile(
+                              title: Text(
+                                selectedValue,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
                             ),
-                            labelText: "Name *",
-                            contentPadding: EdgeInsets.all(11),
                           ),
                         ),
+                      const Divider(
+                        color: Colors.transparent,
                       ),
+                      if (editMode && selectedValue != "Baseline")
+                        Container(
+                          margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                          child: DropdownButtonFormField(
+                            value: selectedValue,
+                            items: dropdownItems,
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedValue = value!;
+                                if (editMode) {
+                                  //incident.iName = selectedValue;
+                                }
+                              });
+                            },
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              labelText: "Type *",
+                              contentPadding: EdgeInsets.all(11),
+                            ),
+                          ),
+                        ),
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                         child: TextField(
@@ -295,7 +324,7 @@ class _TestsPage extends State<TestsPage> {
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             trailing: Icon(test!.reactiveTest == null
-                                ? Icons.add_circle
+                                ? Icons.add
                                 : Icons.arrow_forward_ios),
                           ),
                           ListTile(
@@ -362,7 +391,7 @@ class _TestsPage extends State<TestsPage> {
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             trailing: Icon(test!.dynamicTest == null
-                                ? Icons.add_circle
+                                ? Icons.add
                                 : Icons.arrow_forward_ios),
                           ),
                           ListTile(
@@ -408,7 +437,7 @@ class _TestsPage extends State<TestsPage> {
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             trailing: Icon(test!.staticTest == null
-                                ? Icons.add_circle
+                                ? Icons.add
                                 : Icons.arrow_forward_ios),
                           ),
                         ]),

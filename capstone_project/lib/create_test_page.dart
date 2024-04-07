@@ -8,9 +8,10 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 
 class CreateTestPage extends StatefulWidget {
-  const CreateTestPage({super.key, required this.iID});
+  const CreateTestPage({super.key, required this.iID, required this.name});
 
   final int iID;
+  final String name;
   @override
   State<CreateTestPage> createState() => _CreateTestPage();
 }
@@ -18,8 +19,9 @@ class CreateTestPage extends StatefulWidget {
 class _CreateTestPage extends State<CreateTestPage> {
   Future<dynamic> createTest() async {
     try {
+      String name = widget.name == "Baseline" ? "Baseline" : selectedValue;
       dynamic jsonTest = await create({
-        "tName": selectedValue,
+        "tName": name,
         "tDate": date.text,
         "tNotes": notes.text,
         "iID": widget.iID,
@@ -96,32 +98,46 @@ class _CreateTestPage extends State<CreateTestPage> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: DropdownButtonFormField(
-                    disabledHint: Text(selectedValue),
-                    value: selectedValue,
-                    items: dropdownItems,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedValue = value!;
-                      });
-                    },
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                if (widget.name == "Baseline")
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(11, 0, 0, 0),
+                    child: Text(
+                      widget.name,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      labelText: "Type *",
-                      contentPadding: EdgeInsets.all(11),
                     ),
                   ),
-                ),
+                if (widget.name != "Baseline")
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    child: DropdownButtonFormField(
+                      disabledHint: Text(selectedValue),
+                      value: selectedValue,
+                      items: dropdownItems,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedValue = value!;
+                        });
+                      },
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        labelText: "Type *",
+                        contentPadding: EdgeInsets.all(11),
+                      ),
+                    ),
+                  ),
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                   child: TextField(

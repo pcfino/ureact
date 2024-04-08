@@ -225,12 +225,16 @@ class App extends State<MyApp> {
                           ),
                           onPressed: () async {
                             dynamic loggedIn = await logInUser();
-                            if (context.mounted) {
+                            dynamic group = await setGroup();
+                            if (context.mounted &&
+                                group['status'] == "succsess") {
                               if (loggedIn['status'] != 'error') {
                                 SessionManager().setString(
                                     "token", loggedIn['accessToken']);
                                 SessionManager()
                                     .setString("username", _username.text);
+                                SessionManager().setString(
+                                    "orgID", group['orgID'].toString());
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

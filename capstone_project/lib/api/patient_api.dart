@@ -4,7 +4,7 @@ import 'dart:convert';
 /// Makes request to get all patients
 ///
 /// @return Json object with the patients info
-Future getAll(int orgID) async {
+Future getAll(String orgID) async {
   var results = await api.get('/mysql/getAllPatients?ID=$orgID');
   return jsonDecode(results);
 }

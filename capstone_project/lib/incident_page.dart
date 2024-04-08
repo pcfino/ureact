@@ -1,3 +1,4 @@
+import 'package:capstone_project/api/export_api.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/create_test_page.dart';
@@ -262,6 +263,19 @@ class _IncidentPage extends State<IncidentPage> {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.endContained,
+          bottomNavigationBar: BottomAppBar(
+              surfaceTintColor: Colors.white,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        exportIncident(incident.pID, incident.iID);
+                      },
+                      child: const Text('Export Data')),
+                ],
+              )),
         ),
       ),
     );

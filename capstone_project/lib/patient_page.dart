@@ -586,7 +586,7 @@ class _PatientPage extends State<PatientPage> {
                       children: [
                         TextButton(
                             onPressed: () {
-                              exportPatientData(patient!.pID);
+                              exportPatient(patient!.pID);
                             },
                             child: const Text('Export Data')),
                       ],

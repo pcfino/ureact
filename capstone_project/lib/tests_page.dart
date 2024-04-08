@@ -1,3 +1,4 @@
+import 'package:capstone_project/api/export_api.dart';
 import 'package:capstone_project/dynamic_test_page.dart';
 import 'package:capstone_project/reactive_test_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
@@ -430,6 +431,19 @@ class _TestsPage extends State<TestsPage> {
                     ],
                   ),
                 ),
+                bottomNavigationBar: BottomAppBar(
+                    surfaceTintColor: Colors.white,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              // exportTest(test!.tID);
+                            },
+                            child: const Text('Export Data')),
+                      ],
+                    )),
               ),
             ),
           );

@@ -6,8 +6,6 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:capstone_project/api/export_api.dart' as export_api;
 
-bool isPatient = false;
-
 /* ------------------------------------- Headers ------------------------------------- */
 
 List<dynamic> csvHeader = [
@@ -49,7 +47,6 @@ List<dynamic> csvHeader = [
 
 Future<dynamic> getPatientData(int pID) async {
   try {
-    isPatient = true;
     dynamic jsonExport = await export_api.exportPatient(pID);
     return jsonExport[0];
   } catch (e) {
@@ -89,7 +86,7 @@ void exportPatient(int pID) async {
       fileName = "patient${json['thirdPartyID']}";
     }
 
-    exportData(fileName, json);
+    exportData(fileName, json, true);
   }
 }
 
@@ -108,13 +105,11 @@ void exportIncident(int pID, int iID) async {
       }
     }
 
-    exportData(fileName, json);
+    exportData(fileName, json, false);
   }
 }
 
 void exportTest(int pID, int tID) async {
-  // print("pID is: " + pID.toString());
-  // print("tID is: " + tID.toString());
   String fileName = "";
   Map<String, dynamic> json = {};
   List<dynamic> jsonList = await export_api.exportTest(pID, tID);
@@ -129,11 +124,12 @@ void exportTest(int pID, int tID) async {
       }
     }
 
-    exportData(fileName, json);
+    exportData(fileName, json, false);
   }
 }
 
-void exportData(String fileName, Map<String, dynamic> json) async {
+void exportData(
+    String fileName, Map<String, dynamic> json, bool isPatient) async {
   List<List<dynamic>> rows = [];
   Map<int, Map<String, dynamic>> processedJson = {};
 

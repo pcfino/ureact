@@ -1,5 +1,3 @@
-import 'dart:convert';
-// import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:capstone_project/reactive_test_results_page.dart';
@@ -8,7 +6,6 @@ import 'package:capstone_project/models/reactive.dart';
 import 'reactive_sensor_recorder.dart';
 import 'dart:async';
 import 'api/test_api.dart';
-import 'package:event/event.dart';
 
 class ReactiveTestPage extends StatefulWidget {
   const ReactiveTestPage(

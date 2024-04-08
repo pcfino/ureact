@@ -11,6 +11,28 @@ Future get(int testId) async {
   return await jsonDecode(results);
 }
 
+/// Makes request to delete a Test and relevent information
+///
+/// @param testID: info needed to delete a test.
+///
+/// @return boolean if deletion was successful
+Future delete(int testID) async {
+  var results = await api.delete('/mysql/deleteTest', {'tID': testID});
+  var decodedResults = jsonDecode(results);
+  return decodedResults['Status'];
+}
+
+/// Makes request to update a Test and relevent information
+///
+/// @param testID: id needed to update a test.
+/// @param testInfo: info to update in the test
+///
+/// @return updated test info
+Future update(Map testInfo) async {
+  var results = await api.put('/mysql/updateTest', testInfo);
+  return await jsonDecode(results);
+}
+
 /// SWITCH TO THIS WHEN READY
 /// NEW AND UPDATED GET TEST METHOD THAT RETURNS ALL INFORMATION FROM ALL 3 TESTS
 /// Makes request to get test and relevent information
@@ -190,4 +212,14 @@ Future runTandemGaitTestScript(Map sensorData) async {
       "turningSpeed": 0.0
     };
   }
+}
+
+/// Makes request to get a baseline and the test information from that baseline
+///
+/// @param patientId: patientID need to find basline
+///
+/// @return Json object with the incident information
+Future getBaseline(int testId) async {
+  var results = await api.get('/mysql/getBaseline?ID=$testId');
+  return await jsonDecode(results);
 }

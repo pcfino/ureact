@@ -3,14 +3,18 @@
 
 import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/test.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 
 class CreateTestPage extends StatefulWidget {
-  const CreateTestPage({super.key, required this.iID});
+  const CreateTestPage(
+      {super.key, required this.iID, required this.pID, required this.name});
 
   final int iID;
+  final int pID;
+  final String name;
   @override
   State<CreateTestPage> createState() => _CreateTestPage();
 }
@@ -18,8 +22,9 @@ class CreateTestPage extends StatefulWidget {
 class _CreateTestPage extends State<CreateTestPage> {
   Future<dynamic> createTest() async {
     try {
+      String name = widget.name == "Baseline" ? "Baseline" : selectedValue;
       dynamic jsonTest = await create({
-        "tName": selectedValue,
+        "tName": name,
         "tDate": date.text,
         "tNotes": notes.text,
         "iID": widget.iID,
@@ -29,6 +34,33 @@ class _CreateTestPage extends State<CreateTestPage> {
     } catch (e) {
       print("Error creating test: $e");
     }
+  }
+
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a value'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   final TextEditingController date = TextEditingController();
@@ -68,24 +100,29 @@ class _CreateTestPage extends State<CreateTestPage> {
           title: const Text('Create Test'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => IncidentPage(iID: widget.iID),
+              SlideRightRoute(
+                page: IncidentPage(iID: widget.iID),
               ),
             );
           }),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                Test? createdTest = await createTest();
-                if (createdTest != null && context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TestsPage(tID: createdTest.tID),
-                    ),
-                  );
+                if (date.text == "") {
+                  throwError();
+                } else {
+                  Test? createdTest = await createTest();
+                  if (createdTest != null && context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            TestsPage(tID: createdTest.tID, pID: widget.pID),
+                      ),
+                    );
+                  }
                 }
               },
               child: const Text('Save'),
@@ -96,35 +133,50 @@ class _CreateTestPage extends State<CreateTestPage> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  child: DropdownButtonFormField(
-                    disabledHint: Text(selectedValue),
-                    value: selectedValue,
-                    items: dropdownItems,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedValue = value!;
-                      });
-                    },
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                if (widget.name == "Baseline")
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(11, 0, 0, 0),
+                    child: Text(
+                      widget.name,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      labelText: "Type *",
-                      contentPadding: EdgeInsets.all(11),
                     ),
                   ),
-                ),
+                if (widget.name != "Baseline")
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    child: DropdownButtonFormField(
+                      disabledHint: Text(selectedValue),
+                      value: selectedValue,
+                      items: dropdownItems,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedValue = value!;
+                        });
+                      },
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        labelText: "Type *",
+                        contentPadding: EdgeInsets.all(11),
+                      ),
+                    ),
+                  ),
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                   child: TextField(
+                    readOnly: true,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(
                         borderSide: BorderSide.none,

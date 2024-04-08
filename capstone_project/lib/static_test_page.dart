@@ -12,6 +12,7 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 class StaticTestPage extends StatefulWidget {
   StaticTestPage({
     super.key,
+    required this.pID,
     required this.tID,
     required this.stance,
     required this.tlSolidML,
@@ -40,6 +41,7 @@ class StaticTestPage extends StatefulWidget {
     this.tandFoamDataFs,
   });
 
+  final int pID;
   final String stance;
   final double tlSolidML;
   final double tlFoamML;
@@ -189,6 +191,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           context,
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
+              pID: widget.pID,
               stance: "Single Leg Stance (Solid)",
               tID: widget.tID,
               tlSolidML: mlSway,
@@ -205,6 +208,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           context,
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
+              pID: widget.pID,
               stance: "Tandem Stance (Solid)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
@@ -221,6 +225,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           context,
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
+              pID: widget.pID,
               stance: "Two Leg Stance (Foam)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
@@ -237,6 +242,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           context,
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
+              pID: widget.pID,
               stance: "Single Leg Stance (Foam)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
@@ -253,6 +259,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           context,
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
+              pID: widget.pID,
               stance: "Tandem Stance (Foam)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
@@ -273,6 +280,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               context,
               MaterialPageRoute(
                 builder: (context) => StaticResultsPage(
+                  pID: widget.pID,
                   tID: widget.tID,
                   tlSolidML: widget.tlSolidML * 100,
                   tlFoamML: widget.tlFoamML * 100,
@@ -319,10 +327,11 @@ class _StaticTestPage extends State<StaticTestPage> {
 
   void skip() async {
     if (widget.stance == "Two Leg Stance (Solid)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
+            pID: widget.pID,
             stance: "Single Leg Stance (Solid)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -335,10 +344,11 @@ class _StaticTestPage extends State<StaticTestPage> {
         ),
       );
     } else if (widget.stance == "Single Leg Stance (Solid)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
+            pID: widget.pID,
             stance: "Tandem Stance (Solid)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -351,10 +361,11 @@ class _StaticTestPage extends State<StaticTestPage> {
         ),
       );
     } else if (widget.stance == "Tandem Stance (Solid)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
+            pID: widget.pID,
             stance: "Two Leg Stance (Foam)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -367,10 +378,11 @@ class _StaticTestPage extends State<StaticTestPage> {
         ),
       );
     } else if (widget.stance == "Two Leg Stance (Foam)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
+            pID: widget.pID,
             stance: "Single Leg Stance (Foam)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -383,10 +395,11 @@ class _StaticTestPage extends State<StaticTestPage> {
         ),
       );
     } else if (widget.stance == "Single Leg Stance (Foam)") {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
+            pID: widget.pID,
             stance: "Tandem Stance (Foam)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -403,10 +416,11 @@ class _StaticTestPage extends State<StaticTestPage> {
       if (createdStatic != null && context.mounted) {
         await sendIMU(createdStatic.sID);
         if (context.mounted) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => StaticResultsPage(
+                pID: widget.pID,
                 tID: widget.tID,
                 tlSolidML: widget.tlSolidML,
                 tlFoamML: widget.tlFoamML,
@@ -426,11 +440,12 @@ class _StaticTestPage extends State<StaticTestPage> {
     if (timer != null) {
       timer!.cancel();
     }
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => TestsPage(
           tID: widget.tID,
+          pID: widget.pID,
         ),
       ),
     );

@@ -6,7 +6,7 @@ import 'dart:convert';
 /// @param patientId: id of the patient
 ///
 /// @return Json object with the patient infomation
-Future get(int patientId) async {
+Future exportPatient(int patientId) async {
   var results = await api.get('/mysql/exportSinglePatient?ID=$patientId');
   return await jsonDecode(results);
 }
@@ -31,6 +31,6 @@ Future exportIncident(int patientId, int incidentID) async {
 /// @return Json object with the patient infomation
 Future exportTest(int patientId, int testID) async {
   var results =
-      await api.get('/mysql/exportSinglePatient?ID=$patientId&tID=$testID');
+      await api.get('/mysql/exportSingleTest?pID=$patientId&tID=$testID');
   return await jsonDecode(results);
 }

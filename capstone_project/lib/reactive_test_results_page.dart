@@ -1,6 +1,4 @@
-// import 'package:capstone_project/main.dart';
 import 'package:capstone_project/tests_page.dart';
-import 'package:capstone_project/api/test_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:capstone_project/slide_right_transition.dart';
@@ -8,6 +6,7 @@ import 'package:capstone_project/slide_right_transition.dart';
 class ReactiveTestResultsPage extends StatefulWidget {
   const ReactiveTestResultsPage(
       {super.key,
+      required this.pID,
       required this.forward,
       required this.left,
       required this.right,
@@ -15,6 +14,7 @@ class ReactiveTestResultsPage extends StatefulWidget {
       required this.median,
       required this.tID});
 
+  final int pID;
   final double forward;
   final double left;
   final double right;
@@ -52,7 +52,10 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
             Navigator.pushReplacement(
               context,
               SlideRightRoute(
-                page: TestsPage(tID: widget.tID),
+                page: TestsPage(
+                  tID: widget.tID,
+                  pID: widget.pID,
+                ),
               ),
             );
           }),

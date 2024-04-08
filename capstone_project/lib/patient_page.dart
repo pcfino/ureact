@@ -1,10 +1,3 @@
-import 'package:capstone_project/models/test.dart';
-import 'package:csv/csv.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-// import 'package:file_picker/file_picker.dart';
-import 'dart:io';
-
 import 'package:capstone_project/create_incident_page.dart';
 import 'package:capstone_project/home_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,8 +6,8 @@ import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/patient_api.dart';
-import 'package:capstone_project/api/export_api.dart' as export_api;
 import 'package:capstone_project/slide_right_transition.dart';
+import 'package:capstone_project/export_data.dart';
 
 class PatientPage extends StatefulWidget {
   const PatientPage({super.key, required this.pID});
@@ -45,7 +38,15 @@ class _PatientPage extends State<PatientPage> {
 
   Future<dynamic> savePatient(Map<String, dynamic> updatePatient) async {
     try {
-      await update(widget.pID, updatePatient);
+      var jsonPatient = await update(widget.pID, updatePatient);
+      patient?.firstName = jsonPatient["firstName"];
+      patient?.lastName = jsonPatient["lastName"];
+      patient?.dOB = jsonPatient["dOB"];
+      patient?.height = jsonPatient["height"];
+      patient?.weight = jsonPatient["weight"];
+      patient?.sport = jsonPatient["sport"];
+      patient?.gender = jsonPatient["gender"];
+      patient?.thirdPartyID = jsonPatient["thirdPartyID"];
     } catch (e) {
       print("Error updating patient: $e");
     }
@@ -55,254 +56,56 @@ class _PatientPage extends State<PatientPage> {
     try {
       bool deleted = await delete(pID);
       if (deleted) {
-        setState(() {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const HomePage(),
-            ),
-          );
-        });
+        Navigator.pushReplacement(
+            context, SlideRightRoute(page: const HomePage()));
       }
     } catch (e) {
       print("Error deleting patient: $e");
     }
   }
 
-  Future<dynamic> getExport(int pID) async {
-    try {
-      dynamic jsonExport = await export_api.get(pID);
-      return jsonExport[0];
-    } catch (e) {
-      print("Error fetching export data: $e");
-    }
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a value'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  Future<XFile> createCSVFile(String fileName, String fileContent) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final csvFile = File('${dir.path}/$fileName.csv');
-    await csvFile.writeAsString(fileContent);
-    final xCsvFile = XFile('${dir.path}/$fileName.csv');
-    return xCsvFile;
-  }
-
-  Future<void> exportCSV(XFile file) async {
-    Share.shareXFiles([file]);
-  }
-
-  void exportPatientData() async {
-    // Get patient data
-    String fileName = "";
-    List<List<dynamic>> rows = [];
-    rows.add([
-      '3rd Party ID',
-      'Incident',
-      'Incident Date/Time',
-      'Condition',
-      'Reactive MTime',
-      'Static TL Solid ML',
-      'Static TL Foam ML',
-      // 'Dynamic T1 Duration',
-      // 'Dynamic T1 TurnSpeed',
-      // 'Dynamic T1 ML Sway',
-      // 'Dynamic T2 Duration',
-      // 'Dynamic T2 TurnSpeed',
-      // 'Dynamic T2 ML Sway',
-      // 'Dynamic T3 Duration',
-      // 'Dynamic T3 TurnSpeed',
-      // 'Dynamic T3 ML Sway',
-      'dMax',
-      'dMin',
-      'dMean',
-      'dMedian',
-      'tsMax',
-      'tsMin',
-      'tsMean',
-      'tsMedian',
-      'mlMax',
-      'mlMin',
-      'mlMean',
-      'mlMedian',
-    ]);
-
-    List<dynamic> colHeaders = rows[0];
-    Map<String, dynamic> json = await getExport(widget.pID);
-    Map<int, Map<String, dynamic>> processedJson = {};
-
-    print(json);
-
-    if (json.containsKey('thirdPartyID')) {
-      fileName = "patient${json['thirdPartyID']}";
-      if (json.containsKey('incidents')) {
-        List<dynamic> incidents = json['incidents'];
-
-        // Iterate over incidents
-        for (var incident in incidents) {
-          if (incident.containsKey('tests')) {
-            List<dynamic> tests = incident['tests'];
-
-            // Iterate over tests
-            for (var test in tests) {
-              bool hasData = false;
-              double? reactiveMTime;
-
-              double? staticTLSolidML;
-              double? staticTLFoamML;
-
-              // double? dynamicT1Duration;
-              // double? dynamicT1TurnSpeed;
-              // double? dynamicT1MLSway;
-
-              // double? dynamicT2Duration;
-              // double? dynamicT2TurnSpeed;
-              // double? dynamicT2MLSway;
-
-              // double? dynamicT3Duration;
-              // double? dynamicT3TurnSpeed;
-              // double? dynamicT3MLSway;
-
-              double? dMax;
-              double? dMin;
-              double? dMean;
-              double? dMedian;
-              double? tsMax;
-              double? tsMin;
-              double? tsMean;
-              double? tsMedian;
-              double? mlMax;
-              double? mlMin;
-              double? mlMean;
-              double? mlMedian;
-
-              // Get reactive test data
-              if (test.containsKey('reactive')) {
-                if (test['reactive'].length != 0) {
-                  reactiveMTime = test['reactive']['mTime'];
-                  hasData = true;
-                }
-              }
-              // Get static test data
-              else if (test.containsKey('static')) {
-                if (test['static'].length != 0) {
-                  staticTLSolidML = test['static']['tlSolidML'];
-                  staticTLFoamML = test['static']['tlFoamML'];
-                  hasData = true;
-                }
-              }
-              // Get dynamic test data
-              else if (test.containsKey('dynamic')) {
-                if (test['dynamic'].length != 0) {
-                  // dynamicT1Duration = test['dynamic']['t1Duration'];
-                  // dynamicT1TurnSpeed = test['dynamic']['t1TurnSpeed'];
-                  // dynamicT1MLSway = test['dynamic']['t1MLSway'];
-
-                  // dynamicT2Duration = test['dynamic']['t2Duration'];
-                  // dynamicT2TurnSpeed = test['dynamic']['t2TurnSpeed'];
-                  // dynamicT2MLSway = test['dynamic']['t2MLSway'];
-
-                  // dynamicT3Duration = test['dynamic']['t3Duration'];
-                  // dynamicT3TurnSpeed = test['dynamic']['t3TurnSpeed'];
-                  // dynamicT3MLSway = test['dynamic']['t3MLSway'];
-
-                  dMax = test['dynamic']['dMax'];
-                  dMin = test['dynamic']['dMin'];
-                  dMean = test['dynamic']['dMean'];
-                  dMedian = test['dynamic']['dMedian'];
-
-                  tsMax = test['dynamic']['tsMax'];
-                  tsMin = test['dynamic']['tsMin'];
-                  tsMean = test['dynamic']['tsMean'];
-                  tsMedian = test['dynamic']['tsMedian'];
-
-                  mlMax = test['dynamic']['mlMax'];
-                  mlMin = test['dynamic']['mlMin'];
-                  mlMean = test['dynamic']['mlMean'];
-                  mlMedian = test['dynamic']['mlMedian'];
-
-                  hasData = true;
-                }
-              }
-
-              List<dynamic> row;
-
-              if (hasData) {
-                row = [
-                  json['thirdPartyID'],
-                  incident['iName'],
-                  incident['iDate'],
-                  incident['iNotes'],
-                  reactiveMTime,
-                  staticTLSolidML,
-                  staticTLFoamML,
-                  // dynamicT1Duration,
-                  // dynamicT1TurnSpeed,
-                  // dynamicT1MLSway,
-                  // dynamicT2Duration,
-                  // dynamicT2TurnSpeed,
-                  // dynamicT2MLSway,
-                  // dynamicT3Duration,
-                  // dynamicT3TurnSpeed,
-                  // dynamicT3MLSway,
-                  dMax,
-                  dMin,
-                  dMean,
-                  dMedian,
-                  tsMax,
-                  tsMin,
-                  tsMean,
-                  tsMedian,
-                  mlMax,
-                  mlMin,
-                  mlMean,
-                  mlMedian,
-                ];
-                rows.add(row);
-
-                // Condense csv rows to group related data
-                if (processedJson.containsKey(test['tID'])) {
-                  int headerIndex = 0;
-                  for (var col in row) {
-                    if (processedJson[test['tID']]?[colHeaders[headerIndex]] ==
-                            null &&
-                        col != null) {
-                      processedJson[test['tID']]![colHeaders[headerIndex]] =
-                          col;
-                    }
-                    headerIndex++;
-                  }
-                } else {
-                  int headerIndex = 0;
-                  for (var col in row) {
-                    if (processedJson[test['tID']] == null) {
-                      processedJson[test['tID']] = {};
-                    }
-                    processedJson[test['tID']]![colHeaders[headerIndex++]] =
-                        col;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    rows.clear();
-    rows.add(colHeaders);
-    // Reorder the row data so that it matches the csv column order
-    processedJson.forEach((test, row) {
-      List<dynamic> orderedRow = [];
-      for (String header in colHeaders) {
-        orderedRow.add(row[header]);
-      }
-      rows.add(orderedRow);
-    });
-
-    // Export patient data
-    String csv = const ListToCsvConverter().convert(rows);
-    String fileContent = csv;
-    XFile csvFile = await createCSVFile(fileName, fileContent);
-    await exportCSV(csvFile);
+  void setPatient() {
+    feet = patient!.height! ~/ 12;
+    inches = patient!.height! % 12;
+    incidents = patient!.incidents!;
+    fullName.text = "${patient!.firstName} ${patient!.lastName}";
+    firstName.text = patient!.firstName;
+    lastName.text = patient!.lastName;
+    dOB.text = patient!.dOB!.toString();
+    sport.text = patient!.sport!;
+    weightController.text = "${patient!.weight!} lbs";
+    weight = patient!.weight!;
+    heightController.text = "$feet' $inches\"";
+    gen = patient!.gender!;
+    thirdPartyID.text = patient!.thirdPartyID!;
+    incidents?.sort((a, b) => b.iDate.compareTo(a.iDate));
   }
 
   final TextEditingController fullName = TextEditingController();
@@ -325,26 +128,14 @@ class _PatientPage extends State<PatientPage> {
   String gen = '';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return FutureBuilder(
       future: future,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (patient == null) {
             patient = snapshot.data! as Patient;
-            feet = patient!.height! ~/ 12;
-            inches = patient!.height! % 12;
-            incidents = patient!.incidents!;
-            fullName.text = "${patient!.firstName} ${patient!.lastName}";
-            firstName.text = patient!.firstName;
-            lastName.text = patient!.lastName;
-            dOB.text = patient!.dOB!.toString();
-            sport.text = patient!.sport!;
-            weightController.text = "${patient!.weight!} lbs";
-            weight = patient!.weight!;
-            heightController.text = "$feet' $inches\"";
-            gen = patient!.gender!;
-            thirdPartyID.text = patient!.thirdPartyID!;
+            setPatient();
           }
 
           return MaterialApp(
@@ -353,50 +144,40 @@ class _PatientPage extends State<PatientPage> {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
               useMaterial3: true,
             ),
-            home: GestureDetector(
-              onPanUpdate: (details) {
-                // Swiping in right direction.
-                if (details.delta.dx > 0) {
+            home: Scaffold(
+              appBar: AppBar(
+                title: const Text('Patient'),
+                centerTitle: true,
+                leading: BackButton(onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    SlideRightRoute(
-                      page: const HomePage(),
-                    ),
+                    SlideRightRoute(page: const HomePage()),
                   );
-                }
-              },
-              child: Scaffold(
-                appBar: AppBar(
-                  title: const Text('Patient'),
-                  centerTitle: true,
-                  leading: BackButton(onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      SlideRightRoute(
-                        page: const HomePage(),
+                }),
+                actions: <Widget>[
+                  if (editMode)
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
                       ),
-                    );
-                  }),
-                  actions: <Widget>[
-                    if (editMode)
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                        ),
-                        onPressed: () {
-                          deletePatient(patient!.pID);
-                        },
-                      ),
-                    TextButton(
                       onPressed: () {
-                        if (!editMode) {
-                          setState(() {
-                            mode = 'Save';
-                            editMode = true;
-                          });
-                        } else if (editMode) {
+                        deletePatient(patient!.pID);
+                      },
+                    ),
+                  TextButton(
+                    onPressed: () async {
+                      if (!editMode) {
+                        setState(() {
+                          mode = 'Save';
+                          editMode = true;
+                        });
+                      } else if (editMode) {
+                        if (firstName.text == "" ||
+                            lastName.text == "" ||
+                            dOB.text == "") {
+                          throwError();
+                        } else {
                           editMode = false;
-
                           var updatePatient = {
                             "firstName": firstName.text,
                             "lastName": lastName.text,
@@ -407,112 +188,71 @@ class _PatientPage extends State<PatientPage> {
                             "gender": gen,
                             "thirdPartyID": thirdPartyID.text
                           };
+                          await savePatient(updatePatient);
+                          setPatient();
                           setState(() {
                             mode = 'Edit';
-                            savePatient(updatePatient);
                           });
                         }
-                      },
-                      child: Text(mode),
-                    ),
-                  ],
-                ),
-                body: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (!editMode)
-                          TextField(
-                            textCapitalization: TextCapitalization.words,
-                            readOnly: !editMode,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                              ),
-                              labelText: "Name *",
-                              contentPadding: EdgeInsets.all(11),
-                            ),
-                            controller: fullName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        if (editMode)
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: TextField(
-                                  textCapitalization: TextCapitalization.words,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    labelText: "First *",
-                                    contentPadding: EdgeInsets.all(11),
-                                  ),
-                                  controller: firstName,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: TextField(
-                                  textCapitalization: TextCapitalization.words,
-                                  readOnly: !editMode,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    labelText: "Last *",
-                                    contentPadding: EdgeInsets.all(11),
-                                  ),
-                                  controller: lastName,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                      }
+                    },
+                    child: Text(mode),
+                  ),
+                ],
+              ),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!editMode)
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
+                            color: const Color.fromRGBO(255, 220, 212, 1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 15,
                               ),
                             ],
                           ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: ListTile(
+                              title: Text(
+                                fullName.text,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      const Divider(color: Colors.transparent),
+                      if (editMode)
                         Row(
                           children: [
                             Expanded(
                               flex: 1,
                               child: TextField(
-                                readOnly: !editMode,
+                                textCapitalization: TextCapitalization.words,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide.none,
                                   ),
-                                  labelText: "DOB *",
+                                  labelText: "First *",
                                   contentPadding: EdgeInsets.all(11),
                                 ),
-                                controller: dOB,
-                                onTap: () async {
-                                  if (editMode) {
-                                    DateTime? selectedDate =
-                                        await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(1900),
-                                      lastDate: DateTime.now(),
-                                    );
-                                    if (selectedDate != null) {
-                                      setState(() {
-                                        dOB.text =
-                                            "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
-                                      });
-                                    }
-                                  }
-                                },
+                                controller: firstName,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             Expanded(
@@ -524,317 +264,365 @@ class _PatientPage extends State<PatientPage> {
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide.none,
                                   ),
-                                  labelText: "Sport",
+                                  labelText: "Last *",
                                   contentPadding: EdgeInsets.all(11),
                                 ),
-                                controller: sport,
+                                controller: lastName,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: TextField(
-                                controller: heightController,
-                                onTap: () {
-                                  if (editMode) {
-                                    FocusScope.of(context)
-                                        .requestFocus(FocusNode());
-                                    showCupertinoModalPopup(
-                                      context: context,
-                                      builder: (context) => Container(
-                                        height: 300,
-                                        color: Colors.white,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              flex: 3,
-                                              child: CupertinoPicker(
-                                                scrollController:
-                                                    FixedExtentScrollController(
-                                                        initialItem: feet),
-                                                itemExtent: 32.0,
-                                                onSelectedItemChanged:
-                                                    (int index) {
-                                                  setState(() {
-                                                    feet = index;
-                                                    heightController.text =
-                                                        "$feet' $inches\"";
-                                                  });
-                                                },
-                                                children:
-                                                    List.generate(12, (index) {
-                                                  return Center(
-                                                    child: Text('$index'),
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                            const Expanded(
-                                              flex: 1,
-                                              child: Center(
-                                                child: Text(
-                                                  'ft',
-                                                  style: TextStyle(
-                                                    decoration:
-                                                        TextDecoration.none,
-                                                    fontSize: 16,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: CupertinoPicker(
-                                                scrollController:
-                                                    FixedExtentScrollController(
-                                                        initialItem: inches),
-                                                itemExtent: 32.0,
-                                                onSelectedItemChanged:
-                                                    (int index) {
-                                                  setState(() {
-                                                    inches = index;
-                                                    heightController.text =
-                                                        "$feet' $inches\"";
-                                                  });
-                                                },
-                                                children:
-                                                    List.generate(12, (index) {
-                                                  return Center(
-                                                    child: Text('$index'),
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                            const Expanded(
-                                              flex: 2,
-                                              child: Center(
-                                                child: Text(
-                                                  'inches',
-                                                  style: TextStyle(
-                                                    decoration:
-                                                        TextDecoration.none,
-                                                    fontSize: 16,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: TextField(
+                              readOnly: true,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                labelText: "DOB *",
+                                contentPadding: EdgeInsets.all(11),
+                              ),
+                              controller: dOB,
+                              onTap: () async {
+                                if (editMode) {
+                                  DateTime? selectedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime.now(),
+                                  );
+                                  if (selectedDate != null) {
+                                    setState(() {
+                                      dOB.text =
+                                          "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
+                                    });
                                   }
-                                },
-                                readOnly: !editMode,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  labelText: "Height",
-                                  contentPadding: EdgeInsets.all(11),
-                                ),
-                              ),
+                                }
+                              },
                             ),
-                            Expanded(
-                              flex: 1,
-                              child: TextField(
-                                onTap: () {
-                                  if (editMode) {
-                                    FocusScope.of(context)
-                                        .requestFocus(FocusNode());
-                                    showCupertinoModalPopup(
-                                      context: context,
-                                      builder: (context) => Container(
-                                        height: 300,
-                                        color: Colors.white,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              flex: 3,
-                                              child: CupertinoPicker(
-                                                scrollController:
-                                                    FixedExtentScrollController(
-                                                        initialItem: weight),
-                                                itemExtent: 32.0,
-                                                onSelectedItemChanged:
-                                                    (int index) {
-                                                  setState(() {
-                                                    weight = (index);
-                                                    weightController.text =
-                                                        "$weight lbs";
-                                                  });
-                                                },
-                                                children:
-                                                    List.generate(500, (index) {
-                                                  return Center(
-                                                    child: Text('$index'),
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                            const Expanded(
-                                              flex: 1,
-                                              child: Center(
-                                                child: Text(
-                                                  'lbs',
-                                                  style: TextStyle(
-                                                    decoration:
-                                                        TextDecoration.none,
-                                                    fontSize: 16,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                                readOnly: !editMode,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  labelText: "Weight",
-                                  contentPadding: EdgeInsets.all(11),
-                                ),
-                                controller: weightController,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: DropdownButtonFormField(
-                                //disabledHint: Text(gen),
-                                value: gen,
-                                items: const [
-                                  DropdownMenuItem<String>(
-                                    value: 'M',
-                                    child: Text('M'),
-                                  ),
-                                  DropdownMenuItem<String>(
-                                    value: 'F',
-                                    child: Text('F'),
-                                  ),
-                                  DropdownMenuItem<String>(
-                                    value: 'Other',
-                                    child: Text('Other'),
-                                  ),
-                                  DropdownMenuItem<String>(
-                                    value: '',
-                                    child: Text(''),
-                                  )
-                                ],
-                                onChanged: editMode
-                                    ? (String? value) {
-                                        setState(() {
-                                          gen = value!;
-                                        });
-                                      }
-                                    : null,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  labelText: "Gender",
-                                  contentPadding: EdgeInsets.all(11),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: TextField(
-                                readOnly: !editMode,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  labelText: "3rd Party ID",
-                                  contentPadding: EdgeInsets.all(11),
-                                ),
-                                controller: thirdPartyID,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Text(
-                          'Incidents',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-                        Expanded(
-                          child: ListView.separated(
-                            itemCount: incidents!.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return ListTile(
-                                title: Text(incidents![index].iName),
-                                subtitle: Text(incidents![index].iDate),
-                                onTap: () {
-                                  if (!editMode) {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => IncidentPage(
-                                            iID: incidents![index].iID),
-                                      ),
-                                    );
-                                  }
-                                },
-                              );
-                            },
-                            separatorBuilder: (context, index) {
-                              return const Divider();
-                            },
+                          Expanded(
+                            flex: 1,
+                            child: TextField(
+                              textCapitalization: TextCapitalization.words,
+                              readOnly: !editMode,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                labelText: "Sport",
+                                contentPadding: EdgeInsets.all(11),
+                              ),
+                              controller: sport,
+                            ),
                           ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: TextField(
+                              controller: heightController,
+                              onTap: () {
+                                if (editMode) {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  showCupertinoModalPopup(
+                                    context: context,
+                                    builder: (context) => Container(
+                                      height: 300,
+                                      color: Colors.white,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 3,
+                                            child: CupertinoPicker(
+                                              scrollController:
+                                                  FixedExtentScrollController(
+                                                      initialItem: feet),
+                                              itemExtent: 32.0,
+                                              onSelectedItemChanged:
+                                                  (int index) {
+                                                setState(() {
+                                                  feet = index;
+                                                  heightController.text =
+                                                      "$feet' $inches\"";
+                                                });
+                                              },
+                                              children:
+                                                  List.generate(12, (index) {
+                                                return Center(
+                                                  child: Text('$index'),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                          const Expanded(
+                                            flex: 1,
+                                            child: Center(
+                                              child: Text(
+                                                'ft',
+                                                style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: CupertinoPicker(
+                                              scrollController:
+                                                  FixedExtentScrollController(
+                                                      initialItem: inches),
+                                              itemExtent: 32.0,
+                                              onSelectedItemChanged:
+                                                  (int index) {
+                                                setState(() {
+                                                  inches = index;
+                                                  heightController.text =
+                                                      "$feet' $inches\"";
+                                                });
+                                              },
+                                              children:
+                                                  List.generate(12, (index) {
+                                                return Center(
+                                                  child: Text('$index'),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                          const Expanded(
+                                            flex: 2,
+                                            child: Center(
+                                              child: Text(
+                                                'inches',
+                                                style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              readOnly: !editMode,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                labelText: "Height",
+                                contentPadding: EdgeInsets.all(11),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: TextField(
+                              onTap: () {
+                                if (editMode) {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  showCupertinoModalPopup(
+                                    context: context,
+                                    builder: (context) => Container(
+                                      height: 300,
+                                      color: Colors.white,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 3,
+                                            child: CupertinoPicker(
+                                              scrollController:
+                                                  FixedExtentScrollController(
+                                                      initialItem: weight),
+                                              itemExtent: 32.0,
+                                              onSelectedItemChanged:
+                                                  (int index) {
+                                                setState(() {
+                                                  weight = (index);
+                                                  weightController.text =
+                                                      "$weight lbs";
+                                                });
+                                              },
+                                              children:
+                                                  List.generate(500, (index) {
+                                                return Center(
+                                                  child: Text('$index'),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                          const Expanded(
+                                            flex: 1,
+                                            child: Center(
+                                              child: Text(
+                                                'lbs',
+                                                style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              readOnly: !editMode,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                labelText: "Weight",
+                                contentPadding: EdgeInsets.all(11),
+                              ),
+                              controller: weightController,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField(
+                              //disabledHint: Text(gen),
+                              value: gen,
+                              items: const [
+                                DropdownMenuItem<String>(
+                                  value: 'M',
+                                  child: Text('M'),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: 'F',
+                                  child: Text('F'),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: 'Other',
+                                  child: Text('Other'),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: '',
+                                  child: Text(''),
+                                )
+                              ],
+                              onChanged: editMode
+                                  ? (String? value) {
+                                      setState(() {
+                                        gen = value!;
+                                      });
+                                    }
+                                  : null,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                labelText: "Gender",
+                                contentPadding: EdgeInsets.all(11),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: TextField(
+                              readOnly: !editMode,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                labelText: "3rd Party ID",
+                                contentPadding: EdgeInsets.all(11),
+                              ),
+                              controller: thirdPartyID,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Text(
+                        'Incidents',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
+                      ),
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Colors.grey,
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: incidents!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              title: Text(incidents![index].iName),
+                              subtitle: Text(incidents![index].iDate),
+                              onTap: () async {
+                                if (!editMode) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => IncidentPage(
+                                          iID: incidents![index].iID),
+                                    ),
+                                  );
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => CreateIncidentPage(
                           pID: patient!.pID,
                         ),
-                      ),
-                    );
-                  },
-                  child: const Icon(Icons.add),
-                ),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.endContained,
-                bottomNavigationBar: BottomAppBar(
-                    surfaceTintColor: Colors.white,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        TextButton(
-                            onPressed: () {
-                              exportPatientData();
-                            },
-                            child: const Text('Export Data')),
-                      ],
-                    )),
+                      ));
+                },
+                child: const Icon(Icons.add),
               ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endContained,
+              bottomNavigationBar: BottomAppBar(
+                  surfaceTintColor: Colors.white,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            exportPatient(patient!.pID);
+                          },
+                          child: const Text('Export Data')),
+                    ],
+                  )),
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {

@@ -213,3 +213,13 @@ Future runTandemGaitTestScript(Map sensorData) async {
     };
   }
 }
+
+/// Makes request to get a baseline and the test information from that baseline
+///
+/// @param patientId: patientID need to find basline
+///
+/// @return Json object with the incident information
+Future getBaseline(int testId) async {
+  var results = await api.get('/mysql/getBaseline?ID=$testId');
+  return await jsonDecode(results);
+}

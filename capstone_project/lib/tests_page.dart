@@ -22,12 +22,14 @@ class TestsPage extends StatefulWidget {
 
 class _TestsPage extends State<TestsPage> {
   late Future<dynamic> future;
+  late Future<dynamic> baselineFuture;
 
   @override
   void initState() {
     super.initState();
 
     future = getTest(widget.tID);
+    baselineFuture = getBaselineTest(widget.tID);
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
@@ -46,6 +48,49 @@ class _TestsPage extends State<TestsPage> {
       }
       Test test = Test.fromJson(jsonTest[0]);
       return test;
+    } catch (e) {
+      print("Error getting test: $e");
+    }
+  }
+
+  Future<dynamic> updateTest(Map<String, dynamic> updateTest) async {
+    try {
+      var jsonTest = await update(widget.tID, updateTest);
+      test?.tName = jsonTest["tName"];
+      test?.tDate = jsonTest["tDate"];
+      test?.tNotes = jsonTest["tNotes"];
+    } catch (e) {
+      print("Error updating test: $e");
+    }
+  }
+
+  void setTest() {
+    selectedValue = test!.tName;
+    _date.text = test!.tDate;
+    notes.text = test!.tNotes!;
+  }
+
+  Future<dynamic> deleteTest() async {
+    try {
+      bool deleted = await delete(widget.tID);
+      if (deleted && context.mounted) {
+        Navigator.pushReplacement(
+            context,
+            SlideRightRoute(
+                page: IncidentPage(
+              iID: test!.iID,
+            )));
+      }
+    } catch (e) {
+      print("Error deleting test: $e");
+    }
+  }
+
+  Future<dynamic> getBaselineTest(int tID) async {
+    try {
+      var jsonTest = await getBaseline(tID);
+
+      return jsonTest[0];
     } catch (e) {
       print("Error getting test: $e");
     }
@@ -107,18 +152,23 @@ class _TestsPage extends State<TestsPage> {
   final TextEditingController notes = TextEditingController();
 
   Test? test;
+  dynamic baseline;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: future,
+      future: Future.wait([
+        future,
+        baselineFuture,
+      ]),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (test == null) {
-            test = snapshot.data! as Test;
+            test = snapshot.data![0] as Test;
             selectedValue = test!.tName;
             _date.text = test!.tDate;
             notes.text = test!.tNotes!;
+            baseline = snapshot.data![1];
           }
 
           return MaterialApp(
@@ -145,32 +195,31 @@ class _TestsPage extends State<TestsPage> {
                       icon: const Icon(
                         Icons.delete_outline,
                       ),
-                      onPressed: () {
-                        //delete(incident.iID);
-                        Navigator.pushReplacement(
-                          context,
-                          SlideRightRoute(
-                            page: IncidentPage(iID: test!.iID),
-                          ),
-                        );
+                      onPressed: () async {
+                        await deleteTest();
                       },
                     ),
                   TextButton(
-                    onPressed: () {
-                      setState(() {
-                        if (editMode) {
-                          if (_date.text == "") {
-                            throwError();
-                          } else {
-                            editMode = false;
-                            mode = 'Edit';
-                            //savePatient(patient);
-                          }
-                        } else if (!editMode) {
-                          editMode = true;
-                          mode = 'Save';
+                    onPressed: () async {
+                      if (editMode) {
+                        if (_date.text == "") {
+                          throwError();
+                        } else {
+                          var newTest = {
+                            "tName": selectedValue,
+                            "tDate": _date.text,
+                            "tNotes": notes.text,
+                          };
+                          await updateTest(newTest);
+                          setTest();
+                          editMode = false;
+                          mode = 'Edit';
                         }
-                      });
+                      } else if (!editMode) {
+                        editMode = true;
+                        mode = 'Save';
+                      }
+                      setState(() {});
                     },
                     child: Text(mode),
                   )
@@ -307,37 +356,40 @@ class _TestsPage extends State<TestsPage> {
                       color: Colors.grey,
                     ),
                     Expanded(
-                      child: ListView(children: [
+                      child: ListView(shrinkWrap: true, children: [
                         ListTile(
                           onTap: () {
-                            if (test!.reactiveTest != null) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReactiveTestResultsPage(
-                                    backward: test!.reactiveTest!.bTime,
-                                    forward: test!.reactiveTest!.fTime,
-                                    left: test!.reactiveTest!.lTime,
-                                    right: test!.reactiveTest!.rTime,
-                                    median: test!.reactiveTest!.mTime,
-                                    tID: test!.tID,
+                            if (!editMode) {
+                              if (test!.reactiveTest != null) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ReactiveTestResultsPage(
+                                      backward: test!.reactiveTest!.bTime,
+                                      forward: test!.reactiveTest!.fTime,
+                                      left: test!.reactiveTest!.lTime,
+                                      right: test!.reactiveTest!.rTime,
+                                      median: test!.reactiveTest!.mTime,
+                                      tID: test!.tID,
+                                    ),
                                   ),
-                                ),
-                              );
-                            } else {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReactiveTestPage(
-                                    direction: 'Forward',
-                                    forward: 0,
-                                    left: 0,
-                                    right: 0,
-                                    backward: 0,
-                                    tID: widget.tID,
+                                );
+                              } else {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReactiveTestPage(
+                                      direction: 'Forward',
+                                      forward: 0,
+                                      left: 0,
+                                      right: 0,
+                                      backward: 0,
+                                      tID: widget.tID,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             }
                           },
                           title: const Text(
@@ -352,56 +404,61 @@ class _TestsPage extends State<TestsPage> {
                         ListTile(
                           onTap: () {
                             // check if dynamic exists
-                            if (test!.dynamicTest != null) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DynamicResultsPage(
-                                    t1Duration: test!.dynamicTest!.t1Duration,
-                                    t1TurnSpeed: test!.dynamicTest!.t1TurnSpeed,
-                                    t1MLSway: test!.dynamicTest!.t1MLSway,
-                                    t2Duration: test!.dynamicTest!.t2Duration,
-                                    t2TurnSpeed: test!.dynamicTest!.t2TurnSpeed,
-                                    t2MLSway: test!.dynamicTest!.t2MLSway,
-                                    t3Duration: test!.dynamicTest!.t3Duration,
-                                    t3TurnSpeed: test!.dynamicTest!.t3TurnSpeed,
-                                    t3MLSway: test!.dynamicTest!.t3MLSway,
-                                    dMax: test!.dynamicTest!.dMax,
-                                    dMin: test!.dynamicTest!.dMin,
-                                    dMean: test!.dynamicTest!.dMean,
-                                    dMedian: test!.dynamicTest!.dMedian,
-                                    tsMax: test!.dynamicTest!.tsMax,
-                                    tsMin: test!.dynamicTest!.tsMin,
-                                    tsMean: test!.dynamicTest!.tsMean,
-                                    tsMedian: test!.dynamicTest!.tsMedian,
-                                    mlMax: test!.dynamicTest!.mlMax,
-                                    mlMin: test!.dynamicTest!.mlMin,
-                                    mlMean: test!.dynamicTest!.mlMean,
-                                    mlMedian: test!.dynamicTest!.mlMedian,
-                                    tID: widget.tID,
+                            if (!editMode) {
+                              if (test!.dynamicTest != null) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DynamicResultsPage(
+                                      t1Duration: test!.dynamicTest!.t1Duration,
+                                      t1TurnSpeed:
+                                          test!.dynamicTest!.t1TurnSpeed,
+                                      t1MLSway: test!.dynamicTest!.t1MLSway,
+                                      t2Duration: test!.dynamicTest!.t2Duration,
+                                      t2TurnSpeed:
+                                          test!.dynamicTest!.t2TurnSpeed,
+                                      t2MLSway: test!.dynamicTest!.t2MLSway,
+                                      t3Duration: test!.dynamicTest!.t3Duration,
+                                      t3TurnSpeed:
+                                          test!.dynamicTest!.t3TurnSpeed,
+                                      t3MLSway: test!.dynamicTest!.t3MLSway,
+                                      dMax: test!.dynamicTest!.dMax,
+                                      dMin: test!.dynamicTest!.dMin,
+                                      dMean: test!.dynamicTest!.dMean,
+                                      dMedian: test!.dynamicTest!.dMedian,
+                                      tsMax: test!.dynamicTest!.tsMax,
+                                      tsMin: test!.dynamicTest!.tsMin,
+                                      tsMean: test!.dynamicTest!.tsMean,
+                                      tsMedian: test!.dynamicTest!.tsMedian,
+                                      mlMax: test!.dynamicTest!.mlMax,
+                                      mlMin: test!.dynamicTest!.mlMin,
+                                      mlMean: test!.dynamicTest!.mlMean,
+                                      mlMedian: test!.dynamicTest!.mlMedian,
+                                      tID: widget.tID,
+                                    ),
                                   ),
-                                ),
-                              );
-                            } else {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DynamicTestPage(
-                                    tID: widget.tID,
-                                    start: true,
-                                    trialNumber: 1,
-                                    t1Duration: 0,
-                                    t1TurnSpeed: 0,
-                                    t1MLSway: 0,
-                                    t2Duration: 0,
-                                    t2TurnSpeed: 0,
-                                    t2MLSway: 0,
-                                    t3Duration: 0,
-                                    t3TurnSpeed: 0,
-                                    t3MLSway: 0,
+                                );
+                              } else {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DynamicTestPage(
+                                      tID: widget.tID,
+                                      start: true,
+                                      trialNumber: 1,
+                                      t1Duration: 0,
+                                      t1TurnSpeed: 0,
+                                      t1MLSway: 0,
+                                      t2Duration: 0,
+                                      t2TurnSpeed: 0,
+                                      t2MLSway: 0,
+                                      t3Duration: 0,
+                                      t3TurnSpeed: 0,
+                                      t3MLSway: 0,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             }
                           },
                           title: const Text(
@@ -415,38 +472,41 @@ class _TestsPage extends State<TestsPage> {
                         ),
                         ListTile(
                           onTap: () {
-                            // check if static exists
-                            if (test!.staticTest != null) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => StaticResultsPage(
-                                    tID: widget.tID,
-                                    tlSolidML: test!.staticTest!.tlSolidML,
-                                    tlFoamML: test!.staticTest!.tlFoamML,
-                                    slSolidML: test!.staticTest!.slSolidML,
-                                    slFoamML: test!.staticTest!.slSolidML,
-                                    tandSolidML: test!.staticTest!.tandSolidML,
-                                    tandFoamML: test!.staticTest!.tandFoamML,
+                            if (!editMode) {
+                              // check if static exists
+                              if (test!.staticTest != null) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => StaticResultsPage(
+                                      tID: widget.tID,
+                                      tlSolidML: test!.staticTest!.tlSolidML,
+                                      tlFoamML: test!.staticTest!.tlFoamML,
+                                      slSolidML: test!.staticTest!.slSolidML,
+                                      slFoamML: test!.staticTest!.slSolidML,
+                                      tandSolidML:
+                                          test!.staticTest!.tandSolidML,
+                                      tandFoamML: test!.staticTest!.tandFoamML,
+                                    ),
                                   ),
-                                ),
-                              );
-                            } else {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => StaticTestPage(
-                                    tID: widget.tID,
-                                    stance: "Two Leg Stance (Solid)",
-                                    tlSolidML: 0,
-                                    tlFoamML: 0,
-                                    slSolidML: 0,
-                                    slFoamML: 0,
-                                    tandSolidML: 0,
-                                    tandFoamML: 0,
+                                );
+                              } else {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => StaticTestPage(
+                                      tID: widget.tID,
+                                      stance: "Two Leg Stance (Solid)",
+                                      tlSolidML: 0,
+                                      tlFoamML: 0,
+                                      slSolidML: 0,
+                                      slFoamML: 0,
+                                      tandSolidML: 0,
+                                      tandFoamML: 0,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             }
                           },
                           title: const Text(
@@ -460,9 +520,210 @@ class _TestsPage extends State<TestsPage> {
                         ),
                       ]),
                     ),
+                    const Divider(
+                      color: Colors.transparent,
+                    ),
+                    if (selectedValue != "Baseline")
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                        child: const Text(
+                          'Baseline',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    if (selectedValue != "Baseline")
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Colors.grey,
+                      ),
+                    if (selectedValue != "Baseline")
+                      Expanded(
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: [
+                            ListTile(
+                              onTap: () {
+                                if (!editMode) {
+                                  if (baseline["reactiveTest"]["rID"] != null) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ReactiveTestResultsPage(
+                                          backward: baseline["reactiveTest"]
+                                                  ["bTime"] *
+                                              1000,
+                                          forward: baseline["reactiveTest"]
+                                                  ["fTime"] *
+                                              1000,
+                                          left: baseline["reactiveTest"]
+                                                  ["lTime"] *
+                                              1000,
+                                          right: baseline["reactiveTest"]
+                                                  ["rTime"] *
+                                              1000,
+                                          median: baseline["reactiveTest"]
+                                                  ["mTime"] *
+                                              1000,
+                                          tID: baseline["reactiveTest"]["tID"],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              title: const Text(
+                                'Reactive',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              trailing: Icon(
+                                  baseline["reactiveTest"]["rID"] == null
+                                      ? null
+                                      : Icons.arrow_forward_ios),
+                            ),
+                            ListTile(
+                              onTap: () {
+                                if (!editMode) {
+                                  if (baseline["dynamicTest"]["dID"] != null) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DynamicResultsPage(
+                                          t1Duration: baseline["dynamicTest"]
+                                                  ["t1Duration"] *
+                                              1000,
+                                          t1TurnSpeed: baseline["dynamicTest"]
+                                              ["t1TurnSpeed"],
+                                          t1MLSway: baseline["dynamicTest"]
+                                                  ["t1MLSway"] *
+                                              100,
+                                          t2Duration: baseline["dynamicTest"]
+                                                  ["t2Duration"] *
+                                              1000,
+                                          t2TurnSpeed: baseline["dynamicTest"]
+                                              ["t2TurnSpeed"],
+                                          t2MLSway: baseline["dynamicTest"]
+                                                  ["t2MLSway"] *
+                                              100,
+                                          t3Duration: baseline["dynamicTest"]
+                                                  ["t3Duration"] *
+                                              1000,
+                                          t3TurnSpeed: baseline["dynamicTest"]
+                                              ["t3TurnSpeed"],
+                                          t3MLSway: baseline["dynamicTest"]
+                                                  ["t3MLSway"] *
+                                              100,
+                                          dMax: baseline["dynamicTest"]
+                                                  ["dMax"] *
+                                              1000,
+                                          dMin: baseline["dynamicTest"]
+                                                  ["dMin"] *
+                                              1000,
+                                          dMean: baseline["dynamicTest"]
+                                                  ["dMean"] *
+                                              1000,
+                                          dMedian: baseline["dynamicTest"]
+                                                  ["dMedian"] *
+                                              1000,
+                                          tsMax: baseline["dynamicTest"]
+                                              ["tsMax"],
+                                          tsMin: baseline["dynamicTest"]
+                                              ["tsMin"],
+                                          tsMean: baseline["dynamicTest"]
+                                              ["tsMean"],
+                                          tsMedian: baseline["dynamicTest"]
+                                              ["tsMedian"],
+                                          mlMax: baseline["dynamicTest"]
+                                                  ["mlMax"] *
+                                              100,
+                                          mlMin: baseline["dynamicTest"]
+                                                  ["mlMin"] *
+                                              100,
+                                          mlMean: baseline["dynamicTest"]
+                                                  ["mlMean"] *
+                                              100,
+                                          mlMedian: baseline["dynamicTest"]
+                                                  ["mlMedian"] *
+                                              100,
+                                          tID: baseline["dynamicTest"]["tID"],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              title: const Text(
+                                'Dynamic',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              trailing: Icon(
+                                  baseline["dynamicTest"]["dID"] == null
+                                      ? null
+                                      : Icons.arrow_forward_ios),
+                            ),
+                            ListTile(
+                              onTap: () {
+                                if (!editMode) {
+                                  if (baseline["staticTest"]["sID"] != null) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => StaticResultsPage(
+                                          tID: baseline["staticTest"]["tID"],
+                                          tlSolidML: baseline["staticTest"]
+                                              ["tlSolidML"],
+                                          tlFoamML: baseline["staticTest"]
+                                              ["tlFoamML"],
+                                          slSolidML: baseline["staticTest"]
+                                              ["slSolidML"],
+                                          slFoamML: baseline["staticTest"]
+                                              ["slFoamML"],
+                                          tandSolidML: baseline["staticTest"]
+                                              ["tandSolidML"],
+                                          tandFoamML: baseline["staticTest"]
+                                              ["tandFoamML"],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              title: const Text(
+                                'Static',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              trailing: Icon(
+                                  baseline["staticTest"]["sID"] == null
+                                      ? null
+                                      : Icons.arrow_forward_ios),
+                            )
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
+              bottomNavigationBar: BottomAppBar(
+                  surfaceTintColor: Colors.white,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            // export test data
+                          },
+                          child: const Text('Export Data')),
+                    ],
+                  )),
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {

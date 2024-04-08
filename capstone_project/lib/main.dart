@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:capstone_project/home_page.dart';
 import 'package:capstone_project/sign_up_page.dart';
 import 'package:capstone_project/api/login_api.dart';
+import 'package:session_manager/session_manager.dart';
 
 void main() => runApp(const MaterialApp(
       home: MyApp(),
@@ -51,6 +52,17 @@ class App extends State<MyApp> {
     }
   }
 
+  Future<dynamic> setGroup() async {
+    try {
+      var groupSet = {"orgName": defaultValue};
+      var group = await setOrginization(groupSet);
+
+      return group;
+    } catch (e) {
+      print("Error fetching patients: $e");
+    }
+  }
+
   List<DropdownMenuItem<String>> getDropdownItems(List<String> groupNames) {
     List<DropdownMenuItem<String>> dropdownGroups = List.empty(growable: true);
     for (String groupName in groupNames) {
@@ -70,18 +82,17 @@ class App extends State<MyApp> {
   ColorScheme cs = ColorScheme.fromSeed(seedColor: Colors.red);
   String errorMessage = "";
   bool error = false;
+  String defaultValue = "Test Organization";
 
   List<String>? groups;
 
   @override
   Widget build(BuildContext context) {
-    String defaultValue = "Test Organization";
     return FutureBuilder(
       future: future,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        groups = snapshot.data! as List<String>;
-        //print(groups);
         if (snapshot.hasData) {
+          groups = snapshot.data! as List<String>;
           return MaterialApp(
             title: 'Login',
             theme: ThemeData(
@@ -216,6 +227,10 @@ class App extends State<MyApp> {
                             dynamic loggedIn = await logInUser();
                             if (context.mounted) {
                               if (loggedIn['status'] != 'error') {
+                                SessionManager().setString(
+                                    "token", loggedIn['accessToken']);
+                                SessionManager()
+                                    .setString("username", _username.text);
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

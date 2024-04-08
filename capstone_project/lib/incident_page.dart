@@ -1,3 +1,5 @@
+import 'package:capstone_project/export_data.dart';
+import 'package:capstone_project/home_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:flutter/material.dart';
@@ -256,8 +258,10 @@ class _IncidentPage extends State<IncidentPage> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                TestsPage(tID: incident.tests![index].tID),
+                            builder: (context) => TestsPage(
+                              tID: incident.tests![index].tID,
+                              pID: incident.pID,
+                            ),
                           ),
                         );
                       },
@@ -275,6 +279,7 @@ class _IncidentPage extends State<IncidentPage> {
               MaterialPageRoute(
                 builder: (context) => CreateTestPage(
                   iID: widget.iID,
+                  pID: incident.pID,
                   name: incident.iName,
                 ),
               ),
@@ -283,6 +288,19 @@ class _IncidentPage extends State<IncidentPage> {
           child: const Icon(Icons.add),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
+        bottomNavigationBar: BottomAppBar(
+            surfaceTintColor: Colors.white,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      exportIncident(incident.pID, incident.iID);
+                    },
+                    child: const Text('Export Data')),
+              ],
+            )),
       ),
     );
   }

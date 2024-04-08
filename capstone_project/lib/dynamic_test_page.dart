@@ -1,4 +1,4 @@
-import 'dart:convert';
+// import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -13,6 +13,7 @@ import 'package:capstone_project/models/dynamic.dart';
 class DynamicTestPage extends StatefulWidget {
   DynamicTestPage({
     super.key,
+    required this.pID,
     required this.tID,
     required this.trialNumber,
     required this.start,
@@ -33,6 +34,7 @@ class DynamicTestPage extends StatefulWidget {
     this.t2DataFs,
   });
 
+  final int pID;
   final int trialNumber;
   bool start;
   final double t1Duration;
@@ -110,6 +112,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
             context,
             MaterialPageRoute(
               builder: (context) => DynamicResultsPage(
+                pID: widget.pID,
                 t1Duration: createdDynamic.t1Duration,
                 t1TurnSpeed: createdDynamic.t1TurnSpeed,
                 t1MLSway: createdDynamic.t1MLSway,
@@ -142,6 +145,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
         context,
         MaterialPageRoute(
           builder: (context) => DynamicTestPage(
+            pID: widget.pID,
             trialNumber: widget.trialNumber + 1,
             tID: widget.tID,
             start: true,
@@ -362,6 +366,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                   MaterialPageRoute(
                     builder: (context) => TestsPage(
                       tID: widget.tID,
+                      pID: widget.pID,
                     ),
                   ),
                 );
@@ -479,6 +484,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
+                                      pID: widget.pID,
                                       trialNumber: 2,
                                       tID: widget.tID,
                                       start: true,
@@ -502,6 +508,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
+                                      pID: widget.pID,
                                       trialNumber: 3,
                                       tID: widget.tID,
                                       start: true,
@@ -535,6 +542,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             DynamicResultsPage(
+                                          pID: widget.pID,
                                           t1Duration:
                                               createdDynamic.t1Duration * 1000,
                                           t1TurnSpeed:

@@ -1,6 +1,6 @@
 // import 'package:capstone_project/main.dart';
 import 'package:capstone_project/tests_page.dart';
-import 'package:capstone_project/api/test_api.dart';
+// import 'package:capstone_project/api/test_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:capstone_project/slide_right_transition.dart';
@@ -8,6 +8,7 @@ import 'package:capstone_project/slide_right_transition.dart';
 class StaticResultsPage extends StatefulWidget {
   const StaticResultsPage(
       {super.key,
+      required this.pID,
       required this.tlSolidML,
       required this.tlFoamML,
       required this.slSolidML,
@@ -16,6 +17,7 @@ class StaticResultsPage extends StatefulWidget {
       required this.tandFoamML,
       required this.tID});
 
+  final int pID;
   final double tlSolidML;
   final double tlFoamML;
   final double slSolidML;
@@ -54,7 +56,10 @@ class _StaticResultsPage extends State<StaticResultsPage> {
             Navigator.pushReplacement(
               context,
               SlideRightRoute(
-                page: TestsPage(tID: widget.tID),
+                page: TestsPage(
+                  tID: widget.tID,
+                  pID: widget.pID,
+                ),
               ),
             );
           }),

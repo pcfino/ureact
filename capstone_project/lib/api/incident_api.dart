@@ -11,6 +11,16 @@ Future get(int incidentId) async {
   return await jsonDecode(results);
 }
 
+/// Makes request to get a baseline and the test information from that baseline
+///
+/// @param patientId: patientID need to find basline
+///
+/// @return Json object with the incident information
+Future getBasline(int patientId) async {
+  var results = await api.get('/mysql/getBaseline?ID=$patientId');
+  return await jsonDecode(results);
+}
+
 /// Makes request to create a incident
 ///
 /// @param incidentInfo: info needed to create a incident.

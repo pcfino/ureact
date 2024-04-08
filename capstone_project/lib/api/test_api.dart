@@ -22,6 +22,17 @@ Future delete(int testID) async {
   return decodedResults['Status'];
 }
 
+/// Makes request to update a Test and relevent information
+///
+/// @param testID: id needed to update a test.
+/// @param testInfo: info to update in the test
+///
+/// @return updated test info
+Future update(int testID, Map testInfo) async {
+  var results = await api.put('/mysql/updateTest', testInfo);
+  return await jsonDecode(results);
+}
+
 /// SWITCH TO THIS WHEN READY
 /// NEW AND UPDATED GET TEST METHOD THAT RETURNS ALL INFORMATION FROM ALL 3 TESTS
 /// Makes request to get test and relevent information

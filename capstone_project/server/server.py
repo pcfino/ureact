@@ -522,6 +522,50 @@ def createTest():
         returnTest = {"tID": tID, "tName": data['tName'], "tDate": str(data['tDate']), "tNotes": data['tNotes'], "iID": data['iID']} #, "dynamic": {}, "static": {}, "reactive": {}}
         return jsonify(returnTest)
 
+@app.route('/mysql/updateTest', methods=['PUT'])
+def updateTest():
+    if request.method == 'PUT':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+ 
+        data = request.json
+        sql = "UPDATE Test SET " + updateTestHelper(data)
+        print(sql) 
+        mycursor.execute(sql)
+        mydb.commit()
+
+        tID = [(data['tID'])]
+        sql = "SELECT * FROM Test WHERE tID=%s"
+        mycursor.execute(sql, tID)
+        myresult = mycursor.fetchall()
+
+        returnList = {}
+        # Get the incident we are looking for
+        for x in myresult:
+            returnList = {"tID": x[0], "tName": x[1], "tDate": str(x[2]), "tNotes": x[3], "iID": x[4]}
+        return jsonify(returnList)
+
+def updateTestHelper(data):
+    sql = ""
+    nameBool=dateBool = False
+    if 'tName' in data:
+        nameBool = True
+        sql += "tName='" + data['tName'] + "'"
+    if 'tDate' in data:
+        if nameBool == True:
+            sql += ", "
+        dateBool = True
+        sql += "tDate='" + str(data['tDate']) + "'"
+    if 'tNotes' in data:
+        if (nameBool or dateBool) == True:
+            sql += ", "
+        dBool = True
+        sql += "tNotes='" + str(data['tNotes']) + "'"
+
+    sql += " WHERE tID=" + str(data['tID'])
+    return sql
+
 @app.route('/mysql/deleteTest', methods=['DELETE'])
 def deleteTest():
     if request.method == 'DELETE':

@@ -248,10 +248,18 @@ def getBaseline():
         # connection to database
         mydb = connectSql()
         mycursor = mydb.cursor()
-        
         data = request.args.get('ID')
-        sql = "select * from Incident where iName = 'Baseline' and pID=%s order by iDate desc"
+        sql = "select * from Test as t join Incident as i on t.iID=i.iID where tID=%s"
         val = [(data)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        pID = 0
+        for x in myresult:
+            pID = x[9]
+            break
+
+        sql = "select * from Incident where iName = 'Baseline' and pID=%s order by iDate desc"
+        val = [(pID)]
         mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
 
@@ -1353,6 +1361,36 @@ def signIp():
     password = request.json.get('password')
     accessToken = CIPW.start_sign_in(user_name= userName, password= password)
     #what is the token for?
+    if accessToken["AuthenticationResult"]["AccessToken"] != None:
+        return jsonify(status = True, accessToken = accessToken["AuthenticationResult"]["AccessToken"])
+    return jsonify(status = accessToken)
+
+#SignOut the User
+@app.route('/log_out', methods=['POST'])
+def signOut():
+    currUserToken = request.json.get('AccessToken')
+    status = CIPW.log_out(currUserToken)
+    #CIPW.log_out(currentUser)
+    if status == None: status = True
+    return jsonify(status = status)
+
+#sends message delcaring password is forgotten, sends email acces code
+#response if good is the email sent
+@app.route('/forgot_password', methods=['POST'])
+def forgot_password():
+    userName = request.json.get('userName')
+    accessToken = CIPW.forgot_password(user_name= userName)
+    if accessToken["CodeDeliveryDetails"]["DeliveryMedium"] == "EMAIL":
+        return jsonify(status = "emailed")
+    return jsonify(status = accessToken)
+
+#use access token to reset password
+@app.route('/confirm_forgot_password', methods=['POST'])
+def confirm_forgot_password():
+    userName = request.json.get('userName')
+    password = request.json.get('password')
+    token = request.json.get('confirmation_code')
+    accessToken = CIPW.confirm_forgot_Password(user_name= userName, password = password, confirmation_code = token)
     return jsonify(status = accessToken)
 
 #Gets all users within a selected orginization

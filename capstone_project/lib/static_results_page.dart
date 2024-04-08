@@ -77,6 +77,20 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                     thickness: 0.5,
                     color: Colors.transparent,
                   ),
+                  const Text(
+                    'Solid Mediolateral Sway',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Divider(
+                    color: Colors.grey,
+                  ),
+                  const Divider(
+                    thickness: 0.5,
+                    color: Colors.transparent,
+                  ),
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(15)),
@@ -93,14 +107,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                       padding: const EdgeInsets.all(4),
                       child: ListTile(
                         title: const Text(
-                          'Two Leg Stance (Solid)',
+                          'Two Leg Stance',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
                         trailing: Text(
-                          widget.tlSolidML.toString(),
+                          "${widget.tlSolidML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -125,14 +139,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                       padding: const EdgeInsets.all(4),
                       child: ListTile(
                         title: const Text(
-                          'Two Leg Stance (Foam)',
+                          'Tandem Stance',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
                         trailing: Text(
-                          widget.tlFoamML.toString(),
+                          "${widget.tandSolidML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -157,14 +171,60 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                       padding: const EdgeInsets.all(4),
                       child: ListTile(
                         title: const Text(
-                          'Tandem Stance (Solid)',
+                          'Single Leg Stance',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
                         trailing: Text(
-                          widget.tandSolidML.toString(),
+                          "${widget.slSolidML.toStringAsFixed(3)} cm/s\u00B2",
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    color: Colors.transparent,
+                  ),
+                  const Text(
+                    'Foam Mediolateral Sway',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Divider(
+                    color: Colors.grey,
+                  ),
+                  const Divider(
+                    thickness: 0.5,
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Two Leg Stance',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.tlFoamML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -189,14 +249,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                       padding: const EdgeInsets.all(4),
                       child: ListTile(
                         title: const Text(
-                          'Tandem Stance (Foam)',
+                          'Tandem Stance',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
                         trailing: Text(
-                          widget.tandFoamML.toString(),
+                          "${widget.tandFoamML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -221,46 +281,14 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                       padding: const EdgeInsets.all(4),
                       child: ListTile(
                         title: const Text(
-                          'Single Leg Stance (Solid)',
+                          'Single Leg Stance',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
                         trailing: Text(
-                          widget.slSolidML.toString(),
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(
-                    color: Colors.transparent,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      color: const Color.fromRGBO(255, 220, 212, 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 15,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: ListTile(
-                        title: const Text(
-                          'Single Leg Stance (Foam)',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        trailing: Text(
-                          widget.slFoamML.toString(),
+                          "${widget.slFoamML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),

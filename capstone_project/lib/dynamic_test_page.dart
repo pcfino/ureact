@@ -7,6 +7,7 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
 import 'package:capstone_project/static_dynamic_recorder.dart';
 import 'package:capstone_project/api/test_api.dart';
+import 'package:capstone_project/api/imu_api.dart';
 import 'package:capstone_project/models/dynamic.dart';
 
 class DynamicTestPage extends StatefulWidget {
@@ -24,6 +25,12 @@ class DynamicTestPage extends StatefulWidget {
     required this.t3Duration,
     required this.t3TurnSpeed,
     required this.t3MLSway,
+    this.t1DataAcc,
+    this.t1DataRot,
+    this.t1DataFs,
+    this.t2DataAcc,
+    this.t2DataRot,
+    this.t2DataFs,
   });
 
   final int trialNumber;
@@ -37,6 +44,15 @@ class DynamicTestPage extends StatefulWidget {
   final double t3Duration;
   final double t3TurnSpeed;
   final double t3MLSway;
+  dynamic t1DataAcc;
+  dynamic t1DataRot;
+  dynamic t1DataFs;
+  dynamic t2DataAcc;
+  dynamic t2DataRot;
+  dynamic t2DataFs;
+  dynamic t3DataAcc;
+  dynamic t3DataRot;
+  dynamic t3DataFs;
 
   final int tID;
 
@@ -88,35 +104,38 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     if (widget.trialNumber == 3) {
       Dynamic? createdDynamic = await createDynamicTest(0, 0, 0);
       if (createdDynamic != null && context.mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DynamicResultsPage(
-              t1Duration: createdDynamic.t1Duration,
-              t1TurnSpeed: createdDynamic.t1TurnSpeed,
-              t1MLSway: createdDynamic.t1MLSway,
-              t2Duration: createdDynamic.t2Duration,
-              t2TurnSpeed: createdDynamic.t2TurnSpeed,
-              t2MLSway: createdDynamic.t2MLSway,
-              t3Duration: createdDynamic.t3Duration,
-              t3TurnSpeed: createdDynamic.t3TurnSpeed,
-              t3MLSway: createdDynamic.t3MLSway,
-              dMax: createdDynamic.dMax,
-              dMin: createdDynamic.dMin,
-              dMean: createdDynamic.dMean,
-              dMedian: createdDynamic.dMedian,
-              tsMax: createdDynamic.tsMax,
-              tsMin: createdDynamic.tsMin,
-              tsMean: createdDynamic.tsMean,
-              tsMedian: createdDynamic.tsMedian,
-              mlMax: createdDynamic.mlMax,
-              mlMin: createdDynamic.mlMin,
-              mlMean: createdDynamic.mlMean,
-              mlMedian: createdDynamic.mlMedian,
-              tID: widget.tID,
+        await sendIMU(createdDynamic.dID);
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DynamicResultsPage(
+                t1Duration: createdDynamic.t1Duration,
+                t1TurnSpeed: createdDynamic.t1TurnSpeed,
+                t1MLSway: createdDynamic.t1MLSway,
+                t2Duration: createdDynamic.t2Duration,
+                t2TurnSpeed: createdDynamic.t2TurnSpeed,
+                t2MLSway: createdDynamic.t2MLSway,
+                t3Duration: createdDynamic.t3Duration,
+                t3TurnSpeed: createdDynamic.t3TurnSpeed,
+                t3MLSway: createdDynamic.t3MLSway,
+                dMax: createdDynamic.dMax,
+                dMin: createdDynamic.dMin,
+                dMean: createdDynamic.dMean,
+                dMedian: createdDynamic.dMedian,
+                tsMax: createdDynamic.tsMax,
+                tsMin: createdDynamic.tsMin,
+                tsMean: createdDynamic.tsMean,
+                tsMedian: createdDynamic.tsMedian,
+                mlMax: createdDynamic.mlMax,
+                mlMin: createdDynamic.mlMin,
+                mlMean: createdDynamic.mlMean,
+                mlMedian: createdDynamic.mlMedian,
+                tID: widget.tID,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     } else {
       Navigator.pushReplacement(
@@ -150,6 +169,19 @@ class _DynamicTestPage extends State<DynamicTestPage> {
       'timeStamps': sensorData.timeStamps,
       'fs': sensorData.fs
     });
+    if (widget.trialNumber == 1) {
+      widget.t1DataAcc = sensorData.formattedAccData();
+      widget.t1DataRot = sensorData.formattedGyrData();
+      widget.t1DataFs = sensorData.fs;
+    } else if (widget.trialNumber == 2) {
+      widget.t2DataAcc = sensorData.formattedAccData();
+      widget.t2DataRot = sensorData.formattedGyrData();
+      widget.t2DataFs = sensorData.fs;
+    } else if (widget.trialNumber == 3) {
+      widget.t3DataAcc = sensorData.formattedAccData();
+      widget.t3DataRot = sensorData.formattedGyrData();
+      widget.t3DataFs = sensorData.fs;
+    }
     return decodedData;
   }
 
@@ -258,6 +290,29 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     } catch (e) {
       print("Error creating reactive test: $e");
     }
+  }
+
+  Future<dynamic> sendIMU(int dID) async {
+    dynamic imuData = {
+      "dID": dID,
+      "t1": {
+        "dataAcc": widget.t1DataAcc,
+        "dataRot": widget.t1DataRot,
+        "fps": widget.t1DataFs,
+      },
+      "t2": {
+        "dataAcc": widget.t2DataAcc,
+        "dataRot": widget.t2DataRot,
+        "fps": widget.t2DataFs,
+      },
+      "t3": {
+        "dataAcc": widget.t3DataAcc,
+        "dataRot": widget.t3DataRot,
+        "fps": widget.t3DataFs,
+      }
+    };
+    dynamic inserted = await insertIMU(imuData);
+    return inserted;
   }
 
   @override
@@ -436,6 +491,9 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                       t3Duration: widget.t1Duration,
                                       t3TurnSpeed: widget.t1TurnSpeed,
                                       t3MLSway: widget.t1MLSway,
+                                      t1DataAcc: widget.t1DataAcc,
+                                      t1DataRot: widget.t1DataRot,
+                                      t1DataFs: widget.t1DataFs,
                                     ),
                                   ),
                                 );
@@ -456,6 +514,12 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                       t3Duration: widget.t1Duration,
                                       t3TurnSpeed: widget.t1TurnSpeed,
                                       t3MLSway: widget.t1MLSway,
+                                      t1DataAcc: widget.t1DataAcc,
+                                      t1DataRot: widget.t1DataRot,
+                                      t1DataFs: widget.t1DataFs,
+                                      t2DataAcc: widget.t2DataAcc,
+                                      t2DataRot: widget.t2DataRot,
+                                      t2DataFs: widget.t2DataFs,
                                     ),
                                   ),
                                 );
@@ -464,35 +528,50 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                     await createDynamicTest(
                                         duration, turningSpeed, mlSway);
                                 if (createdDynamic != null && context.mounted) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DynamicResultsPage(
-                                        t1Duration: createdDynamic.t1Duration,
-                                        t1TurnSpeed: createdDynamic.t1TurnSpeed,
-                                        t1MLSway: createdDynamic.t1MLSway,
-                                        t2Duration: createdDynamic.t2Duration,
-                                        t2TurnSpeed: createdDynamic.t2TurnSpeed,
-                                        t2MLSway: createdDynamic.t2MLSway,
-                                        t3Duration: createdDynamic.t3Duration,
-                                        t3TurnSpeed: createdDynamic.t3TurnSpeed,
-                                        t3MLSway: createdDynamic.t3MLSway,
-                                        dMax: createdDynamic.dMax,
-                                        dMin: createdDynamic.dMin,
-                                        dMean: createdDynamic.dMean,
-                                        dMedian: createdDynamic.dMedian,
-                                        tsMax: createdDynamic.tsMax,
-                                        tsMin: createdDynamic.tsMin,
-                                        tsMean: createdDynamic.tsMean,
-                                        tsMedian: createdDynamic.tsMedian,
-                                        mlMax: createdDynamic.mlMax,
-                                        mlMin: createdDynamic.mlMin,
-                                        mlMean: createdDynamic.mlMean,
-                                        mlMedian: createdDynamic.mlMedian,
-                                        tID: widget.tID,
+                                  await sendIMU(createdDynamic.dID);
+                                  if (context.mounted) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DynamicResultsPage(
+                                          t1Duration:
+                                              createdDynamic.t1Duration * 1000,
+                                          t1TurnSpeed:
+                                              createdDynamic.t1TurnSpeed,
+                                          t1MLSway:
+                                              createdDynamic.t1MLSway * 100,
+                                          t2Duration:
+                                              createdDynamic.t2Duration * 1000,
+                                          t2TurnSpeed:
+                                              createdDynamic.t2TurnSpeed,
+                                          t2MLSway:
+                                              createdDynamic.t2MLSway * 100,
+                                          t3Duration:
+                                              createdDynamic.t3Duration * 1000,
+                                          t3TurnSpeed:
+                                              createdDynamic.t3TurnSpeed,
+                                          t3MLSway:
+                                              createdDynamic.t3MLSway * 100,
+                                          dMax: createdDynamic.dMax * 1000,
+                                          dMin: createdDynamic.dMin * 1000,
+                                          dMean: createdDynamic.dMean * 1000,
+                                          dMedian:
+                                              createdDynamic.dMedian * 1000,
+                                          tsMax: createdDynamic.tsMax,
+                                          tsMin: createdDynamic.tsMin,
+                                          tsMean: createdDynamic.tsMean,
+                                          tsMedian: createdDynamic.tsMedian,
+                                          mlMax: createdDynamic.mlMax * 100,
+                                          mlMin: createdDynamic.mlMin * 100,
+                                          mlMean: createdDynamic.mlMean * 100,
+                                          mlMedian:
+                                              createdDynamic.mlMedian * 100,
+                                          tID: widget.tID,
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  }
                                 }
                               }
                             }

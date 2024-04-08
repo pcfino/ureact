@@ -6,17 +6,32 @@ import 'package:capstone_project/models/reactive.dart';
 import 'reactive_sensor_recorder.dart';
 import 'dart:async';
 import 'api/test_api.dart';
+import 'api/imu_api.dart';
+import 'package:event/event.dart';
 
 class ReactiveTestPage extends StatefulWidget {
-  const ReactiveTestPage(
-      {super.key,
-      required this.pID,
-      required this.direction,
-      required this.forward,
-      required this.left,
-      required this.right,
-      required this.backward,
-      required this.tID});
+  ReactiveTestPage({
+    super.key,
+    required this.pID,
+    required this.tID,
+    required this.direction,
+    required this.forward,
+    required this.left,
+    required this.right,
+    required this.backward,
+    this.forwardDataAcc,
+    this.forwardDataRot,
+    this.forwardDataFs,
+    this.backwardDataAcc,
+    this.backwardDataRot,
+    this.backwardDataFs,
+    this.leftDataAcc,
+    this.leftDataRot,
+    this.leftDataFs,
+    this.rightDataAcc,
+    this.rightDataRot,
+    this.rightDataFs,
+  });
 
   final String direction;
   final int pID;
@@ -24,6 +39,19 @@ class ReactiveTestPage extends StatefulWidget {
   final double left;
   final double right;
   final double backward;
+
+  dynamic forwardDataAcc;
+  dynamic forwardDataRot;
+  dynamic forwardDataFs;
+  dynamic backwardDataAcc;
+  dynamic backwardDataRot;
+  dynamic backwardDataFs;
+  dynamic leftDataAcc;
+  dynamic leftDataRot;
+  dynamic leftDataFs;
+  dynamic rightDataAcc;
+  dynamic rightDataRot;
+  dynamic rightDataFs;
 
   final int tID;
 
@@ -82,7 +110,6 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     SensorRecorderResults? sensorData;
     try {
       sensorData = sensorRecorder.endRecording();
-      //print(sensorData.accData.x.length);
       var decodedData = await runReactiveTestScript({
         'dataAcc': sensorData.formattedAccData(),
         'dataRot': sensorData.formattedGyrData(),
@@ -91,14 +118,57 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
       });
 
       timeToStab = decodedData['TTS'];
-      //Output to Consol for testing purposes TODO: REMOVE LATER
-      print(timeToStab);
+      if (widget.direction == "Forward") {
+        widget.forwardDataAcc = sensorData.formattedAccData();
+        widget.forwardDataRot = sensorData.formattedGyrData();
+        widget.forwardDataFs = sensorData.fs;
+      } else if (widget.direction == "Backward") {
+        widget.backwardDataAcc = sensorData.formattedAccData();
+        widget.backwardDataRot = sensorData.formattedGyrData();
+        widget.backwardDataFs = sensorData.fs;
+      } else if (widget.direction == "Left") {
+        widget.leftDataAcc = sensorData.formattedAccData();
+        widget.leftDataRot = sensorData.formattedGyrData();
+        widget.leftDataFs = sensorData.fs;
+      } else if (widget.direction == "Right") {
+        widget.rightDataAcc = sensorData.formattedAccData();
+        widget.rightDataRot = sensorData.formattedGyrData();
+        widget.rightDataFs = sensorData.fs;
+      }
       nextTest();
     } catch (e) {
       if (context.mounted) {
         throwTestError();
       }
     }
+  }
+
+  Future<dynamic> sendIMU(int rID) async {
+    dynamic imuData = {
+      "rID": rID,
+      "forward": {
+        "dataAcc": widget.forwardDataAcc,
+        "dataRot": widget.forwardDataRot,
+        "fps": widget.forwardDataFs,
+      },
+      "backward": {
+        "dataAcc": widget.backwardDataAcc,
+        "dataRot": widget.backwardDataRot,
+        "fps": widget.backwardDataFs,
+      },
+      "left": {
+        "dataAcc": widget.leftDataAcc,
+        "dataRot": widget.leftDataRot,
+        "fps": widget.leftDataFs,
+      },
+      "right": {
+        "dataAcc": widget.rightDataAcc,
+        "dataRot": widget.rightDataRot,
+        "fps": widget.rightDataFs,
+      },
+    };
+    dynamic inserted = await insertIMU(imuData);
+    return inserted;
   }
 
   void nextTest() async {
@@ -152,51 +222,60 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         ),
       );
     } else if (widget.direction == 'Right') {
-      List<double> vals = List.empty(growable: true);
-      // Check for cases when test is skipped
-      if (widget.forward != 0) {
-        vals.add(widget.forward);
-      }
-      if (widget.backward != 0) {
-        vals.add(widget.backward);
-      }
-      if (widget.left != 0) {
-        vals.add(widget.left);
-      }
-      if (widget.right != 0) {
-        vals.add(widget.right);
-      }
-
-      vals.sort();
-      double median = 0;
-      if (vals.length == 4) {
-        median = (vals[1] + vals[2]) / 2;
-      } else if (vals.length == 3) {
-        median = vals[1];
-      } else if (vals.length == 2) {
-        median = (vals[0] + vals[1]) / 2;
-      } else {
-        median = vals[0];
-      }
-      double normMedian = double.parse(median.toStringAsFixed(2));
+      double normMedian = calcMedian();
       Reactive? createdReactive = await createReactiveTest(normMedian);
       if (createdReactive != null && context.mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ReactiveTestResultsPage(
-              pID: widget.pID,
-              forward: widget.forward * 1000,
-              left: widget.left * 1000,
-              right: timeToStab * 1000,
-              backward: widget.backward * 1000,
-              median: normMedian * 1000,
-              tID: widget.tID,
+        await sendIMU(createdReactive.rID);
+        print(createdReactive.rID);
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ReactiveTestResultsPage(
+                pID: widget.pID,
+                forward: widget.forward * 1000,
+                left: widget.left * 1000,
+                right: timeToStab * 1000,
+                backward: widget.backward * 1000,
+                median: normMedian * 1000,
+                tID: widget.tID,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     }
+  }
+
+  double calcMedian() {
+    List<double> vals = List.empty(growable: true);
+    // Check for cases when test is skipped
+    if (widget.forward != 0) {
+      vals.add(widget.forward);
+    }
+    if (widget.backward != 0) {
+      vals.add(widget.backward);
+    }
+    if (widget.left != 0) {
+      vals.add(widget.left);
+    }
+    if (timeToStab != 0) {
+      vals.add(timeToStab);
+    }
+
+    vals.sort();
+    double median = 0;
+    if (vals.length == 4) {
+      median = (vals[1] + vals[2]) / 2;
+    } else if (vals.length == 3) {
+      median = vals[1];
+    } else if (vals.length == 2) {
+      median = (vals[0] + vals[1]) / 2;
+    } else {
+      median = vals[0];
+    }
+    double normMedian = double.parse(median.toStringAsFixed(2));
+    return normMedian;
   }
 
   void skip() async {
@@ -208,32 +287,27 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
       }
     }
     if (widget.direction == "Right") {
-      List<double> vals = [
-        widget.forward,
-        widget.left,
-        widget.right,
-        widget.backward
-      ];
-      vals.sort();
-      // Check - do we want to just take the median of nonzero values?
-      double median = (vals[1] + vals[2]) / 2;
+      double median = calcMedian();
       Reactive? createdReactive =
           await createReactiveTest(double.parse(median.toStringAsFixed(2)));
       if (createdReactive != null && context.mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ReactiveTestResultsPage(
-              pID: widget.pID,
-              forward: widget.forward,
-              left: widget.left,
-              right: widget.right,
-              backward: widget.backward,
-              median: double.parse(median.toStringAsFixed(2)),
-              tID: widget.tID,
+        await sendIMU(createdReactive.rID);
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ReactiveTestResultsPage(
+                pID: widget.pID,
+                forward: widget.forward,
+                left: widget.left,
+                right: widget.right,
+                backward: widget.backward,
+                median: double.parse(median.toStringAsFixed(2)),
+                tID: widget.tID,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     } else {
       String nextDir = "";

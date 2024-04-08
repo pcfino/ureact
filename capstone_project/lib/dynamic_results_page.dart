@@ -195,28 +195,28 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.dMax.toString(),
+                                    widget.dMax.toInt().toString(),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.dMin.toString(),
+                                    widget.dMin.toInt().toString(),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.dMean.toString(),
+                                    widget.dMean.toInt().toString(),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.dMedian.toString(),
+                                    widget.dMedian.toInt().toString(),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -239,28 +239,28 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.tsMax.toString(),
+                                    widget.tsMax.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.tsMin.toString(),
+                                    widget.tsMin.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.tsMean.toString(),
+                                    widget.tsMean.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.tsMedian.toString(),
+                                    widget.tsMedian.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -283,28 +283,28 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.mlMax.toString(),
+                                    widget.mlMax.toStringAsFixed(1),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.mlMin.toString(),
+                                    widget.mlMin.toStringAsFixed(1),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.mlMean.toString(),
+                                    widget.mlMean.toStringAsFixed(1),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.mlMedian.toString(),
+                                    widget.mlMedian.toStringAsFixed(1),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),

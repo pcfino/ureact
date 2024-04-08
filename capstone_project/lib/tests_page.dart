@@ -53,9 +53,9 @@ class _TestsPage extends State<TestsPage> {
     }
   }
 
-  Future<dynamic> updateTest(Map<String, dynamic> updateTest) async {
+  Future<dynamic> updateTest(Map<String, dynamic> updated) async {
     try {
-      var jsonTest = await update(widget.tID, updateTest);
+      var jsonTest = await update(updated);
       test?.tName = jsonTest["tName"];
       test?.tDate = jsonTest["tDate"];
       test?.tNotes = jsonTest["tNotes"];
@@ -206,6 +206,7 @@ class _TestsPage extends State<TestsPage> {
                           throwError();
                         } else {
                           var newTest = {
+                            "tID": widget.tID,
                             "tName": selectedValue,
                             "tDate": _date.text,
                             "tNotes": notes.text,

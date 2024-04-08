@@ -1,4 +1,5 @@
 import 'package:capstone_project/export_data.dart';
+import 'package:capstone_project/home_page.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/create_test_page.dart';
@@ -97,7 +98,7 @@ class _IncidentPage extends State<IncidentPage> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => IncidentPage(iID: widget.iID),
+                        builder: (context) => const HomePage(),
                       ),
                     );
                   },

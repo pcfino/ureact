@@ -166,7 +166,8 @@ class CognitoIdentityProviderWrapper:
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
-            raise
+            confirmed = err.response["Error"]["Message"]
+            return confirmed
         else:
             response.pop("ResponseMetadata", None)
             return response
@@ -199,9 +200,37 @@ class CognitoIdentityProviderWrapper:
         """
         try:
             response = self.cognito_idp_client.global_sign_out(AccessToken=accessToken)
-            logOut = response["Users"]
+            logOut = response
         except ClientError as err:
             logOut = err.response["Error"]["Message"]
-            raise
         else:
             return logOut
+
+
+    def forgot_password(self, user_name):
+        try:
+            kwargs = {
+                #"UserPoolId": self.user_pool_id,
+                "ClientId": self.client_id,
+                "SecretHash": self._secret_hash(user_name),
+                "Username": user_name, 
+            }
+            response = self.cognito_idp_client.forgot_password(**kwargs)
+        except ClientError as err:
+            response = err.response["Error"]["Message"]
+        return response
+
+    def confirm_forgot_Password(self, user_name, password, confirmation_code):
+        try:
+            kwargs = {
+                #"UserPoolId": self.user_pool_id,
+                "ClientId": self.client_id,
+                "SecretHash": self._secret_hash(user_name),
+                "Username": user_name, 
+                "Password": password,
+                "ConfirmationCode": confirmation_code,
+            }
+            response = self.cognito_idp_client.confirm_forgot_password(**kwargs)
+        except ClientError as err:
+            response = err.response["Error"]["Message"]
+        return response

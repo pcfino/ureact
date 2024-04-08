@@ -242,6 +242,92 @@ def getIncident():
         returnList.append(incident)
         return jsonify(returnList)
 
+@app.route('/mysql/getBaseline', methods=['GET'])
+def getBaseline():
+    if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+        data = request.args.get('ID')
+        sql = "select * from Test as t join Incident as i on t.iID=i.iID where tID=%s"
+        val = [(data)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        pID = 0
+        for x in myresult:
+            pID = x[9]
+            break
+
+        sql = "select * from Incident where iName = 'Baseline' and pID=%s order by iDate desc"
+        val = [(pID)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        returnList = []
+        iID = 0
+        # get the iID
+        for x in myresult:
+            iID = x[0]
+            break
+
+        # Get the Tests that that patient has
+        sql = "SELECT * FROM Test WHERE iID=%s"
+        mycursor.execute(sql, [(iID)])
+        myresult = mycursor.fetchall()
+        tID = 0
+        for x in myresult:
+            tID = x[0]
+            break
+
+        if tID == 0:
+            return jsonify(returnList)
+        
+        # Get the ReactiveTests that the patient has
+        val = [(tID)]
+        sql = "SELECT * FROM ReactiveTest WHERE tID=%s"
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        test = OrderedDict()
+        if myresult == []:
+            test['reactiveTest'] = {}
+        else:
+            for x in myresult:
+                test['reactiveTest'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6]}
+
+        # Get the DynamicTest that the patient has
+        sql = "SELECT * FROM DynamicTest WHERE tID=%s"
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        if myresult == []:
+            test["dynamicTest"] = {}
+        else:
+            for x in myresult:
+                test['dynamicTest'] = {"dID": x[0], 
+                                "t1Duration": x[1], "t1TurnSpeed": x[2], "t1MLSway": x[3], 
+                                "t2Duration": x[4], "t2TurnSpeed": x[5], "t2MLSway": x[6], 
+                                "t3Duration": x[7], "t3TurnSpeed": x[8], "t3MLSway": x[9], 
+                                    
+                                "dMax": x[10], "dMin": x[11], "dMean": x[12], "dMedian": x[13],
+                                "tsMax": x[14], "tsMin": x[15], "tsMean": x[16], "tsMedian": x[17],
+                                "mlMax": x[18], "mlMin": x[19], "mlMean": x[20], "mlMedian": x[21],
+
+                                "tID": x[22]}
+
+        # Get the StaticTests that the patient has
+        sql = "SELECT * FROM StaticTest WHERE tID=%s"
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        if myresult == []:
+            test['staticTest'] = {}
+        else:
+            for x in myresult:
+                test['staticTest'] = {"sID": x[0], 
+                                "tlSolidML": x[1], "tlFoamML": x[2], 
+                                "slSolidML": x[3], "slFoamML": x[4], 
+                                "tandSolidML": x[5], "tandFoamML": x[6], "tID": x[7]}  
+        returnList.append(test)
+        return jsonify(returnList)
+
 # RIGHT NOW, YOU MUST INPUT ALL VALUES (front end is handling this)
 @app.route('/mysql/createIncident', methods=['POST'])
 def createIncident():
@@ -436,12 +522,80 @@ def createTest():
         data = request.json
         sql = "INSERT INTO Test (tName, tDate, tNotes, iID) VALUES(%s, %s, %s, %s)"
         val = (data['tName'], data['tDate'], data['tNotes'], data['iID'])
+        # print(data["tDate"], "this is tdate")
         mycursor.execute(sql, val)
         mydb.commit()
 
         tID = mycursor.lastrowid
         returnTest = {"tID": tID, "tName": data['tName'], "tDate": str(data['tDate']), "tNotes": data['tNotes'], "iID": data['iID']} #, "dynamic": {}, "static": {}, "reactive": {}}
         return jsonify(returnTest)
+
+@app.route('/mysql/updateTest', methods=['PUT'])
+def updateTest():
+    if request.method == 'PUT':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+ 
+        data = request.json
+        sql = "UPDATE Test SET " + updateTestHelper(data)
+        print(sql) 
+        mycursor.execute(sql)
+        mydb.commit()
+
+        tID = [(data['tID'])]
+        sql = "SELECT * FROM Test WHERE tID=%s"
+        mycursor.execute(sql, tID)
+        myresult = mycursor.fetchall()
+
+        returnList = {}
+        # Get the incident we are looking for
+        for x in myresult:
+            returnList = {"tID": x[0], "tName": x[1], "tDate": str(x[2]), "tNotes": x[3], "iID": x[4]}
+        return jsonify(returnList)
+
+def updateTestHelper(data):
+    sql = ""
+    nameBool=dateBool = False
+    if 'tName' in data:
+        nameBool = True
+        sql += "tName='" + data['tName'] + "'"
+    if 'tDate' in data:
+        if nameBool == True:
+            sql += ", "
+        dateBool = True
+        sql += "tDate='" + str(data['tDate']) + "'"
+    if 'tNotes' in data:
+        if (nameBool or dateBool) == True:
+            sql += ", "
+        dBool = True
+        sql += "tNotes='" + str(data['tNotes']) + "'"
+
+    sql += " WHERE tID=" + str(data['tID'])
+    return sql
+
+@app.route('/mysql/deleteTest', methods=['DELETE'])
+def deleteTest():
+    if request.method == 'DELETE':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+ 
+        data = request.json
+        sql = "Delete from Test where tID = %s"
+        val = [(data["tID"])]
+        mycursor.execute(sql, val) 
+        mydb.commit()
+
+        sql = "SELECT * FROM Test WHERE tID=%s"
+        mycursor.execute(sql,val)
+        testExist = mycursor.fetchall()
+
+        if len(testExist) == 0:
+            return jsonify({"Status": True})
+        else:
+            # make sure you pass in a valid iID
+            return jsonify({"Status": False})
 
 # --------------------------------------------------------------- REACTIVE TEST ------------------------------------------------------------------
 
@@ -559,9 +713,8 @@ def insertIMU():
             return jsonify({"Status": False})
 
         sql = "INSERT INTO IMUData (imuData, " + type_of_id + ") VALUES (%s, %s)"
-        imu_json = {key: data[key] for key in ['dataAcc', 'dataRot', 'fps']}
-        imu_json_str = json.dumps(imu_json)
-        val = [imu_json_str, id_val]
+        result_json_str = json.dumps(data)
+        val = [result_json_str, id_val]
 
         try:
             mycursor.execute(sql, val)
@@ -570,7 +723,6 @@ def insertIMU():
             print("MySQL Cursor Error:", err)
             return jsonify({"Status": False})
 
-        
         return jsonify({"Status": True})
 
 
@@ -582,23 +734,42 @@ def getIMU():
         mydb = connectSql()
         mycursor = mydb.cursor()
 
-        data = request.args.get('rID')
-        type_of_id = ""
+        rID = ""
+        sID = ""
+        dID = ""
         if request.args.get('rID') != None:
-            data = request.args.get('rID')
-            type_of_id = "rID"
-        elif request.args.get('sID') != None:
-            data = request.args.get('sID')
-            type_of_id = "sID"
-        elif request.args.get('dID') != None:
-            data = request.args.get('dID')
-            type_of_id = "dID"
-        else:
-            return jsonify({"Status": False})
+            rID = request.args.get('rID')
+        if request.args.get('sID') != None:
+            sID = request.args.get('sID')
+        if request.args.get('dID') != None:
+            dID = request.args.get('dID')
 
-        sql = "SELECT * FROM IMUData WHERE " + type_of_id + "=%s"
-        val = [(data)]
-        mycursor.execute(sql, val)
+        sql = "SELECT * FROM IMUData WHERE "
+        # start by trying to add an rID
+        if rID != "":
+            sql += "rID=" + rID
+
+        # now lets see if we can add an sID
+        if sID != "":
+            # check if we added an rID or not
+            if rID != "":
+                sql += " and sID=" + sID
+            else:
+                sql += "sID=" + sID
+        
+        # finally try to add a dID
+        if dID != "":
+            # check did we add an sID and an rID
+            if sID != "" and rID != "":
+                sql += " and dID=" + dID
+            elif sID == "" and rID != "":
+                sql += " and dID=" + dID
+            elif sID != "" and rID == "":
+                sql += " and dID=" + dID
+            else:
+                sql += "dID=" + dID
+        
+        mycursor.execute(sql)
         myresult = mycursor.fetchall()
 
         returnList = []
@@ -628,7 +799,8 @@ def exportSinglePatient():
 
         sql = """select i.iName, i.iDate, i.iNotes, t.tDate, 
 	             rt.mTime, rt.tID,
-                 i.iID
+                 i.iID,
+                 rt.fTime, rt.bTime, rt.lTime, rt.rTime
                  from Incident as i left join Test as t on i.iID=t.iID
                  left join ReactiveTest as rt on t.tID=rt.tID
                  where i.pID=%s;"""
@@ -659,7 +831,7 @@ def exportSinglePatient():
                     if x[5] is None:
                         i['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {}})
                     else:
-                        i['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {"mTime": x[4]}})
+                        i['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {"mTime": x[4], "fTime": x[7], "bTime": x[8], "lTime": x[9], "rTime": x[10]}})
                     flag = True
                     break
             
@@ -667,7 +839,7 @@ def exportSinglePatient():
             if flag == False:
                 # if there is a test to add
                 if x[5] is not None:
-                    incident['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {"mTime": x[4]}})
+                    incident['tests'].append({"tDate": str(x[3]), "tID": x[5], "reactive": {"mTime": x[4], "fTime": x[7], "bTime": x[8], "lTime": x[9], "rTime": x[10]}})
                     returnList[0]['incidents'].append(incident)
                 else:
                     returnList[0]['incidents'].append(incident)
@@ -722,6 +894,162 @@ def exportSinglePatient():
                     break
         
         return jsonify(returnList)
+
+@app.route('/mysql/exportSingleIncident', methods=['GET'])
+def exportSingleIncident():
+    if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+        
+        pID = request.args.get('pID')
+        iID = request.args.get('iID')
+        sql = "SELECT thirdPartyID FROM Patient WHERE pID=%s;"
+        val = [(pID)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        returnList = []
+        thirdPartyID = ""
+        for x in myresult:
+            thirdPartyID = x[0]
+
+        sql = """select i.iName, i.iDate, i.iNotes, i.iID, 
+                        t.tDate, rt.tID,
+                        rt.mTime, rt.fTime, rt.bTime, rt.lTime, rt.rTime
+                 from Incident as i left join Test as t on i.iID=t.iID
+                 left join ReactiveTest as rt on t.tID=rt.tID
+                 where i.pID=%s and i.iID=%s;"""
+        val = [(pID), iID]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        # Get the Incident we are looking for and its reactive tests
+        incident = {}
+        pid = int(pID)
+        for x in myresult:
+            incident = {"thirdPartyID": thirdPartyID, "iName": x[0], "iDate": str(x[1]), "iNotes": x[2], "iID": x[3], "pID": pid, "tests": []}
+            returnList.append(incident)
+            break
+        
+        for x in myresult:
+            # if there is a test to add
+            if x[5] is not None:
+                returnList[0]['tests'].append({"tDate": str(x[4]), "tID": x[5], "reactive": {"mTime": x[6], "fTime": x[7], "bTime": x[8], "lTime": x[9], "rTime": x[10]}})
+            
+            
+        # Get the Incident we are looking for and the static tests
+        incident = {}
+        sql = """select t.tDate, st.tID, 
+                 st.tlSolidML, st.tlFoamML, st.slSolidML, st.slFoamML, st.tandSolidML, st.tandFoamML
+                 from Incident as i left join Test as t on i.iID=t.iID
+                 left join StaticTest as st on t.tID=st.tID
+                 where i.pID=%s and i.iID=%s;"""
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        for x in myresult:
+            if x[1] is not None:
+                # If the desired tID is found, append a new test to its tests list
+                returnList[0]['tests'].append({"tDate": str(x[0]),"tID": x[1], "static": {"tlSolidML": x[2], "tlFoamML": x[3],
+                                                                    "slSolidML": x[4], "slFoamML": x[5],
+                                                                    "tandSolidML": x[6], "tandFoamML": x[7]}})
+
+        # Get the Incidents we are looking for and their dynamic tests
+        sql = """select t.tDate, dt.tID,
+                        dt.dMax, dt.dMin, dt.dMean, dt.dMedian, 
+                        dt.tsMax, dt.tsMin, dt.tsMean, dt.tsMedian, 
+                        dt.mlMax, dt.mlMin, dt.mlMean, dt.mlMedian
+                        from Incident as i left join Test as t on i.iID=t.iID
+                        left join DynamicTest as dt on t.tID=dt.tID
+                        where i.pID=%s and i.iID=%s;"""
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        for x in myresult:
+            #  check if in the incidents part of the json, that iID is not already there
+            if x[1] is not None:
+                returnList[0]['tests'].append({"tDate": str(x[0]), "tID": x[1], "dynamic": {"dMax": x[2], "dMin": x[3], "dMean": x[4], "dMedian": x[5],
+                                                                       "tsMax": x[6], "tsMin": x[7], "tsMean": x[8], "tsMedian": x[9],
+                                                                       "mlMax": x[10], "mlMin": x[11], "mlMean": x[12], "mlMedian": x[13],}})
+        
+        return jsonify(returnList)
+
+@app.route('/mysql/exportSingleTest', methods=['GET'])
+def exportSingleTest():
+    if request.method == 'GET':
+        # connection to database
+        mydb = connectSql()
+        mycursor = mydb.cursor()
+        
+        pID = request.args.get('pID')
+        iID = request.args.get('tID')
+        sql = "SELECT thirdPartyID FROM Patient WHERE pID=%s;"
+        val = [(pID)]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        returnList = []
+        thirdPartyID = ""
+        for x in myresult:
+            thirdPartyID = x[0]
+
+        sql = """select i.iName, i.iDate, i.iNotes, i.iID, 
+                        t.tDate, rt.tID,
+                        rt.mTime, rt.fTime, rt.bTime, rt.lTime, rt.rTime
+                 from Incident as i left join Test as t on i.iID=t.iID
+                 left join ReactiveTest as rt on t.tID=rt.tID
+                 where i.pID=%s and t.tID=%s;"""
+        val = [(pID), iID]
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+
+        # Get the Incident we are looking for and its reactive tests
+        incident = {}
+        pid = int(pID)
+        for x in myresult:
+            incident = {"thirdPartyID": thirdPartyID, "iName": x[0], "iDate": str(x[1]), "iNotes": x[2], "iID": x[3], "pID": pid, "tests": []}
+            returnList.append(incident)
+            break
+        
+        for x in myresult:
+            # if there is a test to add
+            if x[5] is not None:
+                returnList[0]['tests'].append({"tDate": str(x[4]), "tID": x[5], "reactive": {"mTime": x[6], "fTime": x[7], "bTime": x[8], "lTime": x[9], "rTime": x[10]}})
+            
+            
+        # Get the Incident we are looking for and the static tests
+        incident = {}
+        sql = """select t.tDate, st.tID, 
+                 st.tlSolidML, st.tlFoamML, st.slSolidML, st.slFoamML, st.tandSolidML, st.tandFoamML
+                 from Incident as i left join Test as t on i.iID=t.iID
+                 left join StaticTest as st on t.tID=st.tID
+                 where i.pID=%s and t.tID=%s;"""
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        for x in myresult:
+            if x[1] is not None:
+                # If the desired tID is found, append a new test to its tests list
+                returnList[0]['tests'].append({"tDate": str(x[0]),"tID": x[1], "static": {"tlSolidML": x[2], "tlFoamML": x[3],
+                                                                    "slSolidML": x[4], "slFoamML": x[5],
+                                                                    "tandSolidML": x[6], "tandFoamML": x[7]}})
+
+        # Get the Incidents we are looking for and their dynamic tests
+        sql = """select t.tDate, dt.tID,
+                        dt.dMax, dt.dMin, dt.dMean, dt.dMedian, 
+                        dt.tsMax, dt.tsMin, dt.tsMean, dt.tsMedian, 
+                        dt.mlMax, dt.mlMin, dt.mlMean, dt.mlMedian
+                        from Incident as i left join Test as t on i.iID=t.iID
+                        left join DynamicTest as dt on t.tID=dt.tID
+                        where i.pID=%s and t.tID=%s;"""
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchall()
+        for x in myresult:
+            #  check if in the incidents part of the json, that iID is not already there
+            if x[1] is not None:
+                returnList[0]['tests'].append({"tDate": str(x[0]), "tID": x[1], "dynamic": {"dMax": x[2], "dMin": x[3], "dMean": x[4], "dMedian": x[5],
+                                                                       "tsMax": x[6], "tsMin": x[7], "tsMean": x[8], "tsMedian": x[9],
+                                                                       "mlMax": x[10], "mlMin": x[11], "mlMean": x[12], "mlMedian": x[13],}})
+        
+        return jsonify(returnList)
 # --------------------------------------------------------------- TEST SCRIPTS ------------------------------------------------------------------
 
 @app.route('/timeToStability', methods=['POST'])
@@ -729,6 +1057,7 @@ def timeToStability():
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
+    print(fs)
 
     accNorm = np.linalg.norm(dataAcc, axis=0)
     rotNorm = np.linalg.norm(dataRot, axis=0)
@@ -804,6 +1133,7 @@ def timeToStability():
 
 @app.route('/sway', methods=['POST'])
 def sway():
+    # static - stand still
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
@@ -823,14 +1153,20 @@ def sway():
     rms_ml = rms(Sway_ml)
     rms_ap = rms(Sway_ap)
     rms_v = rms(Sway_v)
+    # print("right before the return in sway")
 
     return jsonify(rmsMl = rms_ml, rmsAp = rms_ap, rmsV = rms_v)
 
 @app.route('/tandemGait', methods=['POST'])
 def tandemGait():
+    # dynamic - walking
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
+    timeStamp = request.json.get('timeStamps')
+    # print("DataRot 0:", dataRot[0])
+    # print("DataRot 1:", dataRot[1])
+    # print("DataRot 2:", dataRot[2])
 
     # find the beginning and end
     peaks, _ = signal.find_peaks(dataRot[2], height=0.1)
@@ -840,7 +1176,11 @@ def tandemGait():
     begin = peaks[0]
     end = peaks[len(peaks)-1]
 
-    duration = (end - begin) / fs
+    duration = (timeStamp[end] - timeStamp[begin]) / 1000
+    # print("duration as it was:", duration)
+    # print("updated maybe to seconds (durr/1000):", duration / 1000)
+    # print("timestamp end:", timeStamp[end], "timestamp 0:", timeStamp[0])
+    # print("begin:", begin, "end:", end)
     
     # find global minima - peak turn
     peakTurnsLoc, _ = signal.find_peaks(dataRot[2])
@@ -862,8 +1202,9 @@ def tandemGait():
     goingX = dataRot[0][begin:valueLeft+1]
     returningX = dataRot[0][valueRight:end+1]
 
-    duration = (end - begin) / fs
     turningSpeed = maxTurn * 180.0 / np.pi
+
+    # print("right before the return in dynamic")
 
     return jsonify(rmsMlGoing = rms(goingZ), rmsApGoing = rms(goingX), rmsMlReturn = rms(returningZ), rmsApReturn = rms(returningX), duration = duration, turningSpeed = turningSpeed)
 
@@ -943,11 +1284,11 @@ def rotateVec(v, q):
 
 def MultiplyQuaternions(q0,q1):
     if (np.size(q0) == 4 and np.size(q1) == 4):
-        qr = [0] * 4;
-        qr[0] = q0[0]*q1[0] - q0[1]*q1[1] - q0[2]*q1[2] - q0[3]*q1[3];
-        qr[1] = q0[0]*q1[1] + q0[1]*q1[0] + q0[2]*q1[3] - q0[3]*q1[2];
-        qr[2] = q0[0]*q1[2] - q0[1]*q1[3] + q0[2]*q1[0] + q0[3]*q1[1];
-        qr[3] = q0[0]*q1[3] + q0[1]*q1[2] - q0[2]*q1[1] + q0[3]*q1[0];
+        qr = [0] * 4
+        qr[0] = q0[0]*q1[0] - q0[1]*q1[1] - q0[2]*q1[2] - q0[3]*q1[3]
+        qr[1] = q0[0]*q1[1] + q0[1]*q1[0] + q0[2]*q1[3] - q0[3]*q1[2]
+        qr[2] = q0[0]*q1[2] - q0[1]*q1[3] + q0[2]*q1[0] + q0[3]*q1[1]
+        qr[3] = q0[0]*q1[3] + q0[1]*q1[2] - q0[2]*q1[1] + q0[3]*q1[0]
         return qr
     
     if np.size(q0) == 4:
@@ -989,7 +1330,6 @@ def MultiplyQuaternions(q0,q1):
 
 # --------------------------------------------------------------- Login ----------------------------------------------------------
 
-
 #Signs up a user in thier selected orginization using cognito user pools
 @app.route('/signUp', methods=['POST'])
 def signUp():
@@ -1016,21 +1356,44 @@ def confirmSignUp():
 
 #signs the user in to thier selected orginization
 @app.route('/signIn', methods=['POST'])
-def signIn():
+def signIp():
     userName = request.json.get('userName')
     password = request.json.get('password')
     accessToken = CIPW.start_sign_in(user_name= userName, password= password)
-    currentUser = accessToken
     #what is the token for?
+    if accessToken["AuthenticationResult"]["AccessToken"] != None:
+        return jsonify(status = True, accessToken = accessToken["AuthenticationResult"]["AccessToken"])
     return jsonify(status = accessToken)
 
-@app.route('/signOut', methods=['POST'])
+#SignOut the User
+@app.route('/log_out', methods=['POST'])
 def signOut():
-    currUserToken = request.json.get('token')
+    currUserToken = request.json.get('AccessToken')
     status = CIPW.log_out(currUserToken)
     #CIPW.log_out(currentUser)
+    if status == None: status = True
     return jsonify(status = status)
 
+#sends message delcaring password is forgotten, sends email acces code
+#response if good is the email sent
+@app.route('/forgot_password', methods=['POST'])
+def forgot_password():
+    userName = request.json.get('userName')
+    accessToken = CIPW.forgot_password(user_name= userName)
+    if accessToken["CodeDeliveryDetails"]["DeliveryMedium"] == "EMAIL":
+        return jsonify(status = "emailed")
+    return jsonify(status = accessToken)
+
+#use access token to reset password
+@app.route('/confirm_forgot_password', methods=['POST'])
+def confirm_forgot_password():
+    userName = request.json.get('userName')
+    password = request.json.get('password')
+    token = request.json.get('confirmation_code')
+    accessToken = CIPW.confirm_forgot_Password(user_name= userName, password = password, confirmation_code = token)
+    return jsonify(status = accessToken)
+
+#Gets all users within a selected orginization
 @app.route('/getUsers', methods=['GET'])
 def getUsers():
     return jsonify(CIPW.list_users())
@@ -1106,7 +1469,6 @@ def setOrg():
     CIPW = cognito.CognitoIdentityProviderWrapper(cognito_idp_client=client_idp, user_pool_id = userPoolId, client_id= clientId, client_secret = cognitoSecretNew)
 
     return jsonify(status = 'succsess', orgID = myresult[0])
-
 
 
 # --------------------------------------------------------------- SERVER ----------------------------------------------------------------

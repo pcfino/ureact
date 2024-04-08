@@ -122,6 +122,60 @@ class _TestsPage extends State<TestsPage> {
     );
   }
 
+  String? expData = "Test Data";
+
+  void exportPopUp() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Export Test'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                RadioListTile(
+                  title: const Text('Test Data'),
+                  value: "Test Data",
+                  onChanged: (String? value) {
+                    setState(() {
+                      expData = value!;
+                    });
+                  },
+                  groupValue: expData,
+                ),
+                RadioListTile(
+                  title: const Text('IMU Data'),
+                  value: "IMU Data",
+                  groupValue: expData,
+                  onChanged: (String? value) {
+                    setState(() {
+                      expData = value!;
+                    });
+                  },
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Export'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  if (expData == "Test Data") {
+                    // export test data
+                  } else if (expData == "IMU Data") {
+                    // export IMU data
+                  }
+                },
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(value: "Acute", child: Text("Acute")),
@@ -733,7 +787,7 @@ class _TestsPage extends State<TestsPage> {
                     children: [
                       TextButton(
                           onPressed: () {
-                            // export test data
+                            exportPopUp();
                           },
                           child: const Text('Export Data')),
                     ],

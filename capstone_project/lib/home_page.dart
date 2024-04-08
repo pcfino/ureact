@@ -6,6 +6,7 @@ import 'package:capstone_project/api/patient_api.dart';
 import 'package:flutter/material.dart';
 
 import 'package:azlistview/azlistview.dart';
+import 'package:session_manager/session_manager.dart';
 
 class AzItem extends ISuspensionBean {
   final String name;
@@ -27,7 +28,9 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage> {
   Future<dynamic> getPatients() async {
     try {
-      List<dynamic> jsonPatientList = await getAll() as List;
+      String orgID = await SessionManager().getString("orgID");
+      print(orgID);
+      List<dynamic> jsonPatientList = await getAll(orgID) as List;
       List<Patient> patientList = List<Patient>.from(
           jsonPatientList.map((model) => Patient.fromJson(model)));
 

@@ -3,6 +3,7 @@
 
 import 'package:capstone_project/incident_page.dart';
 import 'package:capstone_project/models/test.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
@@ -99,8 +100,8 @@ class _CreateTestPage extends State<CreateTestPage> {
           leading: BackButton(onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => IncidentPage(iID: widget.iID),
+              SlideRightRoute(
+                page: IncidentPage(iID: widget.iID),
               ),
             );
           }),

@@ -7,6 +7,7 @@ import 'package:capstone_project/slide_right_transition.dart';
 class DynamicResultsPage extends StatefulWidget {
   const DynamicResultsPage({
     super.key,
+    required this.pID,
     required this.t1Duration,
     required this.t1TurnSpeed,
     required this.t1MLSway,
@@ -31,6 +32,7 @@ class DynamicResultsPage extends StatefulWidget {
     required this.tID,
   });
 
+  final int pID;
   final double t1Duration;
   final double t1TurnSpeed;
   final double t1MLSway;
@@ -88,7 +90,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                 Navigator.pushReplacement(
                   context,
                   SlideRightRoute(
-                    page: TestsPage(tID: widget.tID),
+                    page: TestsPage(tID: widget.tID, pID: widget.pID),
                   ),
                 );
               }),

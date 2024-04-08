@@ -1,5 +1,5 @@
-import 'package:capstone_project/api/export_api.dart';
 import 'package:capstone_project/dynamic_test_page.dart';
+import 'package:capstone_project/export_data.dart';
 import 'package:capstone_project/reactive_test_page.dart';
 import 'package:capstone_project/dynamic_results_page.dart';
 import 'package:capstone_project/api/test_api.dart';
@@ -13,9 +13,10 @@ import 'package:flutter/services.dart';
 import 'package:capstone_project/slide_right_transition.dart';
 
 class TestsPage extends StatefulWidget {
-  const TestsPage({super.key, required this.tID});
+  const TestsPage({super.key, required this.tID, required this.pID});
 
   final int tID;
+  final int pID;
 
   @override
   State<TestsPage> createState() => _TestsPage();
@@ -265,6 +266,7 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         ReactiveTestResultsPage(
+                                      pID: widget.pID,
                                       backward:
                                           test!.reactiveTest!.bTime * 1000,
                                       forward: test!.reactiveTest!.fTime * 1000,
@@ -280,6 +282,7 @@ class _TestsPage extends State<TestsPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => ReactiveTestPage(
+                                      pID: widget.pID,
                                       direction: 'Forward',
                                       forward: 0,
                                       left: 0,
@@ -308,6 +311,7 @@ class _TestsPage extends State<TestsPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicResultsPage(
+                                      pID: widget.pID,
                                       t1Duration:
                                           test!.dynamicTest!.t1Duration * 1000,
                                       t1TurnSpeed:
@@ -349,6 +353,7 @@ class _TestsPage extends State<TestsPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
+                                      pID: widget.pID,
                                       tID: widget.tID,
                                       start: true,
                                       trialNumber: 1,
@@ -383,6 +388,7 @@ class _TestsPage extends State<TestsPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => StaticResultsPage(
+                                      pID: widget.pID,
                                       tID: widget.tID,
                                       tlSolidML:
                                           test!.staticTest!.tlSolidML * 100,
@@ -404,6 +410,7 @@ class _TestsPage extends State<TestsPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => StaticTestPage(
+                                      pID: widget.pID,
                                       tID: widget.tID,
                                       stance: "Two Leg Stance (Solid)",
                                       tlSolidML: 0,
@@ -439,7 +446,7 @@ class _TestsPage extends State<TestsPage> {
                       children: [
                         TextButton(
                             onPressed: () {
-                              // exportTest(test!.tID);
+                              exportTest(widget.pID, widget.tID);
                             },
                             child: const Text('Export Data')),
                       ],

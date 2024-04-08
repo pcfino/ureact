@@ -13,6 +13,7 @@ import 'package:event/event.dart';
 class ReactiveTestPage extends StatefulWidget {
   const ReactiveTestPage(
       {super.key,
+      required this.pID,
       required this.direction,
       required this.forward,
       required this.left,
@@ -21,7 +22,7 @@ class ReactiveTestPage extends StatefulWidget {
       required this.tID});
 
   final String direction;
-
+  final int pID;
   final double forward;
   final double left;
   final double right;
@@ -60,6 +61,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                   PageRouteBuilder(
                     pageBuilder: (context, animation1, animation2) =>
                         ReactiveTestPage(
+                      pID: widget.pID,
                       direction: widget.direction,
                       forward: widget.forward,
                       left: widget.left,
@@ -112,6 +114,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
+            pID: widget.pID,
             direction: 'Backward',
             forward: timeToStab,
             left: widget.left,
@@ -126,6 +129,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
+            pID: widget.pID,
             direction: 'Left',
             forward: widget.forward,
             left: widget.left,
@@ -140,6 +144,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
+            pID: widget.pID,
             direction: 'Right',
             forward: widget.forward,
             left: timeToStab,
@@ -183,6 +188,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
           context,
           MaterialPageRoute(
             builder: (context) => ReactiveTestResultsPage(
+              pID: widget.pID,
               forward: widget.forward * 1000,
               left: widget.left * 1000,
               right: timeToStab * 1000,
@@ -221,6 +227,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
           context,
           MaterialPageRoute(
             builder: (context) => ReactiveTestResultsPage(
+              pID: widget.pID,
               forward: widget.forward,
               left: widget.left,
               right: widget.right,
@@ -244,6 +251,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
+            pID: widget.pID,
             direction: nextDir,
             forward: widget.forward,
             left: widget.left,
@@ -283,7 +291,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TestsPage(tID: widget.tID),
+        builder: (context) => TestsPage(tID: widget.tID, pID: widget.pID),
       ),
     );
   }

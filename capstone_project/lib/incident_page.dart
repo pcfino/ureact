@@ -1,4 +1,4 @@
-import 'package:capstone_project/api/export_api.dart';
+import 'package:capstone_project/export_data.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/create_test_page.dart';
@@ -238,8 +238,10 @@ class _IncidentPage extends State<IncidentPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  TestsPage(tID: incident.tests![index].tID),
+                              builder: (context) => TestsPage(
+                                tID: incident.tests![index].tID,
+                                pID: incident.pID,
+                              ),
                             ),
                           );
                         },
@@ -255,7 +257,10 @@ class _IncidentPage extends State<IncidentPage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CreateTestPage(iID: widget.iID),
+                  builder: (context) => CreateTestPage(
+                    iID: widget.iID,
+                    pID: incident.pID,
+                  ),
                 ),
               );
             },

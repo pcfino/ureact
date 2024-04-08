@@ -45,247 +45,256 @@ class _StaticResultsPage extends State<StaticResultsPage> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: GestureDetector(
-        onPanUpdate: (details) {
-          // Swiping in right direction.
-          if (details.delta.dx > 0) {
+      home: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: const Text('Test Results'),
+          centerTitle: true,
+          leading: BackButton(onPressed: () {
             Navigator.pushReplacement(
               context,
               SlideRightRoute(
                 page: TestsPage(tID: widget.tID),
               ),
             );
-          }
-        },
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            title: const Text('Test Results'),
-            centerTitle: true,
-            leading: BackButton(onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                SlideRightRoute(
-                  page: TestsPage(tID: widget.tID),
-                ),
-              );
-            }),
-          ),
-          body: SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Administered by Cannon Rudd',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+          }),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Administered by Cannon Rudd',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const Divider(
-                      thickness: 0.5,
-                      color: Colors.transparent,
+                  ),
+                  const Divider(
+                    thickness: 0.5,
+                    color: Colors.transparent,
+                  ),
+                  const Text(
+                    'Solid Mediolateral Sway',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                        color: const Color.fromRGBO(255, 220, 212, 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 15,
+                  ),
+                  const Divider(
+                    color: Colors.grey,
+                  ),
+                  const Divider(
+                    thickness: 0.5,
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Two Leg Stance',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: ListTile(
-                          title: const Text(
-                            'Two Leg Stance (Solid)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          trailing: Text(
-                            widget.tlSolidML.toString(),
-                            style: const TextStyle(fontSize: 15),
-                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.tlSolidML.toStringAsFixed(3)} cm/s\u00B2",
+                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ),
-                    const Divider(
-                      color: Colors.transparent,
+                  ),
+                  const Divider(
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                        color: const Color.fromRGBO(255, 220, 212, 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 15,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Tandem Stance',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: ListTile(
-                          title: const Text(
-                            'Two Leg Stance (Foam)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          trailing: Text(
-                            widget.tlFoamML.toString(),
-                            style: const TextStyle(fontSize: 15),
-                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.tandSolidML.toStringAsFixed(3)} cm/s\u00B2",
+                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ),
-                    const Divider(
-                      color: Colors.transparent,
+                  ),
+                  const Divider(
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                        color: const Color.fromRGBO(255, 220, 212, 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 15,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Single Leg Stance',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: ListTile(
-                          title: const Text(
-                            'Tandem Stance (Solid)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          trailing: Text(
-                            widget.tandSolidML.toString(),
-                            style: const TextStyle(fontSize: 15),
-                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.slSolidML.toStringAsFixed(3)} cm/s\u00B2",
+                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ),
-                    const Divider(
-                      color: Colors.transparent,
+                  ),
+                  const Divider(
+                    color: Colors.transparent,
+                  ),
+                  const Text(
+                    'Foam Mediolateral Sway',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                        color: const Color.fromRGBO(255, 220, 212, 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 15,
+                  ),
+                  const Divider(
+                    color: Colors.grey,
+                  ),
+                  const Divider(
+                    thickness: 0.5,
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Two Leg Stance',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: ListTile(
-                          title: const Text(
-                            'Tandem Stance (Foam)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          trailing: Text(
-                            widget.tandFoamML.toString(),
-                            style: const TextStyle(fontSize: 15),
-                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.tlFoamML.toStringAsFixed(3)} cm/s\u00B2",
+                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ),
-                    const Divider(
-                      color: Colors.transparent,
+                  ),
+                  const Divider(
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                        color: const Color.fromRGBO(255, 220, 212, 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 15,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Tandem Stance',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: ListTile(
-                          title: const Text(
-                            'Single Leg Stance (Solid)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          trailing: Text(
-                            widget.slSolidML.toString(),
-                            style: const TextStyle(fontSize: 15),
-                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.tandFoamML.toStringAsFixed(3)} cm/s\u00B2",
+                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ),
-                    const Divider(
-                      color: Colors.transparent,
+                  ),
+                  const Divider(
+                    color: Colors.transparent,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      color: const Color.fromRGBO(255, 220, 212, 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 15,
+                        ),
+                      ],
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                        color: const Color.fromRGBO(255, 220, 212, 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 15,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: const Text(
+                          'Single Leg Stance',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: ListTile(
-                          title: const Text(
-                            'Single Leg Stance (Foam)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          trailing: Text(
-                            widget.slFoamML.toString(),
-                            style: const TextStyle(fontSize: 15),
-                          ),
+                        ),
+                        trailing: Text(
+                          "${widget.slFoamML.toStringAsFixed(3)} cm/s\u00B2",
+                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

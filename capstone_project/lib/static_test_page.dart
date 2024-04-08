@@ -5,11 +5,12 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/static_results_page.dart';
 import 'package:capstone_project/static_dynamic_recorder.dart';
 import 'package:capstone_project/api/test_api.dart';
+import 'package:capstone_project/api/imu_api.dart';
 import 'package:capstone_project/models/static.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
 class StaticTestPage extends StatefulWidget {
-  const StaticTestPage({
+  StaticTestPage({
     super.key,
     required this.tID,
     required this.stance,
@@ -19,6 +20,24 @@ class StaticTestPage extends StatefulWidget {
     required this.slFoamML,
     required this.tandSolidML,
     required this.tandFoamML,
+    this.tlSolidDataAcc,
+    this.tlSolidDataRot,
+    this.tlSolidDataFs,
+    this.slSolidDataAcc,
+    this.slSolidDataRot,
+    this.slSolidDataFs,
+    this.tandSolidDataAcc,
+    this.tandSolidDataRot,
+    this.tandSolidDataFs,
+    this.tlFoamDataRot,
+    this.tlFoamDataAcc,
+    this.tlFoamDataFs,
+    this.slFoamDataAcc,
+    this.slFoamDataRot,
+    this.slFoamDataFs,
+    this.tandFoamDataAcc,
+    this.tandFoamDataRot,
+    this.tandFoamDataFs,
   });
 
   final String stance;
@@ -28,6 +47,25 @@ class StaticTestPage extends StatefulWidget {
   final double slFoamML;
   final double tandSolidML;
   final double tandFoamML;
+
+  dynamic tlSolidDataAcc;
+  dynamic tlSolidDataRot;
+  dynamic tlSolidDataFs;
+  dynamic slSolidDataAcc;
+  dynamic slSolidDataRot;
+  dynamic slSolidDataFs;
+  dynamic tandSolidDataAcc;
+  dynamic tandSolidDataRot;
+  dynamic tandSolidDataFs;
+  dynamic tlFoamDataRot;
+  dynamic tlFoamDataAcc;
+  dynamic tlFoamDataFs;
+  dynamic slFoamDataAcc;
+  dynamic slFoamDataRot;
+  dynamic slFoamDataFs;
+  dynamic tandFoamDataAcc;
+  dynamic tandFoamDataRot;
+  dynamic tandFoamDataFs;
 
   final int tID;
 
@@ -57,7 +95,70 @@ class _StaticTestPage extends State<StaticTestPage> {
       'fs': sensorData.fs
     });
     double dataML = decodedData["rmsMl"];
+    if (widget.stance == "Two Leg Stance (Solid)") {
+      widget.tlSolidDataAcc = sensorData.formattedAccData();
+      widget.tlSolidDataRot = sensorData.formattedGyrData();
+      widget.tlSolidDataFs = sensorData.fs;
+    } else if (widget.stance == "Single Leg Stance (Solid)") {
+      widget.slSolidDataAcc = sensorData.formattedAccData();
+      widget.slSolidDataRot = sensorData.formattedGyrData();
+      widget.slSolidDataFs = sensorData.fs;
+    } else if (widget.stance == "Tandem Leg Stance (Solid)") {
+      widget.tandSolidDataAcc = sensorData.formattedAccData();
+      widget.tandSolidDataRot = sensorData.formattedGyrData();
+      widget.tandSolidDataFs = sensorData.fs;
+    } else if (widget.stance == "Two Leg Stance (Foam)") {
+      widget.tlFoamDataAcc = sensorData.formattedAccData();
+      widget.tlFoamDataRot = sensorData.formattedGyrData();
+      widget.tlFoamDataFs = sensorData.fs;
+    } else if (widget.stance == "Single Leg Stance (Foam)") {
+      widget.slFoamDataAcc = sensorData.formattedAccData();
+      widget.slFoamDataRot = sensorData.formattedGyrData();
+      widget.slFoamDataFs = sensorData.fs;
+    } else if (widget.stance == "Tandem Leg Stance (Foam)") {
+      widget.tandFoamDataAcc = sensorData.formattedAccData();
+      widget.tandFoamDataRot = sensorData.formattedGyrData();
+      widget.tandFoamDataFs = sensorData.fs;
+    }
     return dataML;
+  }
+
+  Future<dynamic> sendIMU(int sID) async {
+    dynamic imuData = {
+      "sID": sID,
+      "tlSolid": {
+        "dataAcc": widget.tlSolidDataAcc,
+        "dataRot": widget.tlSolidDataRot,
+        "fps": widget.tlSolidDataFs,
+      },
+      "slSolid": {
+        "dataAcc": widget.slSolidDataAcc,
+        "dataRot": widget.slSolidDataRot,
+        "fps": widget.slSolidDataFs,
+      },
+      "tandSolid": {
+        "dataAcc": widget.tandSolidDataAcc,
+        "dataRot": widget.tandSolidDataRot,
+        "fps": widget.tandSolidDataFs,
+      },
+      "tlFoam": {
+        "dataAcc": widget.tlFoamDataAcc,
+        "dataRot": widget.tlFoamDataRot,
+        "fps": widget.tlFoamDataFs,
+      },
+      "slFoam": {
+        "dataAcc": widget.slFoamDataAcc,
+        "dataRot": widget.slFoamDataRot,
+        "fps": widget.slFoamDataFs,
+      },
+      "tandFoam": {
+        "dataAcc": widget.tandFoamDataAcc,
+        "dataRot": widget.tandFoamDataRot,
+        "fps": widget.tandFoamDataFs,
+      },
+    };
+    dynamic inserted = await insertIMU(imuData);
+    return inserted;
   }
 
   Future<dynamic> createStaticTest(double dataML) async {
@@ -81,7 +182,7 @@ class _StaticTestPage extends State<StaticTestPage> {
   Future stopRecording() async {
     timer!.cancel();
     dynamic dataML = await getStaticData();
-
+    double mlSway = double.parse(dataML.toStringAsFixed(5));
     if (context.mounted) {
       if (widget.stance == "Two Leg Stance (Solid)") {
         Navigator.pushReplacement(
@@ -90,7 +191,7 @@ class _StaticTestPage extends State<StaticTestPage> {
             builder: (context) => StaticTestPage(
               stance: "Single Leg Stance (Solid)",
               tID: widget.tID,
-              tlSolidML: double.parse(dataML.toStringAsFixed(2)),
+              tlSolidML: mlSway,
               tlFoamML: widget.tlFoamML,
               slSolidML: widget.slSolidML,
               slFoamML: widget.slFoamML,
@@ -108,7 +209,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
               tlFoamML: widget.tlFoamML,
-              slSolidML: double.parse(dataML.toStringAsFixed(2)),
+              slSolidML: mlSway,
               slFoamML: widget.slFoamML,
               tandSolidML: widget.tandSolidML,
               tandFoamML: widget.tandFoamML,
@@ -126,7 +227,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               tlFoamML: widget.tlFoamML,
               slSolidML: widget.slSolidML,
               slFoamML: widget.slFoamML,
-              tandSolidML: double.parse(dataML.toStringAsFixed(2)),
+              tandSolidML: mlSway,
               tandFoamML: widget.tandFoamML,
             ),
           ),
@@ -139,7 +240,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               stance: "Single Leg Stance (Foam)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
-              tlFoamML: double.parse(dataML.toStringAsFixed(2)),
+              tlFoamML: mlSway,
               slSolidML: widget.slSolidML,
               slFoamML: widget.slFoamML,
               tandSolidML: widget.tandSolidML,
@@ -157,29 +258,32 @@ class _StaticTestPage extends State<StaticTestPage> {
               tlSolidML: widget.tlSolidML,
               tlFoamML: widget.tlFoamML,
               slSolidML: widget.slSolidML,
-              slFoamML: double.parse(dataML.toStringAsFixed(2)),
+              slFoamML: mlSway,
               tandSolidML: widget.tandSolidML,
               tandFoamML: widget.tandFoamML,
             ),
           ),
         );
       } else if (widget.stance == "Tandem Stance (Foam)") {
-        Static? createdStatic = await createStaticTest(dataML);
+        Static? createdStatic = await createStaticTest(mlSway);
         if (createdStatic != null && context.mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => StaticResultsPage(
-                tID: widget.tID,
-                tlSolidML: widget.tlSolidML,
-                tlFoamML: widget.tlFoamML,
-                slSolidML: widget.slSolidML,
-                slFoamML: widget.slFoamML,
-                tandSolidML: widget.tandSolidML,
-                tandFoamML: double.parse(dataML.toStringAsFixed(2)),
+          await sendIMU(createdStatic.sID);
+          if (context.mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StaticResultsPage(
+                  tID: widget.tID,
+                  tlSolidML: widget.tlSolidML * 100,
+                  tlFoamML: widget.tlFoamML * 100,
+                  slSolidML: widget.slSolidML * 100,
+                  slFoamML: widget.slFoamML * 100,
+                  tandSolidML: widget.tandSolidML * 100,
+                  tandFoamML: mlSway * 100,
+                ),
               ),
-            ),
-          );
+            );
+          }
         }
       }
     }
@@ -297,20 +401,23 @@ class _StaticTestPage extends State<StaticTestPage> {
     } else if (widget.stance == "Tandem Stance (Foam)") {
       Static? createdStatic = await createStaticTest(0);
       if (createdStatic != null && context.mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => StaticResultsPage(
-              tID: widget.tID,
-              tlSolidML: widget.tlSolidML,
-              tlFoamML: widget.tlFoamML,
-              slSolidML: widget.slSolidML,
-              slFoamML: widget.slFoamML,
-              tandSolidML: widget.tandSolidML,
-              tandFoamML: 0.0,
+        await sendIMU(createdStatic.sID);
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StaticResultsPage(
+                tID: widget.tID,
+                tlSolidML: widget.tlSolidML,
+                tlFoamML: widget.tlFoamML,
+                slSolidML: widget.slSolidML,
+                slFoamML: widget.slFoamML,
+                tandSolidML: widget.tandSolidML,
+                tandFoamML: widget.tandFoamML,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     }
   }

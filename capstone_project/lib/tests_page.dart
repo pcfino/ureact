@@ -89,10 +89,9 @@ class _TestsPage extends State<TestsPage> {
   Future<dynamic> getBaselineTest(int tID) async {
     try {
       var jsonTest = await getBaseline(tID);
-
       return jsonTest[0];
     } catch (e) {
-      print("Error getting test: $e");
+      return null;
     }
   }
 
@@ -538,7 +537,7 @@ class _TestsPage extends State<TestsPage> {
                     const Divider(
                       color: Colors.transparent,
                     ),
-                    if (selectedValue != "Baseline")
+                    if (selectedValue != "Baseline" && baseline != null)
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                         child: const Text(
@@ -549,13 +548,13 @@ class _TestsPage extends State<TestsPage> {
                           ),
                         ),
                       ),
-                    if (selectedValue != "Baseline")
+                    if (selectedValue != "Baseline" && baseline != null)
                       const Divider(
                         height: 1,
                         thickness: 1,
                         color: Colors.grey,
                       ),
-                    if (selectedValue != "Baseline")
+                    if (selectedValue != "Baseline" && baseline != null)
                       Expanded(
                         child: ListView(
                           shrinkWrap: true,

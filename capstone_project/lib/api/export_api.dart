@@ -31,6 +31,6 @@ Future exportIncident(int patientId, int incidentID) async {
 /// @return Json object with the patient infomation
 Future exportTest(int patientId, int testID) async {
   var results =
-      await api.get('/mysql/exportSinglePatient?ID=$patientId&tID=$testID');
+      await api.get('/mysql/exportSinglePatient?pID=$patientId&tID=$testID');
   return await jsonDecode(results);
 }

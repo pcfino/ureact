@@ -3,7 +3,7 @@ This module contains tests for the server functionality.
 """
 import sqlite3
 import unittest
-import ref_server
+import server
 
 # pylint test_server.py - use this to test for memory leaks
 
@@ -132,7 +132,7 @@ class TestDatabase(unittest.TestCase):
         """
         cursor.executemany('''
             INSERT INTO Patient (pFirstName, pLastName, dOB, height, weight, sport, gender, thirdPartyID, orgID)
-            VALUES (?, ?, ?, ?, ?, ?, ? , ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', [('Test', 'Smith', '1001-02-15', 60, 195, 'Lax', 'M', '12345', 0),
               ('Lady', 'Smith', '1001-07-25', 52, 125, 'Soc', 'F', '23456', 0),
               ('Alex', 'Smith', '1001-03-05', 72, 215, 'Fot', 'M', '34567', 0)
@@ -150,7 +150,7 @@ class TestDatabase(unittest.TestCase):
 
         cursor.execute('''
             INSERT INTO ReactiveTest (fTime, bTime, lTime, rTime, mTime, tID, administeredBy)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (1.15, 1.25, 1.35, 1.45, 1.55, 1, "Jarrod"))
 
         cursor.execute('''
@@ -160,7 +160,7 @@ class TestDatabase(unittest.TestCase):
                                      dMax, dMin, dMean, dMedian,
                                      tsMax, tsMin, tsMean, tsMedian,
                                      mlMax, mlMin, mlMean, mlMedian, tID, administeredBy) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (2.05, 2.15, 2.25, 
               2.35, 2.45, 2.55,
               2.65, 2.75, 2.85,
@@ -170,7 +170,7 @@ class TestDatabase(unittest.TestCase):
         
         cursor.execute('''
             INSERT INTO StaticTest (tlSolidML, tlFoamML, slSolidML, slFoamML, tandSolidML, tandFoamML, tID, administeredBy)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ''', (3.15, 3.25, 3.35, 3.45, 3.55, 3.65, 1, "Jarrod"))
 
     def test_patient_get_all(self):

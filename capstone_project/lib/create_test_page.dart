@@ -9,9 +9,11 @@ import 'package:capstone_project/tests_page.dart';
 import 'package:capstone_project/api/test_api.dart';
 
 class CreateTestPage extends StatefulWidget {
-  const CreateTestPage({super.key, required this.iID, required this.name});
+  const CreateTestPage(
+      {super.key, required this.iID, required this.pID, required this.name});
 
   final int iID;
+  final int pID;
   final String name;
   @override
   State<CreateTestPage> createState() => _CreateTestPage();
@@ -116,7 +118,8 @@ class _CreateTestPage extends State<CreateTestPage> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TestsPage(tID: createdTest.tID),
+                        builder: (context) =>
+                            TestsPage(tID: createdTest.tID, pID: widget.pID),
                       ),
                     );
                   }

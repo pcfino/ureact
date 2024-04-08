@@ -47,6 +47,7 @@ dependencies:
   circular_countdown_timer: ^0.2.3
   event: ^2.1.2
   audioplayers: ^5.2.1
+  session_manager: ^0.0.4
 
 
 dev_dependencies:

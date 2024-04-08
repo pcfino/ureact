@@ -31,9 +31,6 @@ class DynamicTestPage extends StatefulWidget {
     this.t2DataAcc,
     this.t2DataRot,
     this.t2DataFs,
-    this.t3DataAcc,
-    this.t3DataRot,
-    this.t3DataFs,
   });
 
   final int trialNumber;
@@ -62,30 +59,6 @@ class DynamicTestPage extends StatefulWidget {
   @override
   State<DynamicTestPage> createState() => _DynamicTestPage();
 }
-
-// class AccelerometerData {
-//   late final List<double> x;
-//   late final List<double> y;
-//   late final List<double> z;
-
-//   AccelerometerData() {
-//     x = <double>[];
-//     y = <double>[];
-//     z = <double>[];
-//   }
-// }
-
-// class GyroscopeData {
-//   late final List<double> x;
-//   late final List<double> y;
-//   late final List<double> z;
-
-//   GyroscopeData() {
-//     x = <double>[];
-//     y = <double>[];
-//     z = <double>[];
-//   }
-// }
 
 class _DynamicTestPage extends State<DynamicTestPage> {
   @override
@@ -136,35 +109,38 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     if (widget.trialNumber == 3) {
       Dynamic? createdDynamic = await createDynamicTest(0, 0, 0);
       if (createdDynamic != null && context.mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DynamicResultsPage(
-              t1Duration: createdDynamic.t1Duration,
-              t1TurnSpeed: createdDynamic.t1TurnSpeed,
-              t1MLSway: createdDynamic.t1MLSway,
-              t2Duration: createdDynamic.t2Duration,
-              t2TurnSpeed: createdDynamic.t2TurnSpeed,
-              t2MLSway: createdDynamic.t2MLSway,
-              t3Duration: createdDynamic.t3Duration,
-              t3TurnSpeed: createdDynamic.t3TurnSpeed,
-              t3MLSway: createdDynamic.t3MLSway,
-              dMax: createdDynamic.dMax,
-              dMin: createdDynamic.dMin,
-              dMean: createdDynamic.dMean,
-              dMedian: createdDynamic.dMedian,
-              tsMax: createdDynamic.tsMax,
-              tsMin: createdDynamic.tsMin,
-              tsMean: createdDynamic.tsMean,
-              tsMedian: createdDynamic.tsMedian,
-              mlMax: createdDynamic.mlMax,
-              mlMin: createdDynamic.mlMin,
-              mlMean: createdDynamic.mlMean,
-              mlMedian: createdDynamic.mlMedian,
-              tID: widget.tID,
+        await sendIMU(createdDynamic.dID);
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DynamicResultsPage(
+                t1Duration: createdDynamic.t1Duration,
+                t1TurnSpeed: createdDynamic.t1TurnSpeed,
+                t1MLSway: createdDynamic.t1MLSway,
+                t2Duration: createdDynamic.t2Duration,
+                t2TurnSpeed: createdDynamic.t2TurnSpeed,
+                t2MLSway: createdDynamic.t2MLSway,
+                t3Duration: createdDynamic.t3Duration,
+                t3TurnSpeed: createdDynamic.t3TurnSpeed,
+                t3MLSway: createdDynamic.t3MLSway,
+                dMax: createdDynamic.dMax,
+                dMin: createdDynamic.dMin,
+                dMean: createdDynamic.dMean,
+                dMedian: createdDynamic.dMedian,
+                tsMax: createdDynamic.tsMax,
+                tsMin: createdDynamic.tsMin,
+                tsMean: createdDynamic.tsMean,
+                tsMedian: createdDynamic.tsMedian,
+                mlMax: createdDynamic.mlMax,
+                mlMin: createdDynamic.mlMin,
+                mlMean: createdDynamic.mlMean,
+                mlMedian: createdDynamic.mlMedian,
+                tID: widget.tID,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     } else {
       Navigator.push(
@@ -341,6 +317,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
       }
     };
     dynamic inserted = await insertIMU(imuData);
+    return inserted;
   }
 
   @override
@@ -556,9 +533,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                     await createDynamicTest(
                                         duration, turningSpeed, mlSway);
                                 if (createdDynamic != null && context.mounted) {
-                                  dynamic inserted =
-                                      await sendIMU(createdDynamic.dID);
-                                  print(inserted);
+                                  await sendIMU(createdDynamic.dID);
                                   if (context.mounted) {
                                     Navigator.pushReplacement(
                                       context,

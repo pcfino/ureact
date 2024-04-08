@@ -114,7 +114,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.tlSolidML} cm/s\u00B2",
+                          "${widget.tlSolidML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -146,7 +146,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.tandSolidML} cm/s\u00B2",
+                          "${widget.tandSolidML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -178,7 +178,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.slSolidML} cm/s\u00B2",
+                          "${widget.slSolidML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -224,7 +224,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.tlFoamML} cm/s\u00B2",
+                          "${widget.tlFoamML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -256,7 +256,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.tandFoamML} cm/s\u00B2",
+                          "${widget.tandFoamML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -288,7 +288,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.slFoamML} cm/s\u00B2",
+                          "${widget.slFoamML.toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),

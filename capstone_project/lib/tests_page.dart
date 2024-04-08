@@ -430,6 +430,19 @@ class _TestsPage extends State<TestsPage> {
                     ],
                   ),
                 ),
+                bottomNavigationBar: BottomAppBar(
+                    surfaceTintColor: Colors.white,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              // export test data
+                            },
+                            child: const Text('Export Data')),
+                      ],
+                    )),
               ),
             ),
           );

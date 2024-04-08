@@ -2,6 +2,7 @@
 // import 'dart:io';
 
 import 'package:capstone_project/home_page.dart';
+import 'package:capstone_project/slide_right_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/models/patient.dart';
@@ -35,6 +36,33 @@ class _CreatePatientPage extends State<CreatePatientPage> {
     }
   }
 
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a value'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   final TextEditingController firstName = TextEditingController();
   final TextEditingController lastName = TextEditingController();
   final TextEditingController _date = TextEditingController();
@@ -61,25 +89,31 @@ class _CreatePatientPage extends State<CreatePatientPage> {
           title: const Text('Create Patient'),
           centerTitle: true,
           leading: BackButton(onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
+              SlideRightRoute(page: const HomePage()),
             );
           }),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                Patient? createdPatient = await createPatient();
-                if (createdPatient != null && context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          PatientPage(pID: createdPatient.pID),
-                    ),
-                  );
+                if (firstName.text == "" ||
+                    lastName.text == "" ||
+                    _date.text == "") {
+                  throwError();
+                } else {
+                  Patient? createdPatient = await createPatient();
+                  if (createdPatient != null && context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PatientPage(
+                          pID: createdPatient.pID,
+                        ),
+                      ),
+                      result: true,
+                    );
+                  }
                 }
               },
               child: const Text('Save'),
@@ -134,6 +168,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
                     Expanded(
                       flex: 10,
                       child: TextField(
+                        readOnly: true,
                         decoration: const InputDecoration(
                           labelText: "DOB *",
                           contentPadding: EdgeInsets.all(11),

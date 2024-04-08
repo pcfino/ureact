@@ -359,7 +359,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         sensorRecorder.endRecording();
       }
     }
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => TestsPage(tID: widget.tID, pID: widget.pID),

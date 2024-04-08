@@ -8,7 +8,7 @@ import 'package:capstone_project/api/export_api.dart' as export_api;
 
 /* ------------------------------------- Headers ------------------------------------- */
 
-List<dynamic> patientCSVHeader = [
+List<dynamic> csvHeader = [
   '3rd Party ID',
   'Incident',
   'Incident Date/Time',
@@ -54,18 +54,127 @@ Future<dynamic> getPatientData(int pID) async {
   }
 }
 
+Future<dynamic> getIncidentData(int pID, int iID) async {
+  try {
+    dynamic jsonExport = await export_api.exportIncident(pID, iID);
+    return jsonExport[0];
+  } catch (e) {
+    print("Error fetching export data: $e");
+  }
+}
+
+Future<dynamic> getTestData(int pID, int tID) async {
+  try {
+    dynamic jsonExport = await export_api.exportTest(pID, tID);
+    return jsonExport[0];
+  } catch (e) {
+    print("Error fetching export data: $e");
+  }
+}
+
 /* ------------------------------------- Export Methods ------------------------------------- */
 
-void exportPatientData(int pID) async {
-  // Get patient data
+void exportPatient(int pID) async {
   String fileName = "";
-  List<List<dynamic>> rows = [];
-
-  Map<String, dynamic> json = await getPatientData(pID);
-  Map<int, Map<String, dynamic>> processedJson = {};
+  Map<String, dynamic> json = await export_api.exportPatient(pID);
 
   if (json.containsKey('thirdPartyID')) {
     fileName = "patient${json['thirdPartyID']}";
+  }
+
+  exportData(fileName, json);
+}
+
+void exportIncident(int pID, int iID) async {
+  String fileName = "";
+  Map<String, dynamic> json = await export_api.exportIncident(pID, iID);
+
+  if (json.containsKey('thirdPartyID')) {
+    if (json.containsKey('iName') && json.containsKey('iDate')) {
+      fileName = "patient${json['thirdPartyID']}_${json['iName']}_${'iDate'}";
+    }
+  }
+
+  exportData(fileName, json);
+}
+
+void exportTest(int pID, int tID) async {
+  String fileName = "";
+  Map<String, dynamic> json = await export_api.exportTest(pID, tID);
+
+  if (json.containsKey('thirdPartyID')) {
+    if (json.containsKey('iName') && json.containsKey('iDate')) {
+      fileName =
+          "patient${json['thirdPartyID']}_${json['iName']}_${'iDate'}_tests";
+    }
+  }
+
+  exportData(fileName, json);
+}
+
+void exportData(String fileName, Map<String, dynamic> json) async {
+  List<List<dynamic>> rows = [];
+  Map<int, Map<String, dynamic>> processedJson = {};
+
+  // if (json.containsKey('thirdPartyID')) {
+  //   fileName = "patient${json['thirdPartyID']}";
+  // }
+
+  processedJson = processJSON(json);
+
+  rows.add(csvHeader);
+  // Reorder the row data so that it matches the csv column order
+  processedJson.forEach((test, row) {
+    List<dynamic> orderedRow = [];
+    for (String header in csvHeader) {
+      orderedRow.add(row[header]);
+    }
+    rows.add(orderedRow);
+  });
+
+  // Export patient data
+  String csv = const ListToCsvConverter().convert(rows);
+  String fileContent = csv;
+  XFile csvFile = await createCSVFile(fileName, fileContent);
+  await exportCSV(csvFile);
+}
+
+// void exportPatientData(int pID) async {
+//   String fileName = "";
+//   List<List<dynamic>> rows = [];
+
+//   Map<String, dynamic> json = await getPatientData(pID);
+//   Map<int, Map<String, dynamic>> processedJson = {};
+
+//   if (json.containsKey('thirdPartyID')) {
+//     fileName = "patient${json['thirdPartyID']}";
+//   }
+
+//   processedJson = processJSON(json);
+
+//   rows.clear();
+//   rows.add(csvHeader);
+//   // Reorder the row data so that it matches the csv column order
+//   processedJson.forEach((test, row) {
+//     List<dynamic> orderedRow = [];
+//     for (String header in csvHeader) {
+//       orderedRow.add(row[header]);
+//     }
+//     rows.add(orderedRow);
+//   });
+
+//   // Export patient data
+//   String csv = const ListToCsvConverter().convert(rows);
+//   String fileContent = csv;
+//   XFile csvFile = await createCSVFile(fileName, fileContent);
+//   await exportCSV(csvFile);
+// }
+
+Map<int, Map<String, dynamic>> processJSON(Map<String, dynamic> json) {
+  List<List<dynamic>> rows = [];
+  Map<int, Map<String, dynamic>> processedJson = {};
+  if (json.containsKey('thirdPartyID')) {
+    // fileName = "patient${json['thirdPartyID']}";
     if (json.containsKey('incidents')) {
       List<dynamic> incidents = json['incidents'];
 
@@ -207,12 +316,10 @@ void exportPatientData(int pID) async {
               if (processedJson.containsKey(test['tID'])) {
                 int headerIndex = 0;
                 for (var col in row) {
-                  if (processedJson[test['tID']]
-                              ?[patientCSVHeader[headerIndex]] ==
+                  if (processedJson[test['tID']]?[csvHeader[headerIndex]] ==
                           null &&
                       col != null) {
-                    processedJson[test['tID']]![patientCSVHeader[headerIndex]] =
-                        col;
+                    processedJson[test['tID']]![csvHeader[headerIndex]] = col;
                   }
                   headerIndex++;
                 }
@@ -222,8 +329,7 @@ void exportPatientData(int pID) async {
                   if (processedJson[test['tID']] == null) {
                     processedJson[test['tID']] = {};
                   }
-                  processedJson[test['tID']]![patientCSVHeader[headerIndex++]] =
-                      col;
+                  processedJson[test['tID']]![csvHeader[headerIndex++]] = col;
                 }
               }
             }
@@ -232,23 +338,7 @@ void exportPatientData(int pID) async {
       }
     }
   }
-
-  rows.clear();
-  rows.add(patientCSVHeader);
-  // Reorder the row data so that it matches the csv column order
-  processedJson.forEach((test, row) {
-    List<dynamic> orderedRow = [];
-    for (String header in patientCSVHeader) {
-      orderedRow.add(row[header]);
-    }
-    rows.add(orderedRow);
-  });
-
-  // Export patient data
-  String csv = const ListToCsvConverter().convert(rows);
-  String fileContent = csv;
-  XFile csvFile = await createCSVFile(fileName, fileContent);
-  await exportCSV(csvFile);
+  return processedJson;
 }
 
 /* ------------------------------------- CSV ------------------------------------- */

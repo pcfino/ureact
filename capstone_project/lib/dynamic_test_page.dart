@@ -89,14 +89,9 @@ class _DynamicTestPage extends State<DynamicTestPage> {
               child: const Text('Try again'),
               onPressed: () {
                 widget.start = true;
-                Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation1, animation2) => widget,
-                    transitionDuration: Duration.zero,
-                    reverseTransitionDuration: Duration.zero,
-                  ),
-                );
+                sensorRecorder = null;
+                Navigator.of(context).pop();
+                setState(() {});
               },
             ),
           ],
@@ -143,7 +138,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
         }
       }
     } else {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => DynamicTestPage(
@@ -362,7 +357,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => TestsPage(

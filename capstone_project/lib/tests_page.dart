@@ -22,12 +22,14 @@ class TestsPage extends StatefulWidget {
 
 class _TestsPage extends State<TestsPage> {
   late Future<dynamic> future;
+  late Future<dynamic> baselineFuture;
 
   @override
   void initState() {
     super.initState();
 
     future = getTest(widget.tID);
+    baselineFuture = getBaselineTest(widget.tID);
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
@@ -49,6 +51,75 @@ class _TestsPage extends State<TestsPage> {
     } catch (e) {
       print("Error getting test: $e");
     }
+  }
+
+  Future<dynamic> updateTest(Map<String, dynamic> updated) async {
+    try {
+      var jsonTest = await update(updated);
+      test?.tName = jsonTest["tName"];
+      test?.tDate = jsonTest["tDate"];
+      test?.tNotes = jsonTest["tNotes"];
+    } catch (e) {
+      print("Error updating test: $e");
+    }
+  }
+
+  void setTest() {
+    selectedValue = test!.tName;
+    _date.text = test!.tDate;
+    notes.text = test!.tNotes!;
+  }
+
+  Future<dynamic> deleteTest() async {
+    try {
+      bool deleted = await delete(widget.tID);
+      if (deleted && context.mounted) {
+        Navigator.pushReplacement(
+            context,
+            SlideRightRoute(
+                page: IncidentPage(
+              iID: test!.iID,
+            )));
+      }
+    } catch (e) {
+      print("Error deleting test: $e");
+    }
+  }
+
+  Future<dynamic> getBaselineTest(int tID) async {
+    try {
+      var jsonTest = await getBaseline(tID);
+      return jsonTest[0];
+    } catch (e) {
+      return null;
+    }
+  }
+
+  void throwError() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Required fields must have a value'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   List<DropdownMenuItem<String>> get dropdownItems {
@@ -80,18 +151,23 @@ class _TestsPage extends State<TestsPage> {
   final TextEditingController notes = TextEditingController();
 
   Test? test;
+  dynamic baseline;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: future,
+      future: Future.wait([
+        future,
+        baselineFuture,
+      ]),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (test == null) {
-            test = snapshot.data! as Test;
+            test = snapshot.data![0] as Test;
             selectedValue = test!.tName;
             _date.text = test!.tDate;
             notes.text = test!.tNotes!;
+            baseline = snapshot.data![1];
           }
 
           return MaterialApp(
@@ -100,79 +176,104 @@ class _TestsPage extends State<TestsPage> {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
               useMaterial3: true,
             ),
-            home: GestureDetector(
-              onPanUpdate: (details) {
-                // Swiping in right direction.
-                if (details.delta.dx > 0) {
+            home: Scaffold(
+              appBar: AppBar(
+                title: const Text('Test'),
+                centerTitle: true,
+                leading: BackButton(onPressed: () {
                   Navigator.pushReplacement(
                     context,
                     SlideRightRoute(
                       page: IncidentPage(iID: test!.iID),
                     ),
                   );
-                }
-              },
-              child: Scaffold(
-                appBar: AppBar(
-                  title: const Text('Test'),
-                  centerTitle: true,
-                  leading: BackButton(onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      SlideRightRoute(
-                        page: IncidentPage(iID: test!.iID),
+                }),
+                actions: <Widget>[
+                  if (editMode)
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
                       ),
-                    );
-                  }),
-                  actions: <Widget>[
-                    if (editMode)
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                        ),
-                        onPressed: () {
-                          //delete(incident.iID);
-                          Navigator.pop(context);
-                          // TODO: get incident to navigate back to a fresh copy without the test that was just deleted
-                        },
-                      ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          if (editMode) {
-                            editMode = false;
-                            mode = 'Edit';
-                            //savePatient(patient);
-                          } else if (!editMode) {
-                            editMode = true;
-                            mode = 'Save';
-                          }
-                        });
+                      onPressed: () async {
+                        await deleteTest();
                       },
-                      child: Text(mode),
-                    )
-                  ],
-                ),
-                body: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    ),
+                  TextButton(
+                    onPressed: () async {
+                      if (editMode) {
+                        if (_date.text == "") {
+                          throwError();
+                        } else {
+                          var newTest = {
+                            "tID": widget.tID,
+                            "tName": selectedValue,
+                            "tDate": _date.text,
+                            "tNotes": notes.text,
+                          };
+                          await updateTest(newTest);
+                          setTest();
+                          editMode = false;
+                          mode = 'Edit';
+                        }
+                      } else if (!editMode) {
+                        editMode = true;
+                        mode = 'Save';
+                      }
+                      setState(() {});
+                    },
+                    child: Text(mode),
+                  )
+                ],
+              ),
+              body: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!editMode || selectedValue == "Baseline")
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          color: const Color.fromRGBO(255, 220, 212, 1),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 15,
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: ListTile(
+                            title: Text(
+                              selectedValue,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    const Divider(
+                      color: Colors.transparent,
+                    ),
+                    if (editMode && selectedValue != "Baseline")
                       Container(
                         margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: DropdownButtonFormField(
                           value: selectedValue,
                           items: dropdownItems,
-                          onChanged: editMode
-                              ? (String? value) {
-                                  setState(() {
-                                    selectedValue = value!;
-                                    if (editMode) {
-                                      //incident.iName = selectedValue;
-                                    }
-                                  });
-                                }
-                              : null,
+                          onChanged: (String? value) {
+                            setState(() {
+                              selectedValue = value!;
+                              if (editMode) {
+                                //incident.iName = selectedValue;
+                              }
+                            });
+                          },
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -182,82 +283,83 @@ class _TestsPage extends State<TestsPage> {
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                             ),
-                            labelText: "Name *",
+                            labelText: "Type *",
                             contentPadding: EdgeInsets.all(11),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                        child: TextField(
-                          readOnly: !editMode,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            labelText: "Date *",
-                            contentPadding: EdgeInsets.all(11),
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                      child: TextField(
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
                           ),
-                          controller: _date,
-                          onTap: () async {
-                            if (editMode) {
-                              DateTime? selectedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime.now(),
-                              );
-                              if (selectedDate != null) {
-                                setState(() {
-                                  _date.text =
-                                      "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
-                                  if (editMode) {
-                                    //incident.iDate =
-                                    // "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
-                                  }
-                                });
-                              }
+                          labelText: "Date *",
+                          contentPadding: EdgeInsets.all(11),
+                        ),
+                        controller: _date,
+                        onTap: () async {
+                          if (editMode) {
+                            DateTime? selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime.now(),
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                _date.text =
+                                    "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                                if (editMode) {
+                                  //incident.iDate =
+                                  // "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                                }
+                              });
                             }
-                          },
+                          }
+                        },
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                      child: TextField(
+                        textCapitalization: TextCapitalization.sentences,
+                        readOnly: !editMode,
+                        maxLines: null,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Notes",
+                        ),
+                        controller: notes,
+                        onSubmitted: (value) {
+                          if (editMode) {
+                            //incident.iNotes = value;
+                          }
+                        },
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      child: const Text(
+                        'Test Types',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                        child: TextField(
-                          textCapitalization: TextCapitalization.sentences,
-                          readOnly: !editMode,
-                          maxLines: null,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Notes",
-                          ),
-                          controller: notes,
-                          onSubmitted: (value) {
-                            if (editMode) {
-                              //incident.iNotes = value;
-                            }
-                          },
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        child: const Text(
-                          'Test Types',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: Colors.grey,
-                      ),
-                      Expanded(
-                        child: ListView(children: [
-                          ListTile(
-                            onTap: () {
+                    ),
+                    const Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Colors.grey,
+                    ),
+                    Expanded(
+                      child: ListView(shrinkWrap: true, children: [
+                        ListTile(
+                          onTap: () {
+                            if (!editMode) {
                               if (test!.reactiveTest != null) {
                                 Navigator.pushReplacement(
                                   context,
@@ -289,19 +391,21 @@ class _TestsPage extends State<TestsPage> {
                                   ),
                                 );
                               }
-                            },
-                            title: const Text(
-                              'Reactive',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                            trailing: Icon(test!.reactiveTest == null
-                                ? Icons.add_circle
-                                : Icons.arrow_forward_ios),
+                            }
+                          },
+                          title: const Text(
+                            'Reactive',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          ListTile(
-                            onTap: () {
-                              // check if dynamic exists
+                          trailing: Icon(test!.reactiveTest == null
+                              ? Icons.add
+                              : Icons.arrow_forward_ios),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            // check if dynamic exists
+                            if (!editMode) {
                               if (test!.dynamicTest != null) {
                                 Navigator.pushReplacement(
                                   context,
@@ -364,18 +468,20 @@ class _TestsPage extends State<TestsPage> {
                                   ),
                                 );
                               }
-                            },
-                            title: const Text(
-                              'Dynamic',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                            trailing: Icon(test!.dynamicTest == null
-                                ? Icons.add_circle
-                                : Icons.arrow_forward_ios),
+                            }
+                          },
+                          title: const Text(
+                            'Dynamic',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          ListTile(
-                            onTap: () {
+                          trailing: Icon(test!.dynamicTest == null
+                              ? Icons.add
+                              : Icons.arrow_forward_ios),
+                        ),
+                        ListTile(
+                          onTap: () {
+                            if (!editMode) {
                               // check if static exists
                               if (test!.staticTest != null) {
                                 Navigator.pushReplacement(
@@ -415,35 +521,223 @@ class _TestsPage extends State<TestsPage> {
                                   ),
                                 );
                               }
-                            },
-                            title: const Text(
-                              'Static',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                            trailing: Icon(test!.staticTest == null
-                                ? Icons.add_circle
-                                : Icons.arrow_forward_ios),
+                            }
+                          },
+                          title: const Text(
+                            'Static',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                        ]),
+                          trailing: Icon(test!.staticTest == null
+                              ? Icons.add
+                              : Icons.arrow_forward_ios),
+                        ),
+                      ]),
+                    ),
+                    const Divider(
+                      color: Colors.transparent,
+                    ),
+                    if (selectedValue != "Baseline" && baseline != null)
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                        child: const Text(
+                          'Baseline',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
+                    if (selectedValue != "Baseline" && baseline != null)
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Colors.grey,
+                      ),
+                    if (selectedValue != "Baseline" && baseline != null)
+                      Expanded(
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: [
+                            ListTile(
+                              onTap: () {
+                                if (!editMode) {
+                                  if (baseline["reactiveTest"]["rID"] != null) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ReactiveTestResultsPage(
+                                          backward: baseline["reactiveTest"]
+                                                  ["bTime"] *
+                                              1000,
+                                          forward: baseline["reactiveTest"]
+                                                  ["fTime"] *
+                                              1000,
+                                          left: baseline["reactiveTest"]
+                                                  ["lTime"] *
+                                              1000,
+                                          right: baseline["reactiveTest"]
+                                                  ["rTime"] *
+                                              1000,
+                                          median: baseline["reactiveTest"]
+                                                  ["mTime"] *
+                                              1000,
+                                          tID: baseline["reactiveTest"]["tID"],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              title: const Text(
+                                'Reactive',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              trailing: Icon(
+                                  baseline["reactiveTest"]["rID"] == null
+                                      ? null
+                                      : Icons.arrow_forward_ios),
+                            ),
+                            ListTile(
+                              onTap: () {
+                                if (!editMode) {
+                                  if (baseline["dynamicTest"]["dID"] != null) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DynamicResultsPage(
+                                          t1Duration: baseline["dynamicTest"]
+                                                  ["t1Duration"] *
+                                              1000,
+                                          t1TurnSpeed: baseline["dynamicTest"]
+                                              ["t1TurnSpeed"],
+                                          t1MLSway: baseline["dynamicTest"]
+                                                  ["t1MLSway"] *
+                                              100,
+                                          t2Duration: baseline["dynamicTest"]
+                                                  ["t2Duration"] *
+                                              1000,
+                                          t2TurnSpeed: baseline["dynamicTest"]
+                                              ["t2TurnSpeed"],
+                                          t2MLSway: baseline["dynamicTest"]
+                                                  ["t2MLSway"] *
+                                              100,
+                                          t3Duration: baseline["dynamicTest"]
+                                                  ["t3Duration"] *
+                                              1000,
+                                          t3TurnSpeed: baseline["dynamicTest"]
+                                              ["t3TurnSpeed"],
+                                          t3MLSway: baseline["dynamicTest"]
+                                                  ["t3MLSway"] *
+                                              100,
+                                          dMax: baseline["dynamicTest"]
+                                                  ["dMax"] *
+                                              1000,
+                                          dMin: baseline["dynamicTest"]
+                                                  ["dMin"] *
+                                              1000,
+                                          dMean: baseline["dynamicTest"]
+                                                  ["dMean"] *
+                                              1000,
+                                          dMedian: baseline["dynamicTest"]
+                                                  ["dMedian"] *
+                                              1000,
+                                          tsMax: baseline["dynamicTest"]
+                                              ["tsMax"],
+                                          tsMin: baseline["dynamicTest"]
+                                              ["tsMin"],
+                                          tsMean: baseline["dynamicTest"]
+                                              ["tsMean"],
+                                          tsMedian: baseline["dynamicTest"]
+                                              ["tsMedian"],
+                                          mlMax: baseline["dynamicTest"]
+                                                  ["mlMax"] *
+                                              100,
+                                          mlMin: baseline["dynamicTest"]
+                                                  ["mlMin"] *
+                                              100,
+                                          mlMean: baseline["dynamicTest"]
+                                                  ["mlMean"] *
+                                              100,
+                                          mlMedian: baseline["dynamicTest"]
+                                                  ["mlMedian"] *
+                                              100,
+                                          tID: baseline["dynamicTest"]["tID"],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              title: const Text(
+                                'Dynamic',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              trailing: Icon(
+                                  baseline["dynamicTest"]["dID"] == null
+                                      ? null
+                                      : Icons.arrow_forward_ios),
+                            ),
+                            ListTile(
+                              onTap: () {
+                                if (!editMode) {
+                                  if (baseline["staticTest"]["sID"] != null) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => StaticResultsPage(
+                                          tID: baseline["staticTest"]["tID"],
+                                          tlSolidML: baseline["staticTest"]
+                                              ["tlSolidML"],
+                                          tlFoamML: baseline["staticTest"]
+                                              ["tlFoamML"],
+                                          slSolidML: baseline["staticTest"]
+                                              ["slSolidML"],
+                                          slFoamML: baseline["staticTest"]
+                                              ["slFoamML"],
+                                          tandSolidML: baseline["staticTest"]
+                                              ["tandSolidML"],
+                                          tandFoamML: baseline["staticTest"]
+                                              ["tandFoamML"],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              title: const Text(
+                                'Static',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              trailing: Icon(
+                                  baseline["staticTest"]["sID"] == null
+                                      ? null
+                                      : Icons.arrow_forward_ios),
+                            )
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
-                bottomNavigationBar: BottomAppBar(
-                    surfaceTintColor: Colors.white,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        TextButton(
-                            onPressed: () {
-                              // export test data
-                            },
-                            child: const Text('Export Data')),
-                      ],
-                    )),
               ),
+              bottomNavigationBar: BottomAppBar(
+                  surfaceTintColor: Colors.white,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            // export test data
+                          },
+                          child: const Text('Export Data')),
+                    ],
+                  )),
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {

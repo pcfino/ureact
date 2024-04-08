@@ -68,10 +68,57 @@ Future confirmSignUp(Map userConfirmation) async {
 /// to login: Username, password
 /// 
 ///
-/// @return accesstoken for the user
+/// @return true for status if sucsessfull 
+/// accesstoken for the user to log out
 Future logIn(Map loginCredintials) async {
   try {
     var results = await api.post('/signIn', loginCredintials);
+    return await jsonDecode(results);
+  } catch (err) {
+    return {"status": "error"};
+  }
+}
+
+/// User signOut
+///
+/// @param accesstoken: Object containing all needed information
+/// to sign out: this is the access token returned from sign in
+/// 
+///
+/// @return true
+Future signOut(Map accesstoken) async {
+  try {
+    var results = await api.post('/log_out', accesstoken);
+    return await jsonDecode(results);
+  } catch (err) {
+    return {"status": "error"};
+  }
+}
+
+/// User forgot password
+///
+/// @param userName: the username
+/// 
+///
+/// @return emailed if the conformation code has been emailed
+Future forgotPassword(Map userName) async {
+  try {
+    var results = await api.post('/forgot_password', userName);
+    return await jsonDecode(results);
+  } catch (err) {
+    return {"status": "error"};
+  }
+}
+
+/// User Confirm Forgot Password
+///
+/// @param restPasswordCreds: the username, new password and confirmation code
+/// 
+///
+/// @return http request if good, error message otherwise
+Future confirmforgotPassword(Map resetPasswordCreds) async {
+  try {
+    var results = await api.post('/confirm_forgot_password', resetPasswordCreds);
     return await jsonDecode(results);
   } catch (err) {
     return {"status": "error"};

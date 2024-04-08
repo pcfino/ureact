@@ -29,6 +29,7 @@ Future delete(int testID) async {
 ///
 /// @return updated test info
 Future update(int testID, Map testInfo) async {
+  testInfo['tID'] = testID;
   var results = await api.put('/mysql/updateTest', testInfo);
   return await jsonDecode(results);
 }

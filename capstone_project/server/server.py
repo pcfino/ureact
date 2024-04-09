@@ -527,7 +527,6 @@ def createTest():
         data = request.json
         sql = "INSERT INTO Test (tName, tDate, tNotes, iID) VALUES(%s, %s, %s, %s)"
         val = (data['tName'], data['tDate'], data['tNotes'], data['iID'])
-        # print(data["tDate"], "this is tdate")
         mycursor.execute(sql, val)
         mydb.commit()
 
@@ -709,12 +708,15 @@ def insertIMU():
         if "dID" in data:
             id_val = data["dID"]
             type_of_id = "dID"
+            data.pop(type_of_id)
         elif "rID" in data:
             id_val = data["rID"]
             type_of_id = "rID"
+            data.pop(type_of_id)
         elif "sID" in data:
             id_val = data["sID"]
             type_of_id = "sID"
+            data.pop(type_of_id)
         else:
             return jsonify({"Status": False})
 
@@ -759,7 +761,7 @@ def getIMU():
         if sID != "":
             # check if we added an rID or not
             if rID != "":
-                sql += " and sID=" + sID
+                sql += " or sID=" + sID
             else:
                 sql += "sID=" + sID
         
@@ -767,11 +769,11 @@ def getIMU():
         if dID != "":
             # check did we add an sID and an rID
             if sID != "" and rID != "":
-                sql += " and dID=" + dID
+                sql += " or dID=" + dID
             elif sID == "" and rID != "":
-                sql += " and dID=" + dID
+                sql += " or dID=" + dID
             elif sID != "" and rID == "":
-                sql += " and dID=" + dID
+                sql += " or dID=" + dID
             else:
                 sql += "dID=" + dID
         
@@ -1063,7 +1065,6 @@ def timeToStability():
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
-    print(fs)
 
     accNorm = np.linalg.norm(dataAcc, axis=0)
     rotNorm = np.linalg.norm(dataRot, axis=0)

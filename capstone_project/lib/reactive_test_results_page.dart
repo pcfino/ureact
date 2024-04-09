@@ -7,6 +7,7 @@ class ReactiveTestResultsPage extends StatefulWidget {
   const ReactiveTestResultsPage(
       {super.key,
       required this.pID,
+      required this.administeredBy,
       required this.forward,
       required this.left,
       required this.right,
@@ -15,6 +16,7 @@ class ReactiveTestResultsPage extends StatefulWidget {
       required this.tID});
 
   final int pID;
+  final String administeredBy;
   final double forward;
   final double left;
   final double right;
@@ -67,9 +69,9 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Administered by Cannon Rudd',
-                    style: TextStyle(
+                  Text(
+                    'Administered by ${widget.administeredBy}',
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),

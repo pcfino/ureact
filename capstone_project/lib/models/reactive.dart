@@ -16,6 +16,7 @@ class Reactive {
     this.lTime,
     this.rTime,
     this.mTime,
+    this.administeredBy,
     this.tID,
   );
 
@@ -36,6 +37,9 @@ class Reactive {
 
   @JsonKey(required: true)
   double mTime;
+
+  @JsonKey(required: true)
+  String administeredBy;
 
   @JsonKey(required: true)
   int tID;

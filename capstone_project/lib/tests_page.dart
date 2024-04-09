@@ -41,12 +41,18 @@ class _TestsPage extends State<TestsPage> {
       var jsonTest = await getAllTests(tID);
       if (!jsonTest[0]["reactiveTest"].containsKey("rID")) {
         jsonTest[0].remove("reactiveTest");
+      } else if (jsonTest[0]["reactiveTest"]["administeredBy"] == null) {
+        jsonTest[0]["reactiveTest"]["administeredBy"] = "None";
       }
       if (!jsonTest[0]["dynamicTest"].containsKey("dID")) {
         jsonTest[0].remove("dynamicTest");
+      } else if (jsonTest[0]["dynamicTest"]["administeredBy"] == null) {
+        jsonTest[0]["dynamicTest"]["administeredBy"] = "None";
       }
       if (!jsonTest[0]["staticTest"].containsKey("sID")) {
         jsonTest[0].remove("staticTest");
+      } else if (jsonTest[0]["staticTest"]["administeredBy"] == null) {
+        jsonTest[0]["staticTest"]["administeredBy"] = "None";
       }
       Test test = Test.fromJson(jsonTest[0]);
       return test;
@@ -91,6 +97,15 @@ class _TestsPage extends State<TestsPage> {
   Future<dynamic> getBaselineTest(int tID) async {
     try {
       var jsonTest = await getBaseline(tID);
+      if (jsonTest[0]["reactiveTest"]["administeredBy"] == null) {
+        jsonTest[0]["reactiveTest"]["administeredBy"] = "None";
+      }
+      if (jsonTest[0]["dynamicTest"]["administeredBy"] == null) {
+        jsonTest[0]["dynamicTest"]["administeredBy"] = "None";
+      }
+      if (jsonTest[0]["staticTest"]["administeredBy"] == null) {
+        jsonTest[0]["staticTest"]["administeredBy"] = "None";
+      }
       return jsonTest[0];
     } catch (e) {
       return null;
@@ -423,6 +438,8 @@ class _TestsPage extends State<TestsPage> {
                                     builder: (context) =>
                                         ReactiveTestResultsPage(
                                       pID: widget.pID,
+                                      administeredBy:
+                                          test!.reactiveTest!.administeredBy,
                                       backward:
                                           test!.reactiveTest!.bTime * 1000,
                                       forward: test!.reactiveTest!.fTime * 1000,
@@ -470,6 +487,8 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) => DynamicResultsPage(
                                       pID: widget.pID,
+                                      administeredBy:
+                                          test!.dynamicTest!.administeredBy,
                                       t1Duration:
                                           test!.dynamicTest!.t1Duration * 1000,
                                       t1TurnSpeed:
@@ -549,6 +568,8 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) => StaticResultsPage(
                                       pID: widget.pID,
+                                      administeredBy:
+                                          test!.staticTest!.administeredBy,
                                       tID: widget.tID,
                                       tlSolidML:
                                           test!.staticTest!.tlSolidML * 100,
@@ -631,6 +652,9 @@ class _TestsPage extends State<TestsPage> {
                                         builder: (context) =>
                                             ReactiveTestResultsPage(
                                           pID: widget.pID,
+                                          administeredBy:
+                                              baseline["reactiveTest"]
+                                                  ["administeredBy"],
                                           backward: baseline["reactiveTest"]
                                                   ["bTime"] *
                                               1000,
@@ -646,7 +670,7 @@ class _TestsPage extends State<TestsPage> {
                                           median: baseline["reactiveTest"]
                                                   ["mTime"] *
                                               1000,
-                                          tID: baseline["reactiveTest"]["tID"],
+                                          tID: widget.tID,
                                         ),
                                       ),
                                     );
@@ -673,6 +697,9 @@ class _TestsPage extends State<TestsPage> {
                                         builder: (context) =>
                                             DynamicResultsPage(
                                           pID: widget.pID,
+                                          administeredBy:
+                                              baseline["dynamicTest"]
+                                                  ["administeredBy"],
                                           t1Duration: baseline["dynamicTest"]
                                                   ["t1Duration"] *
                                               1000,
@@ -729,7 +756,7 @@ class _TestsPage extends State<TestsPage> {
                                           mlMedian: baseline["dynamicTest"]
                                                   ["mlMedian"] *
                                               100,
-                                          tID: baseline["dynamicTest"]["tID"],
+                                          tID: widget.tID,
                                         ),
                                       ),
                                     );
@@ -755,7 +782,9 @@ class _TestsPage extends State<TestsPage> {
                                       MaterialPageRoute(
                                         builder: (context) => StaticResultsPage(
                                           pID: widget.pID,
-                                          tID: baseline["staticTest"]["tID"],
+                                          administeredBy: baseline["staticTest"]
+                                              ["administeredBy"],
+                                          tID: widget.tID,
                                           tlSolidML: baseline["staticTest"]
                                               ["tlSolidML"],
                                           tlFoamML: baseline["staticTest"]

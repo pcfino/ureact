@@ -17,6 +17,7 @@ class Static {
     this.slFoamML,
     this.tandSolidML,
     this.tandFoamML,
+    this.administeredBy,
     this.tID,
   );
 
@@ -40,6 +41,9 @@ class Static {
 
   @JsonKey(required: true)
   double tandFoamML;
+
+  @JsonKey(required: true)
+  String administeredBy;
 
   @JsonKey(required: true)
   int tID;

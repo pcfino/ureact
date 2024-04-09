@@ -32,6 +32,7 @@ Dynamic _$DynamicFromJson(Map<String, dynamic> json) {
       'mlMin',
       'mlMean',
       'mlMedian',
+      'administeredBy',
       'tID'
     ],
   );
@@ -58,6 +59,7 @@ Dynamic _$DynamicFromJson(Map<String, dynamic> json) {
     (json['mlMin'] as num).toDouble(),
     (json['mlMean'] as num).toDouble(),
     (json['mlMedian'] as num).toDouble(),
+    json['administeredBy'] as String,
     json['tID'] as int,
   );
 }
@@ -85,5 +87,6 @@ Map<String, dynamic> _$DynamicToJson(Dynamic instance) => <String, dynamic>{
       'mlMin': instance.mlMin,
       'mlMean': instance.mlMean,
       'mlMedian': instance.mlMedian,
+      'administeredBy': instance.administeredBy,
       'tID': instance.tID,
     };

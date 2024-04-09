@@ -8,6 +8,7 @@ import 'dart:async';
 import 'api/test_api.dart';
 import 'api/imu_api.dart';
 import 'package:event/event.dart';
+import 'package:session_manager/session_manager.dart';
 
 class ReactiveTestPage extends StatefulWidget {
   ReactiveTestPage({
@@ -226,13 +227,13 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
       Reactive? createdReactive = await createReactiveTest(normMedian);
       if (createdReactive != null && context.mounted) {
         await sendIMU(createdReactive.rID);
-        print(createdReactive.rID);
         if (context.mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => ReactiveTestResultsPage(
                 pID: widget.pID,
+                administeredBy: createdReactive.administeredBy,
                 forward: widget.forward * 1000,
                 left: widget.left * 1000,
                 right: timeToStab * 1000,
@@ -262,7 +263,9 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     if (timeToStab != 0) {
       vals.add(timeToStab);
     }
-
+    if (vals.isEmpty) {
+      return 0;
+    }
     vals.sort();
     double median = 0;
     if (vals.length == 4) {
@@ -288,8 +291,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     }
     if (widget.direction == "Right") {
       double median = calcMedian();
-      Reactive? createdReactive =
-          await createReactiveTest(double.parse(median.toStringAsFixed(2)));
+      Reactive? createdReactive = await createReactiveTest(median);
       if (createdReactive != null && context.mounted) {
         await sendIMU(createdReactive.rID);
         if (context.mounted) {
@@ -298,6 +300,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
             MaterialPageRoute(
               builder: (context) => ReactiveTestResultsPage(
                 pID: widget.pID,
+                administeredBy: createdReactive.administeredBy,
                 forward: widget.forward,
                 left: widget.left,
                 right: widget.right,
@@ -369,7 +372,10 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
 
   Future<dynamic> createReactiveTest(double median) async {
     try {
+      String admin = await SessionManager().getString("username");
+
       dynamic jsonReactive = await createReactive({
+        "adminsteredBy": admin,
         "fTime": widget.forward,
         "rTime": timeToStab,
         "lTime": widget.left,

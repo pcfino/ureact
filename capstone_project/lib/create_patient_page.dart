@@ -8,6 +8,7 @@ import 'package:capstone_project/patient_page.dart';
 import 'package:capstone_project/models/patient.dart';
 import 'package:capstone_project/api/patient_api.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:session_manager/session_manager.dart';
 
 class CreatePatientPage extends StatefulWidget {
   const CreatePatientPage({super.key});
@@ -19,7 +20,10 @@ class CreatePatientPage extends StatefulWidget {
 class _CreatePatientPage extends State<CreatePatientPage> {
   Future<dynamic> createPatient() async {
     try {
+      String orgID = await SessionManager().getString("orgID");
+
       dynamic jsonPatient = await create({
+        "orgID": orgID,
         "firstName": firstName.text,
         "lastName": lastName.text,
         "dOB": _date.text,

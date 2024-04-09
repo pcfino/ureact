@@ -224,8 +224,8 @@ class App extends State<MyApp> {
                             foregroundColor: cs.background,
                           ),
                           onPressed: () async {
-                            dynamic loggedIn = await logInUser();
                             dynamic group = await setGroup();
+                            dynamic loggedIn = await logInUser();
                             if (context.mounted &&
                                 group['status'] == "succsess") {
                               if (loggedIn['status'] != 'error') {

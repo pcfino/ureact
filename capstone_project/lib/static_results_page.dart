@@ -9,6 +9,7 @@ class StaticResultsPage extends StatefulWidget {
   const StaticResultsPage(
       {super.key,
       required this.pID,
+      required this.administeredBy,
       required this.tlSolidML,
       required this.tlFoamML,
       required this.slSolidML,
@@ -18,6 +19,7 @@ class StaticResultsPage extends StatefulWidget {
       required this.tID});
 
   final int pID;
+  final String administeredBy;
   final double tlSolidML;
   final double tlFoamML;
   final double slSolidML;
@@ -71,9 +73,9 @@ class _StaticResultsPage extends State<StaticResultsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Administered by Cannon Rudd',
-                    style: TextStyle(
+                  Text(
+                    'Administered by ${widget.administeredBy}',
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),

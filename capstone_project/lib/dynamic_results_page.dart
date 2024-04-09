@@ -8,6 +8,7 @@ class DynamicResultsPage extends StatefulWidget {
   const DynamicResultsPage({
     super.key,
     required this.pID,
+    required this.administeredBy,
     required this.t1Duration,
     required this.t1TurnSpeed,
     required this.t1MLSway,
@@ -33,6 +34,7 @@ class DynamicResultsPage extends StatefulWidget {
   });
 
   final int pID;
+  final String administeredBy;
   final double t1Duration;
   final double t1TurnSpeed;
   final double t1MLSway;
@@ -102,9 +104,9 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Administered by Cannon Rudd',
-                        style: TextStyle(
+                      Text(
+                        'Administered by ${widget.administeredBy}',
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),

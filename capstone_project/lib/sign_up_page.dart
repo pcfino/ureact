@@ -31,7 +31,6 @@ class _SignUpPage extends State<SignUpPage> {
         "password": _password.text,
         "email": _email.text,
       });
-      print(signedUp);
       return signedUp;
     } catch (e) {
       print("Error signing up: $e");

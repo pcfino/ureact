@@ -32,6 +32,7 @@ class Dynamic {
     this.mlMin,
     this.mlMean,
     this.mlMedian,
+    this.administeredBy,
     this.tID,
   );
 
@@ -100,6 +101,9 @@ class Dynamic {
 
   @JsonKey(required: true)
   double mlMedian;
+
+  @JsonKey(required: true)
+  String administeredBy;
 
   @JsonKey(required: true)
   int tID;

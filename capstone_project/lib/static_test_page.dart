@@ -13,6 +13,7 @@ class StaticTestPage extends StatefulWidget {
   StaticTestPage({
     super.key,
     required this.pID,
+    required this.thirdPartyID,
     required this.tID,
     required this.stance,
     required this.tlSolidML,
@@ -42,6 +43,7 @@ class StaticTestPage extends StatefulWidget {
   });
 
   final int pID;
+  final String? thirdPartyID;
   final String stance;
   final double tlSolidML;
   final double tlFoamML;
@@ -192,6 +194,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
               pID: widget.pID,
+              thirdPartyID: widget.thirdPartyID,
               stance: "Single Leg Stance (Solid)",
               tID: widget.tID,
               tlSolidML: mlSway,
@@ -209,6 +212,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
               pID: widget.pID,
+              thirdPartyID: widget.thirdPartyID,
               stance: "Tandem Stance (Solid)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
@@ -226,6 +230,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
               pID: widget.pID,
+              thirdPartyID: widget.thirdPartyID,
               stance: "Two Leg Stance (Foam)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
@@ -243,6 +248,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
               pID: widget.pID,
+              thirdPartyID: widget.thirdPartyID,
               stance: "Single Leg Stance (Foam)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
@@ -260,6 +266,7 @@ class _StaticTestPage extends State<StaticTestPage> {
           MaterialPageRoute(
             builder: (context) => StaticTestPage(
               pID: widget.pID,
+              thirdPartyID: widget.thirdPartyID,
               stance: "Tandem Stance (Foam)",
               tID: widget.tID,
               tlSolidML: widget.tlSolidML,
@@ -281,6 +288,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               MaterialPageRoute(
                 builder: (context) => StaticResultsPage(
                   pID: widget.pID,
+                  thirdPartyID: widget.thirdPartyID,
                   tID: widget.tID,
                   tlSolidML: widget.tlSolidML * 100,
                   tlFoamML: widget.tlFoamML * 100,
@@ -332,6 +340,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             stance: "Single Leg Stance (Solid)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -349,6 +358,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             stance: "Tandem Stance (Solid)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -366,6 +376,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             stance: "Two Leg Stance (Foam)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -383,6 +394,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             stance: "Single Leg Stance (Foam)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -400,6 +412,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         MaterialPageRoute(
           builder: (context) => StaticTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             stance: "Tandem Stance (Foam)",
             tID: widget.tID,
             tlSolidML: widget.tlSolidML,
@@ -421,6 +434,7 @@ class _StaticTestPage extends State<StaticTestPage> {
             MaterialPageRoute(
               builder: (context) => StaticResultsPage(
                 pID: widget.pID,
+                thirdPartyID: widget.thirdPartyID,
                 tID: widget.tID,
                 tlSolidML: widget.tlSolidML,
                 tlFoamML: widget.tlFoamML,
@@ -446,6 +460,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         builder: (context) => TestsPage(
           tID: widget.tID,
           pID: widget.pID,
+          thirdPartyID: widget.thirdPartyID,
         ),
       ),
     );

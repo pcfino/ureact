@@ -10,8 +10,9 @@ import 'package:capstone_project/api/incident_api.dart';
 import 'package:capstone_project/slide_right_transition.dart';
 
 class IncidentPage extends StatefulWidget {
-  const IncidentPage({super.key, this.iID = -1});
+  const IncidentPage({super.key, this.iID = -1, required this.thirdPartyID});
   final int iID;
+  final String? thirdPartyID;
 
   @override
   State<IncidentPage> createState() => _IncidentPage();
@@ -261,6 +262,7 @@ class _IncidentPage extends State<IncidentPage> {
                             builder: (context) => TestsPage(
                               tID: incident.tests![index].tID,
                               pID: incident.pID,
+                              thirdPartyID: widget.thirdPartyID,
                             ),
                           ),
                         );
@@ -281,6 +283,7 @@ class _IncidentPage extends State<IncidentPage> {
                   iID: widget.iID,
                   pID: incident.pID,
                   name: incident.iName,
+                  thirdPartyID: widget.thirdPartyID,
                 ),
               ),
             );

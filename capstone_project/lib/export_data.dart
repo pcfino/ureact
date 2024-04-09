@@ -75,7 +75,11 @@ Future<dynamic> getTestData(int pID, int tID) async {
 
 Future<dynamic> getIMUData(int? rID, int? sID, int? dID) async {
   try {
+    // print("rID is: " + rID.toString());
+    // print("sID is: " + sID.toString());
+    // print("dID is: " + dID.toString());
     dynamic jsonExport = await imu_api.getIMU(rID, sID, dID);
+    print(jsonExport);
     return jsonExport[0];
   } catch (e) {
     print("Error fetching export data: $e");
@@ -123,12 +127,17 @@ void exportTest(int pID, int tID) async {
   exportData(fileName, json, false);
 }
 
-void exportIMU(int? rID, int? sID, int? dID) async {
+void exportIMU(
+    int? rID, int? sID, int? dID, String? thirdPartyID, String? tDate) async {
   print("Entered IMU");
   String fileName = "";
   Map<String, dynamic> json = await getIMUData(rID, sID, dID);
 
-  print(json);
+  if (json.containsKey('imuID')) {
+    fileName = "imuData_patient${thirdPartyID}_test_${tDate}";
+  }
+
+  exportIMUData(fileName, json);
 }
 
 void exportData(
@@ -211,11 +220,11 @@ Map<int, Map<String, dynamic>> processPatientJSON(Map<String, dynamic> json) {
             // Get reactive test data
             if (test.containsKey('reactive')) {
               if (test['reactive'].length != 0) {
-                reactiveMTime = test['reactive']['mTime'] ?? '';
-                fTime = test['reactive']['fTime'] ?? '';
-                bTime = test['reactive']['bTime'] ?? '';
-                lTime = test['reactive']['lTime'] ?? '';
-                rTime = test['reactive']['rTime'] ?? '';
+                reactiveMTime = test['reactive']['mTime'];
+                fTime = test['reactive']['fTime'];
+                bTime = test['reactive']['bTime'];
+                lTime = test['reactive']['lTime'];
+                rTime = test['reactive']['rTime'];
                 hasData = true;
               }
             }
@@ -488,6 +497,29 @@ Map<int, Map<String, dynamic>> processIncidentTestJSON(
     }
   }
   return processedJson;
+}
+
+void exportIMUData(String fileName, Map<String, dynamic> json) async {
+  List<List<dynamic>> rows = [];
+  Map<int, Map<String, dynamic>> processedJson = {};
+
+  // Parse JSON
+
+  rows.add(csvHeader);
+  // Reorder the row data so that it matches the csv column order
+  processedJson.forEach((test, row) {
+    List<dynamic> orderedRow = [];
+    for (String header in csvHeader) {
+      orderedRow.add(row[header]);
+    }
+    rows.add(orderedRow);
+  });
+
+  // Export patient data
+  String csv = const ListToCsvConverter().convert(rows);
+  String fileContent = csv;
+  XFile csvFile = await createCSVFile(fileName, fileContent);
+  await exportCSV(csvFile);
 }
 
 /* ------------------------------------- CSV ------------------------------------- */

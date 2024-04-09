@@ -8,6 +8,7 @@ class DynamicResultsPage extends StatefulWidget {
   const DynamicResultsPage({
     super.key,
     required this.pID,
+    required this.thirdPartyID,
     required this.t1Duration,
     required this.t1TurnSpeed,
     required this.t1MLSway,
@@ -33,6 +34,7 @@ class DynamicResultsPage extends StatefulWidget {
   });
 
   final int pID;
+  final String? thirdPartyID;
   final double t1Duration;
   final double t1TurnSpeed;
   final double t1MLSway;
@@ -90,7 +92,11 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                 Navigator.pushReplacement(
                   context,
                   SlideRightRoute(
-                    page: TestsPage(tID: widget.tID, pID: widget.pID),
+                    page: TestsPage(
+                      tID: widget.tID,
+                      pID: widget.pID,
+                      thirdPartyID: widget.thirdPartyID,
+                    ),
                   ),
                 );
               }),

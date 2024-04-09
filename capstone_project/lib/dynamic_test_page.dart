@@ -14,6 +14,7 @@ class DynamicTestPage extends StatefulWidget {
   DynamicTestPage({
     super.key,
     required this.pID,
+    required this.thirdPartyID,
     required this.tID,
     required this.trialNumber,
     required this.start,
@@ -35,6 +36,7 @@ class DynamicTestPage extends StatefulWidget {
   });
 
   final int pID;
+  final String? thirdPartyID;
   final int trialNumber;
   bool start;
   final double t1Duration;
@@ -113,6 +115,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
             MaterialPageRoute(
               builder: (context) => DynamicResultsPage(
                 pID: widget.pID,
+                thirdPartyID: widget.thirdPartyID,
                 t1Duration: createdDynamic.t1Duration,
                 t1TurnSpeed: createdDynamic.t1TurnSpeed,
                 t1MLSway: createdDynamic.t1MLSway,
@@ -146,6 +149,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
         MaterialPageRoute(
           builder: (context) => DynamicTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             trialNumber: widget.trialNumber + 1,
             tID: widget.tID,
             start: true,
@@ -367,6 +371,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                     builder: (context) => TestsPage(
                       tID: widget.tID,
                       pID: widget.pID,
+                      thirdPartyID: widget.thirdPartyID,
                     ),
                   ),
                 );
@@ -485,6 +490,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
                                       pID: widget.pID,
+                                      thirdPartyID: widget.thirdPartyID,
                                       trialNumber: 2,
                                       tID: widget.tID,
                                       start: true,
@@ -509,6 +515,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
                                       pID: widget.pID,
+                                      thirdPartyID: widget.thirdPartyID,
                                       trialNumber: 3,
                                       tID: widget.tID,
                                       start: true,
@@ -543,6 +550,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                         builder: (context) =>
                                             DynamicResultsPage(
                                           pID: widget.pID,
+                                          thirdPartyID: widget.thirdPartyID,
                                           t1Duration:
                                               createdDynamic.t1Duration * 1000,
                                           t1TurnSpeed:

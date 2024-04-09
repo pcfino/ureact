@@ -13,10 +13,15 @@ import 'package:flutter/services.dart';
 import 'package:capstone_project/slide_right_transition.dart';
 
 class TestsPage extends StatefulWidget {
-  const TestsPage({super.key, required this.tID, required this.pID});
+  const TestsPage(
+      {super.key,
+      required this.tID,
+      required this.pID,
+      required this.thirdPartyID});
 
   final int tID;
   final int pID;
+  final String? thirdPartyID;
 
   @override
   State<TestsPage> createState() => _TestsPage();
@@ -90,6 +95,7 @@ class _TestsPage extends State<TestsPage> {
             SlideRightRoute(
                 page: IncidentPage(
               iID: test!.iID,
+              thirdPartyID: widget.thirdPartyID,
             )));
       }
     } catch (e) {
@@ -171,14 +177,29 @@ class _TestsPage extends State<TestsPage> {
             actions: <Widget>[
               TextButton(
                 child: const Text('Export'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  if (expData == "Test Data") {
-                    exportTest(widget.pID, widget.tID);
-                  } else if (expData == "IMU Data") {
-                    exportIMU(rID, sID, dID);
-                  }
-                },
+                // onPressed: () {
+                //   if (rID == null && sID == null && dID == null) {
+                //     null;
+                //   } else {
+                //     Navigator.of(context).pop();
+                //     if (expData == "Test Data") {
+                //       exportTest(widget.pID, widget.tID);
+                //     } else if (expData == "IMU Data") {
+                //       exportIMU(rID, sID, dID);
+                //     }
+                //   }
+                // },
+                onPressed: (rID == null && sID == null && dID == null)
+                    ? null
+                    : () {
+                        if (expData == "Test Data") {
+                          exportTest(widget.pID, widget.tID);
+                        } else if (expData == "IMU Data") {
+                          exportIMU(
+                              rID, sID, dID, widget.thirdPartyID, test?.tDate);
+                        }
+                        Navigator.of(context).pop();
+                      },
               ),
             ],
           );
@@ -249,7 +270,10 @@ class _TestsPage extends State<TestsPage> {
                   Navigator.pushReplacement(
                     context,
                     SlideRightRoute(
-                      page: IncidentPage(iID: test!.iID),
+                      page: IncidentPage(
+                        iID: test!.iID,
+                        thirdPartyID: widget.thirdPartyID,
+                      ),
                     ),
                   );
                 }),
@@ -432,6 +456,7 @@ class _TestsPage extends State<TestsPage> {
                                     builder: (context) =>
                                         ReactiveTestResultsPage(
                                       pID: widget.pID,
+                                      thirdPartyID: widget.thirdPartyID,
                                       backward:
                                           test!.reactiveTest!.bTime * 1000,
                                       forward: test!.reactiveTest!.fTime * 1000,
@@ -448,6 +473,7 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) => ReactiveTestPage(
                                       pID: widget.pID,
+                                      thirdPartyID: widget.thirdPartyID,
                                       direction: 'Forward',
                                       forward: 0,
                                       left: 0,
@@ -479,6 +505,7 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) => DynamicResultsPage(
                                       pID: widget.pID,
+                                      thirdPartyID: widget.thirdPartyID,
                                       t1Duration:
                                           test!.dynamicTest!.t1Duration * 1000,
                                       t1TurnSpeed:
@@ -521,6 +548,7 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) => DynamicTestPage(
                                       pID: widget.pID,
+                                      thirdPartyID: widget.thirdPartyID,
                                       tID: widget.tID,
                                       start: true,
                                       trialNumber: 1,
@@ -558,6 +586,7 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) => StaticResultsPage(
                                       pID: widget.pID,
+                                      thirdPartyID: widget.thirdPartyID,
                                       tID: widget.tID,
                                       tlSolidML:
                                           test!.staticTest!.tlSolidML * 100,
@@ -580,6 +609,7 @@ class _TestsPage extends State<TestsPage> {
                                   MaterialPageRoute(
                                     builder: (context) => StaticTestPage(
                                       pID: widget.pID,
+                                      thirdPartyID: widget.thirdPartyID,
                                       tID: widget.tID,
                                       stance: "Two Leg Stance (Solid)",
                                       tlSolidML: 0,
@@ -640,6 +670,7 @@ class _TestsPage extends State<TestsPage> {
                                         builder: (context) =>
                                             ReactiveTestResultsPage(
                                           pID: widget.pID,
+                                          thirdPartyID: widget.thirdPartyID,
                                           backward: baseline["reactiveTest"]
                                                   ["bTime"] *
                                               1000,
@@ -682,6 +713,7 @@ class _TestsPage extends State<TestsPage> {
                                         builder: (context) =>
                                             DynamicResultsPage(
                                           pID: widget.pID,
+                                          thirdPartyID: widget.thirdPartyID,
                                           t1Duration: baseline["dynamicTest"]
                                                   ["t1Duration"] *
                                               1000,
@@ -764,6 +796,7 @@ class _TestsPage extends State<TestsPage> {
                                       MaterialPageRoute(
                                         builder: (context) => StaticResultsPage(
                                           pID: widget.pID,
+                                          thirdPartyID: widget.thirdPartyID,
                                           tID: baseline["staticTest"]["tID"],
                                           tlSolidML: baseline["staticTest"]
                                               ["tlSolidML"],

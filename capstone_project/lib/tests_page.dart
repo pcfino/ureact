@@ -25,6 +25,9 @@ class TestsPage extends StatefulWidget {
 class _TestsPage extends State<TestsPage> {
   late Future<dynamic> future;
   late Future<dynamic> baselineFuture;
+  int? rID;
+  int? sID;
+  int? dID;
 
   @override
   void initState() {
@@ -41,12 +44,18 @@ class _TestsPage extends State<TestsPage> {
       var jsonTest = await getAllTests(tID);
       if (!jsonTest[0]["reactiveTest"].containsKey("rID")) {
         jsonTest[0].remove("reactiveTest");
+      } else {
+        rID = jsonTest[0]["reactiveTest"]["rID"];
       }
       if (!jsonTest[0]["dynamicTest"].containsKey("dID")) {
         jsonTest[0].remove("dynamicTest");
+      } else {
+        dID = jsonTest[0]["dynamicTest"]["dID"];
       }
       if (!jsonTest[0]["staticTest"].containsKey("sID")) {
         jsonTest[0].remove("staticTest");
+      } else {
+        sID = jsonTest[0]["staticTest"]["sID"];
       }
       Test test = Test.fromJson(jsonTest[0]);
       return test;
@@ -165,9 +174,9 @@ class _TestsPage extends State<TestsPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                   if (expData == "Test Data") {
-                    // export test data
+                    exportTest(widget.pID, widget.tID);
                   } else if (expData == "IMU Data") {
-                    // export IMU data
+                    exportIMU(rID, sID, dID);
                   }
                 },
               ),

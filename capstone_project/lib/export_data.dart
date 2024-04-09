@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:capstone_project/api/export_api.dart' as export_api;
+import 'package:capstone_project/api/imu_api.dart' as imu_api;
 
 /* ------------------------------------- Headers ------------------------------------- */
 
@@ -72,60 +73,62 @@ Future<dynamic> getTestData(int pID, int tID) async {
   }
 }
 
+Future<dynamic> getIMUData(int? rID, int? sID, int? dID) async {
+  try {
+    dynamic jsonExport = await imu_api.getIMU(rID, sID, dID);
+    return jsonExport[0];
+  } catch (e) {
+    print("Error fetching export data: $e");
+  }
+}
+
 /* ------------------------------------- Export Methods ------------------------------------- */
 
 void exportPatient(int pID) async {
   String fileName = "";
-  Map<String, dynamic> json = {};
-  List<dynamic> jsonList = await export_api.exportPatient(pID);
+  Map<String, dynamic> json = await getPatientData(pID);
 
-  if (jsonList.isNotEmpty) {
-    json = jsonList.first;
-
-    if (json.containsKey('thirdPartyID')) {
-      fileName = "patient${json['thirdPartyID']}";
-    }
-
-    exportData(fileName, json, true);
+  if (json.containsKey('thirdPartyID')) {
+    fileName = "patient${json['thirdPartyID']}";
   }
+
+  exportData(fileName, json, true);
 }
 
 void exportIncident(int pID, int iID) async {
   String fileName = "";
-  Map<String, dynamic> json = {};
-  List<dynamic> jsonList = await export_api.exportIncident(pID, iID);
+  Map<String, dynamic> json = await getIncidentData(pID, iID);
 
-  if (jsonList.isNotEmpty) {
-    json = jsonList.first;
-
-    if (json.containsKey('thirdPartyID')) {
-      if (json.containsKey('iName') && json.containsKey('iDate')) {
-        fileName =
-            "patient${json['thirdPartyID']}_${json['iName']}_${json['iDate']}";
-      }
+  if (json.containsKey('thirdPartyID')) {
+    if (json.containsKey('iName') && json.containsKey('iDate')) {
+      fileName =
+          "patient${json['thirdPartyID']}_${json['iName']}_${json['iDate']}";
     }
-
-    exportData(fileName, json, false);
   }
+
+  exportData(fileName, json, false);
 }
 
 void exportTest(int pID, int tID) async {
   String fileName = "";
-  Map<String, dynamic> json = {};
-  List<dynamic> jsonList = await export_api.exportTest(pID, tID);
+  Map<String, dynamic> json = await getTestData(pID, tID);
 
-  if (jsonList.isNotEmpty) {
-    json = jsonList.first;
-
-    if (json.containsKey('thirdPartyID')) {
-      if (json.containsKey('iName') && json.containsKey('iDate')) {
-        fileName =
-            "patient${json['thirdPartyID']}_${json['iName']}_${json['iDate']}_tests";
-      }
+  if (json.containsKey('thirdPartyID')) {
+    if (json.containsKey('iName') && json.containsKey('iDate')) {
+      fileName =
+          "patient${json['thirdPartyID']}_${json['iName']}_${json['iDate']}_tests";
     }
-
-    exportData(fileName, json, false);
   }
+
+  exportData(fileName, json, false);
+}
+
+void exportIMU(int? rID, int? sID, int? dID) async {
+  print("Entered IMU");
+  String fileName = "";
+  Map<String, dynamic> json = await getIMUData(rID, sID, dID);
+
+  print(json);
 }
 
 void exportData(
@@ -208,11 +211,11 @@ Map<int, Map<String, dynamic>> processPatientJSON(Map<String, dynamic> json) {
             // Get reactive test data
             if (test.containsKey('reactive')) {
               if (test['reactive'].length != 0) {
-                reactiveMTime = test['reactive']['mTime'];
-                fTime = test['reactive']['fTime'];
-                bTime = test['reactive']['bTime'];
-                lTime = test['reactive']['lTime'];
-                rTime = test['reactive']['rTime'];
+                reactiveMTime = test['reactive']['mTime'] ?? '';
+                fTime = test['reactive']['fTime'] ?? '';
+                bTime = test['reactive']['bTime'] ?? '';
+                lTime = test['reactive']['lTime'] ?? '';
+                rTime = test['reactive']['rTime'] ?? '';
                 hasData = true;
               }
             }

@@ -62,7 +62,10 @@ def getAllPatients():
         mydb = connectSql()
         mycursor = mydb.cursor()
 
-        mycursor.execute("SELECT * FROM Patient")
+        data = request.args.get('ID')
+        val = [(data)]
+        sql = "SELECT * FROM Patient where orgID=%s"
+        mycursor.execute(sql, val)
         myresult = mycursor.fetchall()
 
         returnList = []
@@ -110,14 +113,14 @@ def createNewPatient():
         mycursor = mydb.cursor()
 
         data = request.json
-        sql = "INSERT INTO Patient (pFirstName, pLastName, dOB, height, weight, sport, gender, thirdPartyID) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (data['firstName'], data['lastName'], data['dOB'], data['height'], data['weight'], data['sport'], data['gender'], data['thirdPartyID'])
+        sql = "INSERT INTO Patient (pFirstName, pLastName, dOB, height, weight, sport, gender, thirdPartyID, orgID) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (data['firstName'], data['lastName'], data['dOB'], data['height'], data['weight'], data['sport'], data['gender'], data['thirdPartyID'], data['orgID'])
         mycursor.execute(sql, val)
         mydb.commit()
 
         pID = mycursor.lastrowid
         returnPatient = {"pID": pID, "firstName": data['firstName'], "lastName": data['lastName'], "dOB": str(data['dOB']), "height": data['height'], 
-            "weight": data['weight'], "sport": data['sport'], "gender": data['gender'], "thirdPartyID": data['thirdPartyID']}
+            "weight": data['weight'], "sport": data['sport'], "gender": data['gender'], "thirdPartyID": data['thirdPartyID'], "orgID": data['orgID']}
         return jsonify(returnPatient)
 
 @app.route('/mysql/updatePatient', methods=['PUT'])
@@ -292,7 +295,7 @@ def getBaseline():
             test['reactiveTest'] = {}
         else:
             for x in myresult:
-                test['reactiveTest'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6]}
+                test['reactiveTest'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6], "administeredBy": x[7]}
 
         # Get the DynamicTest that the patient has
         sql = "SELECT * FROM DynamicTest WHERE tID=%s"
@@ -311,7 +314,8 @@ def getBaseline():
                                 "tsMax": x[14], "tsMin": x[15], "tsMean": x[16], "tsMedian": x[17],
                                 "mlMax": x[18], "mlMin": x[19], "mlMean": x[20], "mlMedian": x[21],
 
-                                "tID": x[22]}
+                                "tID": x[22], 
+                                "administeredBy": x[23]}
 
         # Get the StaticTests that the patient has
         sql = "SELECT * FROM StaticTest WHERE tID=%s"
@@ -324,7 +328,7 @@ def getBaseline():
                 test['staticTest'] = {"sID": x[0], 
                                 "tlSolidML": x[1], "tlFoamML": x[2], 
                                 "slSolidML": x[3], "slFoamML": x[4], 
-                                "tandSolidML": x[5], "tandFoamML": x[6], "tID": x[7]}  
+                                "tandSolidML": x[5], "tandFoamML": x[6], "tID": x[7], "administeredBy": x[8]}  
         returnList.append(test)
         return jsonify(returnList)
 
@@ -442,7 +446,7 @@ def getTest():
         if myresult != []:
             test["reactive"] = {}
         for x in myresult:
-            test['reactive'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6]}
+            test['reactive'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6], "administeredBy": x[7]}
 
         returnList.append(test)
         return jsonify(returnList)
@@ -474,7 +478,7 @@ def getAllTests():
             test['reactiveTest'] = {}
         else:
             for x in myresult:
-                test['reactiveTest'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6]}
+                test['reactiveTest'] = {"rID": x[0], "fTime": x[1], "bTime": x[2], "lTime": x[3], "rTime": x[4], "mTime": x[5], "tID": x[6], "administeredBy": x[7]}
 
         # Get the DynamicTest that the patient has
         sql = "SELECT * FROM DynamicTest WHERE tID=%s"
@@ -493,7 +497,8 @@ def getAllTests():
                                 "tsMax": x[14], "tsMin": x[15], "tsMean": x[16], "tsMedian": x[17],
                                 "mlMax": x[18], "mlMin": x[19], "mlMean": x[20], "mlMedian": x[21],
 
-                                "tID": x[22]}
+                                "tID": x[22],
+                                "administeredBy": x[23]}
 
         # Get the StaticTests that the patient has
         sql = "SELECT * FROM StaticTest WHERE tID=%s"
@@ -506,7 +511,7 @@ def getAllTests():
                 test['staticTest'] = {"sID": x[0], 
                                 "tlSolidML": x[1], "tlFoamML": x[2], 
                                 "slSolidML": x[3], "slFoamML": x[4], 
-                                "tandSolidML": x[5], "tandFoamML": x[6], "tID": x[7]}        
+                                "tandSolidML": x[5], "tandFoamML": x[6], "tID": x[7], "administeredBy": x[8]}        
 
         returnList.append(test)
         return jsonify(returnList)
@@ -522,7 +527,6 @@ def createTest():
         data = request.json
         sql = "INSERT INTO Test (tName, tDate, tNotes, iID) VALUES(%s, %s, %s, %s)"
         val = (data['tName'], data['tDate'], data['tNotes'], data['iID'])
-        # print(data["tDate"], "this is tdate")
         mycursor.execute(sql, val)
         mydb.commit()
 
@@ -607,14 +611,15 @@ def createReactiveTest():
         mycursor = mydb.cursor()
  
         data = request.json
-        sql = "INSERT INTO ReactiveTest (fTime, bTime, lTime, rTime, mTime, tID) VALUES(%s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO ReactiveTest (fTime, bTime, lTime, rTime, mTime, tID, administeredBy) VALUES(%s, %s, %s, %s, %s, %s, %s)"
         val = (data['fTime'], data['bTime'], 
-               data['lTime'], data['rTime'], data['mTime'], data['tID'])
+               data['lTime'], data['rTime'], data['mTime'], data['tID'], data['administeredBy'])
         mycursor.execute(sql, val)
         mydb.commit()
         
         rID = mycursor.lastrowid
-        returnRTest = {"rID": rID, "fTime": data['fTime'], "bTime": data['bTime'], "lTime": data['lTime'], "rTime": data['rTime'], "mTime": data['mTime'], "tID": data['tID']}
+        returnRTest = {"rID": rID, "fTime": data['fTime'], "bTime": data['bTime'], "lTime": data['lTime'], "rTime": data['rTime'], "mTime": data['mTime'], "tID": data['tID'], 
+            "administeredBy": data['administeredBy']}
         return jsonify(returnRTest)
 
 # --------------------------------------------------------------- DYNAMIC TEST ------------------------------------------------------------------
@@ -632,13 +637,13 @@ def createDynamicTest():
                                         t3Duration, t3TurnSpeed, t3MLSway,
                                         dMax, dMin, dMean, dMedian,
                                         tsMax, tsMin, tsMean, tsMedian,
-                                        mlMax, mlMin, mlMean, mlMedian, tID) 
+                                        mlMax, mlMin, mlMean, mlMedian, tID, administeredBy)
                                         VALUES(%s, %s, %s, 
                                                %s, %s, %s, 
                                                %s, %s, %s, 
                                                %s, %s, %s, %s,
                                                %s, %s, %s, %s,
-                                               %s, %s, %s, %s, %s)"""
+                                               %s, %s, %s, %s, %s, %s)"""
         val = (data['t1Duration'], data['t1TurnSpeed'], data['t1MLSway'], 
                data['t2Duration'], data['t2TurnSpeed'], data['t2MLSway'], 
                data['t3Duration'], data['t3TurnSpeed'], data['t3MLSway'],
@@ -646,7 +651,7 @@ def createDynamicTest():
                data['dMax'], data['dMin'], data['dMean'], data['dMedian'],
                data['tsMax'], data['tsMin'], data['tsMean'], data['tsMedian'],
                data['mlMax'], data['mlMin'], data['mlMean'], data['mlMedian'],
-               data['tID'])
+               data['tID'], data['administeredBy'])
         mycursor.execute(sql, val)
         mydb.commit()
         
@@ -660,7 +665,7 @@ def createDynamicTest():
         "tsMax": data['tsMax'], "tsMin": data['tsMin'], "tsMean": data['tsMean'], "tsMedian": data['tsMedian'],
         "mlMax": data['mlMax'], "mlMin": data['mlMin'], "mlMean": data['mlMean'], "mlMedian": data['mlMedian'],
 
-        "tID": data['tID']}
+        "tID": data['tID'], "administeredBy": data['administeredBy']}
         return jsonify(returnRTest)
 
 
@@ -674,10 +679,10 @@ def createStaticTest():
         mycursor = mydb.cursor()
  
         data = request.json
-        sql = "INSERT INTO StaticTest (tlSolidML, tlFoamML, slSolidML, slFoamML, tandSolidML, tandFoamML, tID) VALUES(%s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO StaticTest (tlSolidML, tlFoamML, slSolidML, slFoamML, tandSolidML, tandFoamML, tID, administeredBy) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
         val = (data['tlSolidML'], data['tlFoamML'], 
                data['slSolidML'], data['slFoamML'], 
-               data['tandSolidML'], data['tandFoamML'], data['tID'])
+               data['tandSolidML'], data['tandFoamML'], data['tID'], data['administeredBy'])
         mycursor.execute(sql, val)
         mydb.commit()
         
@@ -685,7 +690,7 @@ def createStaticTest():
         returnRTest = {"sID": sID, 
         "tlSolidML": data['tlSolidML'], "tlFoamML": data['tlFoamML'], 
         "slSolidML": data['slSolidML'], "slFoamML": data['slFoamML'], 
-        "tandSolidML": data['tandSolidML'], "tandFoamML": data['tandFoamML'], "tID": data['tID']}
+        "tandSolidML": data['tandSolidML'], "tandFoamML": data['tandFoamML'], "tID": data['tID'], "administeredBy": data['administeredBy']}
         return jsonify(returnRTest)
 
 # --------------------------------------------------------------- IMU DATA ---------------------------------------------------------------------
@@ -703,12 +708,15 @@ def insertIMU():
         if "dID" in data:
             id_val = data["dID"]
             type_of_id = "dID"
+            data.pop(type_of_id)
         elif "rID" in data:
             id_val = data["rID"]
             type_of_id = "rID"
+            data.pop(type_of_id)
         elif "sID" in data:
             id_val = data["sID"]
             type_of_id = "sID"
+            data.pop(type_of_id)
         else:
             return jsonify({"Status": False})
 
@@ -753,7 +761,7 @@ def getIMU():
         if sID != "":
             # check if we added an rID or not
             if rID != "":
-                sql += " and sID=" + sID
+                sql += " or sID=" + sID
             else:
                 sql += "sID=" + sID
         
@@ -761,11 +769,11 @@ def getIMU():
         if dID != "":
             # check did we add an sID and an rID
             if sID != "" and rID != "":
-                sql += " and dID=" + dID
+                sql += " or dID=" + dID
             elif sID == "" and rID != "":
-                sql += " and dID=" + dID
+                sql += " or dID=" + dID
             elif sID != "" and rID == "":
-                sql += " and dID=" + dID
+                sql += " or dID=" + dID
             else:
                 sql += "dID=" + dID
         
@@ -1057,7 +1065,6 @@ def timeToStability():
     dataAcc = request.json.get('dataAcc')
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
-    print(fs)
 
     accNorm = np.linalg.norm(dataAcc, axis=0)
     rotNorm = np.linalg.norm(dataRot, axis=0)

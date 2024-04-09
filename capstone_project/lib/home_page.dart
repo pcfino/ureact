@@ -29,7 +29,6 @@ class _HomePage extends State<HomePage> {
   Future<dynamic> getPatients() async {
     try {
       String orgID = await SessionManager().getString("orgID");
-      print(orgID);
       List<dynamic> jsonPatientList = await getAll(orgID) as List;
       List<Patient> patientList = List<Patient>.from(
           jsonPatientList.map((model) => Patient.fromJson(model)));

@@ -8,6 +8,7 @@ import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/api/imu_api.dart';
 import 'package:capstone_project/models/static.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
+import 'package:session_manager/session_manager.dart';
 
 class StaticTestPage extends StatefulWidget {
   StaticTestPage({
@@ -165,7 +166,10 @@ class _StaticTestPage extends State<StaticTestPage> {
 
   Future<dynamic> createStaticTest(double dataML) async {
     try {
+      String admin = await SessionManager().getString("username");
+
       dynamic jsonStatic = await createStatic({
+        "administeredBy": admin,
         "tlSolidML": widget.tlSolidML,
         "tlFoamML": widget.tlFoamML,
         "slSolidML": widget.slSolidML,
@@ -281,6 +285,7 @@ class _StaticTestPage extends State<StaticTestPage> {
               MaterialPageRoute(
                 builder: (context) => StaticResultsPage(
                   pID: widget.pID,
+                  administeredBy: createdStatic.administeredBy,
                   tID: widget.tID,
                   tlSolidML: widget.tlSolidML * 100,
                   tlFoamML: widget.tlFoamML * 100,
@@ -421,6 +426,7 @@ class _StaticTestPage extends State<StaticTestPage> {
             MaterialPageRoute(
               builder: (context) => StaticResultsPage(
                 pID: widget.pID,
+                administeredBy: createdStatic.administeredBy,
                 tID: widget.tID,
                 tlSolidML: widget.tlSolidML,
                 tlFoamML: widget.tlFoamML,

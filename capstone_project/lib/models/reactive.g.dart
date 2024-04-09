@@ -16,6 +16,7 @@ Reactive _$ReactiveFromJson(Map<String, dynamic> json) {
       'lTime',
       'rTime',
       'mTime',
+      'administeredBy',
       'tID'
     ],
   );
@@ -26,6 +27,7 @@ Reactive _$ReactiveFromJson(Map<String, dynamic> json) {
     (json['lTime'] as num).toDouble(),
     (json['rTime'] as num).toDouble(),
     (json['mTime'] as num).toDouble(),
+    json['administeredBy'] as String,
     json['tID'] as int,
   );
 }
@@ -37,5 +39,6 @@ Map<String, dynamic> _$ReactiveToJson(Reactive instance) => <String, dynamic>{
       'lTime': instance.lTime,
       'rTime': instance.rTime,
       'mTime': instance.mTime,
+      'administeredBy': instance.administeredBy,
       'tID': instance.tID,
     };

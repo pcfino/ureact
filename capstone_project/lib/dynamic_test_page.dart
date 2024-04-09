@@ -9,6 +9,7 @@ import 'package:capstone_project/static_dynamic_recorder.dart';
 import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/api/imu_api.dart';
 import 'package:capstone_project/models/dynamic.dart';
+import 'package:session_manager/session_manager.dart';
 
 class DynamicTestPage extends StatefulWidget {
   DynamicTestPage({
@@ -113,6 +114,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
             MaterialPageRoute(
               builder: (context) => DynamicResultsPage(
                 pID: widget.pID,
+                administeredBy: createdDynamic.administeredBy,
                 t1Duration: createdDynamic.t1Duration,
                 t1TurnSpeed: createdDynamic.t1TurnSpeed,
                 t1MLSway: createdDynamic.t1MLSway,
@@ -265,7 +267,10 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     mlMedian = widget.t2MLSway;
 
     try {
+      String admin = await SessionManager().getString("username");
+
       dynamic jsonDynamic = await createDynamic({
+        "administeredBy": admin,
         "tID": widget.tID,
         "t1Duration": widget.t1Duration,
         "t1TurnSpeed": widget.t1TurnSpeed,
@@ -536,12 +541,16 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                         duration, turningSpeed, mlSway);
                                 if (createdDynamic != null && context.mounted) {
                                   await sendIMU(createdDynamic.dID);
+                                  String admin = await SessionManager()
+                                      .getString("username");
+
                                   if (context.mounted) {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             DynamicResultsPage(
+                                          administeredBy: admin,
                                           pID: widget.pID,
                                           t1Duration:
                                               createdDynamic.t1Duration * 1000,

@@ -553,28 +553,28 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                           administeredBy: admin,
                                           pID: widget.pID,
                                           t1Duration:
-                                              createdDynamic.t1Duration * 1000,
+                                              createdDynamic.t1Duration,
                                           t1TurnSpeed:
                                               createdDynamic.t1TurnSpeed,
                                           t1MLSway:
                                               createdDynamic.t1MLSway * 100,
                                           t2Duration:
-                                              createdDynamic.t2Duration * 1000,
+                                              createdDynamic.t2Duration,
                                           t2TurnSpeed:
                                               createdDynamic.t2TurnSpeed,
                                           t2MLSway:
                                               createdDynamic.t2MLSway * 100,
                                           t3Duration:
-                                              createdDynamic.t3Duration * 1000,
+                                              createdDynamic.t3Duration,
                                           t3TurnSpeed:
                                               createdDynamic.t3TurnSpeed,
                                           t3MLSway:
                                               createdDynamic.t3MLSway * 100,
-                                          dMax: createdDynamic.dMax * 1000,
-                                          dMin: createdDynamic.dMin * 1000,
-                                          dMean: createdDynamic.dMean * 1000,
+                                          dMax: createdDynamic.dMax,
+                                          dMin: createdDynamic.dMin,
+                                          dMean: createdDynamic.dMean,
                                           dMedian:
-                                              createdDynamic.dMedian * 1000,
+                                              createdDynamic.dMedian,
                                           tsMax: createdDynamic.tsMax,
                                           tsMin: createdDynamic.tsMin,
                                           tsMean: createdDynamic.tsMean,

@@ -373,9 +373,8 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
   Future<dynamic> createReactiveTest(double median) async {
     try {
       String admin = await SessionManager().getString("username");
-
       dynamic jsonReactive = await createReactive({
-        "adminsteredBy": admin,
+        "administeredBy": admin,
         "fTime": widget.forward,
         "rTime": timeToStab,
         "lTime": widget.left,

@@ -168,6 +168,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         "fps": widget.rightDataFs,
       },
     };
+    print(imuData);
     dynamic inserted = await insertIMU(imuData);
     return inserted;
   }
@@ -189,6 +190,9 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
             right: widget.right,
             backward: widget.backward,
             tID: widget.tID,
+            forwardDataAcc: widget.forwardDataAcc,
+            forwardDataRot: widget.forwardDataRot,
+            forwardDataFs: widget.forwardDataFs,
           ),
         ),
       );
@@ -204,6 +208,12 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
             right: widget.right,
             backward: timeToStab,
             tID: widget.tID,
+            forwardDataAcc: widget.forwardDataAcc,
+            forwardDataRot: widget.forwardDataRot,
+            forwardDataFs: widget.forwardDataFs,
+            backwardDataAcc: widget.backwardDataAcc,
+            backwardDataRot: widget.backwardDataRot,
+            backwardDataFs: widget.backwardDataFs,
           ),
         ),
       );
@@ -219,6 +229,15 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
             right: widget.right,
             backward: widget.backward,
             tID: widget.tID,
+            forwardDataAcc: widget.forwardDataAcc,
+            forwardDataRot: widget.forwardDataRot,
+            forwardDataFs: widget.forwardDataFs,
+            backwardDataAcc: widget.backwardDataAcc,
+            backwardDataRot: widget.backwardDataRot,
+            backwardDataFs: widget.backwardDataFs,
+            leftDataAcc: widget.leftDataAcc,
+            leftDataRot: widget.leftDataRot,
+            leftDataFs: widget.leftDataFs,
           ),
         ),
       );
@@ -332,6 +351,15 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
             right: widget.right,
             backward: widget.backward,
             tID: widget.tID,
+            forwardDataAcc: widget.forwardDataAcc,
+            forwardDataRot: widget.forwardDataRot,
+            forwardDataFs: widget.forwardDataFs,
+            backwardDataAcc: widget.backwardDataAcc,
+            backwardDataRot: widget.backwardDataRot,
+            backwardDataFs: widget.backwardDataFs,
+            leftDataAcc: widget.leftDataAcc,
+            leftDataRot: widget.leftDataRot,
+            leftDataFs: widget.leftDataFs,
           ),
         ),
       );

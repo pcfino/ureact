@@ -1,5 +1,7 @@
 // import 'dart:convert';
 import 'dart:math';
+import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +12,7 @@ import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/api/imu_api.dart';
 import 'package:capstone_project/models/dynamic.dart';
 import 'package:session_manager/session_manager.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class DynamicTestPage extends StatefulWidget {
   DynamicTestPage({
@@ -58,6 +61,8 @@ class DynamicTestPage extends StatefulWidget {
   dynamic t3DataFs;
 
   final int tID;
+
+  AudioPlayer player = AudioPlayer();
 
   @override
   State<DynamicTestPage> createState() => _DynamicTestPage();

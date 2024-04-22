@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
@@ -63,8 +65,17 @@ class StaticDynamicRecorder {
   bool _ready = false;
 
   late bool _staticTest;
+  late AudioPlayer player;
 
   StaticDynamicRecorder(bool staticTest) {
+    player = AudioPlayer();
+    const successSoundPath = "sounds/Success.mp3";
+    const failureSoundPath = "sounds/Failure.mp3";
+    sleep(const Duration(seconds: 1));
+    player.play(AssetSource(failureSoundPath));
+    Future.delayed(const Duration(milliseconds: 100), () {
+      player.stop();
+    });
     _staticTest = staticTest;
     gyroscopeEventStream().listen((event) {
       _gyroX = event.y;

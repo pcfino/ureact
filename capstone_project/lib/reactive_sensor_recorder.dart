@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math';
@@ -89,7 +90,14 @@ class ReactiveSensorRecorder {
   *Begins checking angles
   */
   ReactiveSensorRecorder(String testDirection) {
-    stopEvent = Event();
+    player = AudioPlayer();
+    const successSoundPath = "sounds/Success.mp3";
+    const failureSoundPath = "sounds/Failure.mp3";
+    sleep(const Duration(seconds: 1));
+    player.play(AssetSource(failureSoundPath));
+    Future.delayed(const Duration(milliseconds: 100), () {
+      player.stop();
+    });
 
     _running = false;
     _done = false;
@@ -118,9 +126,6 @@ class ReactiveSensorRecorder {
 
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
-    player = AudioPlayer();
-    const successSoundPath = "sounds/Success.mp3";
-    const failureSoundPath = "sounds/Failure.mp3";
 
     //starts a sequence that checks for the angle of patient
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),

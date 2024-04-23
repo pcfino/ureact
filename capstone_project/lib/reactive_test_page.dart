@@ -43,15 +43,19 @@ class ReactiveTestPage extends StatefulWidget {
   dynamic forwardDataAcc;
   dynamic forwardDataRot;
   dynamic forwardDataFs;
+  dynamic forwardTime;
   dynamic backwardDataAcc;
   dynamic backwardDataRot;
   dynamic backwardDataFs;
+  dynamic backwardTime;
   dynamic leftDataAcc;
   dynamic leftDataRot;
   dynamic leftDataFs;
+  dynamic leftTime;
   dynamic rightDataAcc;
   dynamic rightDataRot;
   dynamic rightDataFs;
+  dynamic rightTime;
 
   final int tID;
 
@@ -122,18 +126,22 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         widget.forwardDataAcc = sensorData.formattedAccData();
         widget.forwardDataRot = sensorData.formattedGyrData();
         widget.forwardDataFs = sensorData.fs;
+        widget.forwardTime = sensorData.timeStamps;
       } else if (widget.direction == "Backward") {
         widget.backwardDataAcc = sensorData.formattedAccData();
         widget.backwardDataRot = sensorData.formattedGyrData();
         widget.backwardDataFs = sensorData.fs;
+        widget.backwardTime = sensorData.timeStamps;
       } else if (widget.direction == "Left") {
         widget.leftDataAcc = sensorData.formattedAccData();
         widget.leftDataRot = sensorData.formattedGyrData();
         widget.leftDataFs = sensorData.fs;
+        widget.leftTime = sensorData.timeStamps;
       } else if (widget.direction == "Right") {
         widget.rightDataAcc = sensorData.formattedAccData();
         widget.rightDataRot = sensorData.formattedGyrData();
         widget.rightDataFs = sensorData.fs;
+        widget.rightTime = sensorData.timeStamps;
       }
       nextTest();
     } catch (e) {
@@ -147,21 +155,25 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     dynamic imuData = {
       "rID": rID,
       "forward": {
+        "timeStamps": widget.forwardTime,
         "dataAcc": widget.forwardDataAcc,
         "dataRot": widget.forwardDataRot,
         "fps": widget.forwardDataFs,
       },
       "backward": {
+        "timeStamps": widget.backwardTime,
         "dataAcc": widget.backwardDataAcc,
         "dataRot": widget.backwardDataRot,
         "fps": widget.backwardDataFs,
       },
       "left": {
+        "timeStamps": widget.leftTime,
         "dataAcc": widget.leftDataAcc,
         "dataRot": widget.leftDataRot,
         "fps": widget.leftDataFs,
       },
       "right": {
+        "timeStamps": widget.rightTime,
         "dataAcc": widget.rightDataAcc,
         "dataRot": widget.rightDataRot,
         "fps": widget.rightDataFs,

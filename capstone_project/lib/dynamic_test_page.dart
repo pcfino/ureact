@@ -49,12 +49,15 @@ class DynamicTestPage extends StatefulWidget {
   dynamic t1DataAcc;
   dynamic t1DataRot;
   dynamic t1DataFs;
+  dynamic t1TimeStamps;
   dynamic t2DataAcc;
   dynamic t2DataRot;
   dynamic t2DataFs;
+  dynamic t2TimeStamps;
   dynamic t3DataAcc;
   dynamic t3DataRot;
   dynamic t3DataFs;
+  dynamic t3TimeStamps;
 
   final int tID;
 
@@ -177,14 +180,17 @@ class _DynamicTestPage extends State<DynamicTestPage> {
       widget.t1DataAcc = sensorData.formattedAccData();
       widget.t1DataRot = sensorData.formattedGyrData();
       widget.t1DataFs = sensorData.fs;
+      widget.t1TimeStamps = sensorData.timeStamps;
     } else if (widget.trialNumber == 2) {
       widget.t2DataAcc = sensorData.formattedAccData();
       widget.t2DataRot = sensorData.formattedGyrData();
       widget.t2DataFs = sensorData.fs;
+      widget.t2TimeStamps = sensorData.timeStamps;
     } else if (widget.trialNumber == 3) {
       widget.t3DataAcc = sensorData.formattedAccData();
       widget.t3DataRot = sensorData.formattedGyrData();
       widget.t3DataFs = sensorData.fs;
+      widget.t3TimeStamps = sensorData.timeStamps;
     }
     return decodedData;
   }
@@ -300,16 +306,19 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     dynamic imuData = {
       "dID": dID,
       "t1": {
+        "timeStamps": widget.t1TimeStamps,
         "dataAcc": widget.t1DataAcc,
         "dataRot": widget.t1DataRot,
         "fps": widget.t1DataFs,
       },
       "t2": {
+        "timeStamps": widget.t2TimeStamps,
         "dataAcc": widget.t2DataAcc,
         "dataRot": widget.t2DataRot,
         "fps": widget.t2DataFs,
       },
       "t3": {
+        "timeStamps": widget.t3TimeStamps,
         "dataAcc": widget.t3DataAcc,
         "dataRot": widget.t3DataRot,
         "fps": widget.t3DataFs,

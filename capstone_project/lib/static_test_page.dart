@@ -53,21 +53,32 @@ class StaticTestPage extends StatefulWidget {
   dynamic tlSolidDataAcc;
   dynamic tlSolidDataRot;
   dynamic tlSolidDataFs;
+  dynamic tlSolidTime;
+
   dynamic slSolidDataAcc;
   dynamic slSolidDataRot;
   dynamic slSolidDataFs;
+  dynamic slSolidTime;
+
   dynamic tandSolidDataAcc;
   dynamic tandSolidDataRot;
   dynamic tandSolidDataFs;
+  dynamic tandSolidTime;
+
   dynamic tlFoamDataRot;
   dynamic tlFoamDataAcc;
   dynamic tlFoamDataFs;
+  dynamic tlFoamTime;
+
   dynamic slFoamDataAcc;
   dynamic slFoamDataRot;
   dynamic slFoamDataFs;
+  dynamic slFoamTime;
+
   dynamic tandFoamDataAcc;
   dynamic tandFoamDataRot;
   dynamic tandFoamDataFs;
+  dynamic tandFoamTime;
 
   final int tID;
 
@@ -101,26 +112,32 @@ class _StaticTestPage extends State<StaticTestPage> {
       widget.tlSolidDataAcc = sensorData.formattedAccData();
       widget.tlSolidDataRot = sensorData.formattedGyrData();
       widget.tlSolidDataFs = sensorData.fs;
+      widget.tlSolidTime = sensorData.timeStamps;
     } else if (widget.stance == "Single Leg Stance (Solid)") {
       widget.slSolidDataAcc = sensorData.formattedAccData();
       widget.slSolidDataRot = sensorData.formattedGyrData();
       widget.slSolidDataFs = sensorData.fs;
+      widget.slSolidTime = sensorData.timeStamps;
     } else if (widget.stance == "Tandem Leg Stance (Solid)") {
       widget.tandSolidDataAcc = sensorData.formattedAccData();
       widget.tandSolidDataRot = sensorData.formattedGyrData();
       widget.tandSolidDataFs = sensorData.fs;
+      widget.tandSolidTime = sensorData.timeStamps;
     } else if (widget.stance == "Two Leg Stance (Foam)") {
       widget.tlFoamDataAcc = sensorData.formattedAccData();
       widget.tlFoamDataRot = sensorData.formattedGyrData();
       widget.tlFoamDataFs = sensorData.fs;
+      widget.tlFoamTime = sensorData.timeStamps;
     } else if (widget.stance == "Single Leg Stance (Foam)") {
       widget.slFoamDataAcc = sensorData.formattedAccData();
       widget.slFoamDataRot = sensorData.formattedGyrData();
       widget.slFoamDataFs = sensorData.fs;
+      widget.slFoamTime = sensorData.timeStamps;
     } else if (widget.stance == "Tandem Leg Stance (Foam)") {
       widget.tandFoamDataAcc = sensorData.formattedAccData();
       widget.tandFoamDataRot = sensorData.formattedGyrData();
       widget.tandFoamDataFs = sensorData.fs;
+      widget.tandFoamTime = sensorData.timeStamps;
     }
     return dataML;
   }
@@ -129,31 +146,37 @@ class _StaticTestPage extends State<StaticTestPage> {
     dynamic imuData = {
       "sID": sID,
       "tlSolid": {
+        "timeStamps": widget.tlSolidTime,
         "dataAcc": widget.tlSolidDataAcc,
         "dataRot": widget.tlSolidDataRot,
         "fps": widget.tlSolidDataFs,
       },
       "slSolid": {
+        "timeStamps": widget.slSolidTime,
         "dataAcc": widget.slSolidDataAcc,
         "dataRot": widget.slSolidDataRot,
         "fps": widget.slSolidDataFs,
       },
       "tandSolid": {
+        "timeStamps": widget.tandSolidTime,
         "dataAcc": widget.tandSolidDataAcc,
         "dataRot": widget.tandSolidDataRot,
         "fps": widget.tandSolidDataFs,
       },
       "tlFoam": {
+        "timeStamps": widget.tlFoamTime,
         "dataAcc": widget.tlFoamDataAcc,
         "dataRot": widget.tlFoamDataRot,
         "fps": widget.tlFoamDataFs,
       },
       "slFoam": {
+        "timeStamps": widget.slFoamTime,
         "dataAcc": widget.slFoamDataAcc,
         "dataRot": widget.slFoamDataRot,
         "fps": widget.slFoamDataFs,
       },
       "tandFoam": {
+        "timeStamps": widget.tandFoamTime,
         "dataAcc": widget.tandFoamDataAcc,
         "dataRot": widget.tandFoamDataRot,
         "fps": widget.tandFoamDataFs,

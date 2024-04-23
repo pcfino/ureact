@@ -7,6 +7,7 @@ class ReactiveTestResultsPage extends StatefulWidget {
   const ReactiveTestResultsPage(
       {super.key,
       required this.pID,
+      required this.thirdPartyID,
       required this.forward,
       required this.left,
       required this.right,
@@ -15,6 +16,7 @@ class ReactiveTestResultsPage extends StatefulWidget {
       required this.tID});
 
   final int pID;
+  final String? thirdPartyID;
   final double forward;
   final double left;
   final double right;
@@ -55,6 +57,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                 page: TestsPage(
                   tID: widget.tID,
                   pID: widget.pID,
+                  thirdPartyID: widget.thirdPartyID,
                 ),
               ),
             );

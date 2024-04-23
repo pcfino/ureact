@@ -9,6 +9,7 @@ class StaticResultsPage extends StatefulWidget {
   const StaticResultsPage(
       {super.key,
       required this.pID,
+      required this.thirdPartyID,
       required this.tlSolidML,
       required this.tlFoamML,
       required this.slSolidML,
@@ -18,6 +19,7 @@ class StaticResultsPage extends StatefulWidget {
       required this.tID});
 
   final int pID;
+  final String? thirdPartyID;
   final double tlSolidML;
   final double tlFoamML;
   final double slSolidML;
@@ -59,6 +61,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                 page: TestsPage(
                   tID: widget.tID,
                   pID: widget.pID,
+                  thirdPartyID: widget.thirdPartyID,
                 ),
               ),
             );

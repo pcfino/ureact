@@ -6,8 +6,10 @@ import 'package:capstone_project/models/incident.dart';
 import 'package:capstone_project/api/incident_api.dart';
 
 class CreateIncidentPage extends StatefulWidget {
-  const CreateIncidentPage({super.key, required this.pID});
+  const CreateIncidentPage(
+      {super.key, required this.pID, required this.thirdPartyID});
   final int pID;
+  final String? thirdPartyID;
 
   @override
   State<CreateIncidentPage> createState() => _CreateIncidentPage();
@@ -102,8 +104,9 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            IncidentPage(iID: createdIncident.iID),
+                        builder: (context) => IncidentPage(
+                            iID: createdIncident.iID,
+                            thirdPartyID: widget.thirdPartyID),
                       ),
                     );
                   }

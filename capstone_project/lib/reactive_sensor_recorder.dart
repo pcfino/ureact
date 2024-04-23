@@ -91,6 +91,14 @@ class ReactiveSensorRecorder {
   ReactiveSensorRecorder(String testDirection) {
     stopEvent = Event();
 
+    FlutterRingtonePlayer.play(
+      android: AndroidSounds.notification,
+      ios: IosSounds.chime,
+      looping: false, // Android only - API >= 28
+      volume: 0.8, // Android only - API >= 28
+      asAlarm: false, // Android only - all APIs
+    );
+
     _running = false;
     _done = false;
     _testDirection = testDirection;

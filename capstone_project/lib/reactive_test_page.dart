@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:capstone_project/reactive_test_results_page.dart';
@@ -9,6 +11,7 @@ import 'api/test_api.dart';
 import 'api/imu_api.dart';
 import 'package:event/event.dart';
 import 'package:session_manager/session_manager.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
 class ReactiveTestPage extends StatefulWidget {
   ReactiveTestPage({
@@ -168,7 +171,6 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         "fps": widget.rightDataFs,
       },
     };
-    print(imuData);
     dynamic inserted = await insertIMU(imuData);
     return inserted;
   }
@@ -419,6 +421,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
 
   TextEditingController startButton = TextEditingController();
   bool start = true;
+  bool inCountdown = false;
 
   @override
   Widget build(BuildContext context) {
@@ -539,46 +542,70 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                       const Divider(
                         color: Colors.transparent,
                       ),
-                      RawMaterialButton(
-                        onPressed: () async {
-                          if (start) {
-                            if (widget.direction == 'Forward') {
-                              sensorRecorder =
-                                  ReactiveSensorRecorder("forward");
-                            } else if (widget.direction == 'Right') {
-                              sensorRecorder = ReactiveSensorRecorder("right");
-                            } else if (widget.direction == 'Left') {
-                              sensorRecorder = ReactiveSensorRecorder("left");
-                            } else if (widget.direction == 'Backward') {
-                              sensorRecorder =
-                                  ReactiveSensorRecorder("backward");
-                            }
-                            sensorRecorder.stopEvent.subscribe((args) {
-                              getTTS();
-                            });
-                            start = false;
+                      if (!inCountdown)
+                        RawMaterialButton(
+                          onPressed: () {
+                            inCountdown = true;
                             setState(() {});
-                          }
-                        },
-                        shape: CircleBorder(
-                          side: BorderSide(
-                            width: 10,
-                            color: cs.background,
+                          },
+                          shape: CircleBorder(
+                            side: BorderSide(
+                              width: 10,
+                              color: cs.background,
+                            ),
+                          ),
+                          fillColor: cs.primary.withOpacity(0.1),
+                          padding: const EdgeInsets.all(87),
+                          elevation: 0,
+                          highlightElevation: 0,
+                          child: Text(
+                            start ? 'Start' : 'Running',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: cs.secondary,
+                            ),
                           ),
                         ),
-                        fillColor: cs.primary.withOpacity(0.1),
-                        padding: const EdgeInsets.all(87),
-                        elevation: 0,
-                        highlightElevation: 0,
-                        child: Text(
-                          start ? 'Start' : 'Running',
-                          style: TextStyle(
+                      if (inCountdown)
+                        CircularCountDownTimer(
+                          width: 200,
+                          height: 200,
+                          duration: 3,
+                          fillColor: cs.secondary,
+                          ringColor: Colors.transparent,
+                          backgroundColor: cs.primary.withOpacity(0.1),
+                          textStyle: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                            fontSize: 25,
                             color: cs.secondary,
                           ),
+                          strokeCap: StrokeCap.round,
+                          strokeWidth: 10,
+                          isReverse: true,
+                          onComplete: () async {
+                            inCountdown = false;
+                            if (start) {
+                              if (widget.direction == 'Forward') {
+                                sensorRecorder =
+                                    ReactiveSensorRecorder("forward");
+                              } else if (widget.direction == 'Right') {
+                                sensorRecorder =
+                                    ReactiveSensorRecorder("right");
+                              } else if (widget.direction == 'Left') {
+                                sensorRecorder = ReactiveSensorRecorder("left");
+                              } else if (widget.direction == 'Backward') {
+                                sensorRecorder =
+                                    ReactiveSensorRecorder("backward");
+                              }
+                              sensorRecorder.stopEvent.subscribe((args) {
+                                getTTS();
+                              });
+                              start = false;
+                            }
+                            setState(() {});
+                          },
                         ),
-                      ),
                     ],
                   ),
                 ),

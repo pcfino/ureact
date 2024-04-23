@@ -358,6 +358,9 @@ class _StaticTestPage extends State<StaticTestPage> {
   void start() {
     sensorRecorder = StaticDynamicRecorder(true);
     timer = Timer.periodic(Duration(seconds: 1), (_) => checkTime());
+    inCountdown = false;
+    timerOn = true;
+
     setState(() {});
   }
 
@@ -502,6 +505,10 @@ class _StaticTestPage extends State<StaticTestPage> {
     );
   }
 
+  bool inCountdown = false;
+  bool timerOn = false;
+  final CountDownController _controller = CountDownController();
+
   @override
   Widget build(BuildContext context) {
     ColorScheme cs = Theme.of(context).colorScheme;
@@ -613,10 +620,11 @@ class _StaticTestPage extends State<StaticTestPage> {
                       const Divider(
                         color: Colors.transparent,
                       ),
-                      if (timer == null)
+                      if (!timerOn && !inCountdown)
                         RawMaterialButton(
                           onPressed: () {
-                            start();
+                            inCountdown = true;
+                            setState(() {});
                           },
                           shape: CircleBorder(
                             side: BorderSide(
@@ -637,11 +645,12 @@ class _StaticTestPage extends State<StaticTestPage> {
                             ),
                           ),
                         ),
-                      if (timer != null)
+                      if (timerOn || inCountdown)
                         CircularCountDownTimer(
                           width: 200,
                           height: 200,
-                          duration: 30,
+                          duration: 3,
+                          controller: _controller,
                           fillColor: cs.secondary,
                           ringColor: Colors.transparent,
                           backgroundColor: cs.primary.withOpacity(0.1),
@@ -652,6 +661,13 @@ class _StaticTestPage extends State<StaticTestPage> {
                           ),
                           strokeCap: StrokeCap.round,
                           strokeWidth: 10,
+                          isReverse: true,
+                          onComplete: () {
+                            if (!timerOn) {
+                              _controller.restart(duration: 30);
+                              start();
+                            }
+                          },
                         ),
                     ],
                   ),

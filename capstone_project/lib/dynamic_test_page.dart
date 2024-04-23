@@ -10,6 +10,7 @@ import 'package:capstone_project/api/test_api.dart';
 import 'package:capstone_project/api/imu_api.dart';
 import 'package:capstone_project/models/dynamic.dart';
 import 'package:session_manager/session_manager.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
 class DynamicTestPage extends StatefulWidget {
   DynamicTestPage({
@@ -324,6 +325,8 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     return inserted;
   }
 
+  bool inCountdown = false;
+
   @override
   Widget build(BuildContext context) {
     ColorScheme cs = Theme.of(context).colorScheme;
@@ -461,158 +464,182 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                       const Divider(
                         color: Colors.transparent,
                       ),
-                      RawMaterialButton(
-                        onPressed: () async {
-                          if (widget.start) {
-                            sensorRecorder = StaticDynamicRecorder(false);
-                            widget.start = false;
-                            setState(() {});
-                          } else {
-                            dynamic data = await getDynamicData();
+                      if (!inCountdown)
+                        RawMaterialButton(
+                          onPressed: () async {
+                            if (widget.start) {
+                              inCountdown = true;
+                              setState(() {});
+                            } else {
+                              dynamic data = await getDynamicData();
 
-                            if (context.mounted) {
-                              double duration = data["duration"];
-                              duration =
-                                  double.parse(duration.toStringAsFixed(3));
-                              double turningSpeed = data["turningSpeed"];
-                              turningSpeed =
-                                  double.parse(turningSpeed.toStringAsFixed(3));
-                              double mlSway =
-                                  (data["rmsMlGoing"] + data["rmsMlReturn"]) /
-                                      2;
-                              mlSway = double.parse(mlSway.toStringAsFixed(3));
+                              if (context.mounted) {
+                                double duration = data["duration"];
+                                duration =
+                                    double.parse(duration.toStringAsFixed(3));
+                                double turningSpeed = data["turningSpeed"];
+                                turningSpeed = double.parse(
+                                    turningSpeed.toStringAsFixed(3));
+                                double mlSway =
+                                    (data["rmsMlGoing"] + data["rmsMlReturn"]) /
+                                        2;
+                                mlSway =
+                                    double.parse(mlSway.toStringAsFixed(3));
 
-                              if (duration == 0) {
-                                throwTestError();
-                              } else if (widget.trialNumber == 1) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DynamicTestPage(
-                                      pID: widget.pID,
-                                      trialNumber: 2,
-                                      tID: widget.tID,
-                                      start: true,
-                                      t1Duration: duration,
-                                      t1TurnSpeed: turningSpeed,
-                                      t1MLSway: mlSway,
-                                      t2Duration: widget.t1Duration,
-                                      t2TurnSpeed: widget.t1TurnSpeed,
-                                      t2MLSway: widget.t1MLSway,
-                                      t3Duration: widget.t1Duration,
-                                      t3TurnSpeed: widget.t1TurnSpeed,
-                                      t3MLSway: widget.t1MLSway,
-                                      t1DataAcc: widget.t1DataAcc,
-                                      t1DataRot: widget.t1DataRot,
-                                      t1DataFs: widget.t1DataFs,
-                                    ),
-                                  ),
-                                );
-                              } else if (widget.trialNumber == 2) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DynamicTestPage(
-                                      pID: widget.pID,
-                                      trialNumber: 3,
-                                      tID: widget.tID,
-                                      start: true,
-                                      t1Duration: widget.t1Duration,
-                                      t1TurnSpeed: widget.t1TurnSpeed,
-                                      t1MLSway: widget.t1MLSway,
-                                      t2Duration: duration,
-                                      t2TurnSpeed: turningSpeed,
-                                      t2MLSway: mlSway,
-                                      t3Duration: widget.t1Duration,
-                                      t3TurnSpeed: widget.t1TurnSpeed,
-                                      t3MLSway: widget.t1MLSway,
-                                      t1DataAcc: widget.t1DataAcc,
-                                      t1DataRot: widget.t1DataRot,
-                                      t1DataFs: widget.t1DataFs,
-                                      t2DataAcc: widget.t2DataAcc,
-                                      t2DataRot: widget.t2DataRot,
-                                      t2DataFs: widget.t2DataFs,
-                                    ),
-                                  ),
-                                );
-                              } else if (widget.trialNumber == 3) {
-                                Dynamic? createdDynamic =
-                                    await createDynamicTest(
-                                        duration, turningSpeed, mlSway);
-                                if (createdDynamic != null && context.mounted) {
-                                  await sendIMU(createdDynamic.dID);
-                                  String admin = await SessionManager()
-                                      .getString("username");
-
-                                  if (context.mounted) {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DynamicResultsPage(
-                                          administeredBy: admin,
-                                          pID: widget.pID,
-                                          t1Duration:
-                                              createdDynamic.t1Duration,
-                                          t1TurnSpeed:
-                                              createdDynamic.t1TurnSpeed,
-                                          t1MLSway:
-                                              createdDynamic.t1MLSway * 100,
-                                          t2Duration:
-                                              createdDynamic.t2Duration,
-                                          t2TurnSpeed:
-                                              createdDynamic.t2TurnSpeed,
-                                          t2MLSway:
-                                              createdDynamic.t2MLSway * 100,
-                                          t3Duration:
-                                              createdDynamic.t3Duration,
-                                          t3TurnSpeed:
-                                              createdDynamic.t3TurnSpeed,
-                                          t3MLSway:
-                                              createdDynamic.t3MLSway * 100,
-                                          dMax: createdDynamic.dMax,
-                                          dMin: createdDynamic.dMin,
-                                          dMean: createdDynamic.dMean,
-                                          dMedian:
-                                              createdDynamic.dMedian,
-                                          tsMax: createdDynamic.tsMax,
-                                          tsMin: createdDynamic.tsMin,
-                                          tsMean: createdDynamic.tsMean,
-                                          tsMedian: createdDynamic.tsMedian,
-                                          mlMax: createdDynamic.mlMax * 100,
-                                          mlMin: createdDynamic.mlMin * 100,
-                                          mlMean: createdDynamic.mlMean * 100,
-                                          mlMedian:
-                                              createdDynamic.mlMedian * 100,
-                                          tID: widget.tID,
-                                        ),
+                                if (duration == 0) {
+                                  throwTestError();
+                                } else if (widget.trialNumber == 1) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DynamicTestPage(
+                                        pID: widget.pID,
+                                        trialNumber: 2,
+                                        tID: widget.tID,
+                                        start: true,
+                                        t1Duration: duration,
+                                        t1TurnSpeed: turningSpeed,
+                                        t1MLSway: mlSway,
+                                        t2Duration: widget.t1Duration,
+                                        t2TurnSpeed: widget.t1TurnSpeed,
+                                        t2MLSway: widget.t1MLSway,
+                                        t3Duration: widget.t1Duration,
+                                        t3TurnSpeed: widget.t1TurnSpeed,
+                                        t3MLSway: widget.t1MLSway,
+                                        t1DataAcc: widget.t1DataAcc,
+                                        t1DataRot: widget.t1DataRot,
+                                        t1DataFs: widget.t1DataFs,
                                       ),
-                                    );
+                                    ),
+                                  );
+                                } else if (widget.trialNumber == 2) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DynamicTestPage(
+                                        pID: widget.pID,
+                                        trialNumber: 3,
+                                        tID: widget.tID,
+                                        start: true,
+                                        t1Duration: widget.t1Duration,
+                                        t1TurnSpeed: widget.t1TurnSpeed,
+                                        t1MLSway: widget.t1MLSway,
+                                        t2Duration: duration,
+                                        t2TurnSpeed: turningSpeed,
+                                        t2MLSway: mlSway,
+                                        t3Duration: widget.t1Duration,
+                                        t3TurnSpeed: widget.t1TurnSpeed,
+                                        t3MLSway: widget.t1MLSway,
+                                        t1DataAcc: widget.t1DataAcc,
+                                        t1DataRot: widget.t1DataRot,
+                                        t1DataFs: widget.t1DataFs,
+                                        t2DataAcc: widget.t2DataAcc,
+                                        t2DataRot: widget.t2DataRot,
+                                        t2DataFs: widget.t2DataFs,
+                                      ),
+                                    ),
+                                  );
+                                } else if (widget.trialNumber == 3) {
+                                  Dynamic? createdDynamic =
+                                      await createDynamicTest(
+                                          duration, turningSpeed, mlSway);
+                                  if (createdDynamic != null &&
+                                      context.mounted) {
+                                    await sendIMU(createdDynamic.dID);
+                                    String admin = await SessionManager()
+                                        .getString("username");
+
+                                    if (context.mounted) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              DynamicResultsPage(
+                                            administeredBy: admin,
+                                            pID: widget.pID,
+                                            t1Duration:
+                                                createdDynamic.t1Duration,
+                                            t1TurnSpeed:
+                                                createdDynamic.t1TurnSpeed,
+                                            t1MLSway:
+                                                createdDynamic.t1MLSway * 100,
+                                            t2Duration:
+                                                createdDynamic.t2Duration,
+                                            t2TurnSpeed:
+                                                createdDynamic.t2TurnSpeed,
+                                            t2MLSway:
+                                                createdDynamic.t2MLSway * 100,
+                                            t3Duration:
+                                                createdDynamic.t3Duration,
+                                            t3TurnSpeed:
+                                                createdDynamic.t3TurnSpeed,
+                                            t3MLSway:
+                                                createdDynamic.t3MLSway * 100,
+                                            dMax: createdDynamic.dMax,
+                                            dMin: createdDynamic.dMin,
+                                            dMean: createdDynamic.dMean,
+                                            dMedian: createdDynamic.dMedian,
+                                            tsMax: createdDynamic.tsMax,
+                                            tsMin: createdDynamic.tsMin,
+                                            tsMean: createdDynamic.tsMean,
+                                            tsMedian: createdDynamic.tsMedian,
+                                            mlMax: createdDynamic.mlMax * 100,
+                                            mlMin: createdDynamic.mlMin * 100,
+                                            mlMean: createdDynamic.mlMean * 100,
+                                            mlMedian:
+                                                createdDynamic.mlMedian * 100,
+                                            tID: widget.tID,
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   }
                                 }
                               }
                             }
-                          }
-                        },
-                        shape: CircleBorder(
-                          side: BorderSide(
-                            width: 10,
-                            color: cs.background,
+                          },
+                          shape: CircleBorder(
+                            side: BorderSide(
+                              width: 10,
+                              color: cs.background,
+                            ),
+                          ),
+                          fillColor: cs.primary.withOpacity(0.1),
+                          padding: const EdgeInsets.all(87),
+                          elevation: 0,
+                          highlightElevation: 0,
+                          child: Text(
+                            widget.start ? 'Start' : 'End',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black54,
+                            ),
                           ),
                         ),
-                        fillColor: cs.primary.withOpacity(0.1),
-                        padding: const EdgeInsets.all(87),
-                        elevation: 0,
-                        highlightElevation: 0,
-                        child: Text(
-                          widget.start ? 'Start' : 'End',
-                          style: const TextStyle(
+                      if (inCountdown)
+                        CircularCountDownTimer(
+                          width: 200,
+                          height: 200,
+                          duration: 3,
+                          fillColor: cs.secondary,
+                          ringColor: Colors.transparent,
+                          backgroundColor: cs.primary.withOpacity(0.1),
+                          textStyle: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.black54,
+                            fontSize: 25,
+                            color: cs.secondary,
                           ),
+                          strokeCap: StrokeCap.round,
+                          strokeWidth: 10,
+                          isReverse: true,
+                          onComplete: () async {
+                            inCountdown = false;
+                            sensorRecorder = StaticDynamicRecorder(false);
+                            widget.start = false;
+                            setState(() {});
+                          },
                         ),
-                      ),
                     ],
                   ),
                 ),

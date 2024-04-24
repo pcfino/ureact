@@ -94,8 +94,8 @@ class ReactiveSensorRecorder {
     const successSoundPath = "sounds/Success.mp3";
     const failureSoundPath = "sounds/Failure.mp3";
     sleep(const Duration(seconds: 1));
-    player.play(AssetSource(failureSoundPath));
-    Future.delayed(const Duration(milliseconds: 100), () {
+    player.play(AssetSource(successSoundPath));
+    Future.delayed(const Duration(milliseconds: 1000), () {
       player.stop();
     });
 

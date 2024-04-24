@@ -83,21 +83,6 @@ class _SettingsPage extends State<SettingsPage> {
                       Expanded(
                         child: ListView(
                           children: [
-                            SwitchListTile(
-                              title: const Text("Dark Mode"),
-                              shape: const Border(
-                                bottom: BorderSide(
-                                  color: Colors.grey,
-                                  width: 1,
-                                ),
-                              ),
-                              value: darkMode,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  darkMode = value;
-                                });
-                              },
-                            ),
                             ListTile(
                               title: const Text("Sign Out"),
                               onTap: () async {

@@ -191,16 +191,6 @@ class _HomePage extends State<HomePage> {
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endContained,
-              bottomNavigationBar: BottomAppBar(
-                  surfaceTintColor: Colors.white,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      TextButton(
-                          onPressed: () {}, child: const Text('Export List')),
-                    ],
-                  )),
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {

@@ -79,7 +79,7 @@ Future<dynamic> getIMUData(int? rID, int? sID, int? dID) async {
     // print("sID is: " + sID.toString());
     // print("dID is: " + dID.toString());
     dynamic jsonExport = await imu_api.getIMU(rID, sID, dID);
-    print(jsonExport);
+    // print(jsonExport);
     return jsonExport[0];
   } catch (e) {
     print("Error fetching export data: $e");
@@ -129,15 +129,112 @@ void exportTest(int pID, int tID) async {
 
 void exportIMU(
     int? rID, int? sID, int? dID, String? thirdPartyID, String? tDate) async {
-  print("Entered IMU");
   String fileName = "";
+  List<List<dynamic>> rows = [];
+  List<dynamic> leftDataAcc = [];
+  List<dynamic> rightDataAcc = [];
+  List<dynamic> forwardDataAcc = [];
+  List<dynamic> backwardDataAcc = [];
+
+  List<dynamic> leftDataRot = [];
+  List<dynamic> rightDataRot = [];
+  List<dynamic> forwardDataRot = [];
+  List<dynamic> backwardDataRot = [];
+
+  List<dynamic> imuHeader = [
+    "direction",
+    "accelX",
+    "accelY",
+    "accelZ",
+    "rotX",
+    "rotY",
+    "rotZ",
+  ];
+  rows.add(imuHeader);
+
   Map<String, dynamic> json = await getIMUData(rID, sID, dID);
 
   if (json.containsKey('imuID')) {
+    if (json["imuData"]["left"]["dataAcc"] != null &&
+        json["imuData"]["left"]["dataRot"] != null) {
+      leftDataAcc = json["imuData"]["left"]["dataAcc"];
+      leftDataRot = json["imuData"]["left"]["dataRot"];
+
+      for (int i = 0; i < leftDataRot[0].length; i++) {
+        List<dynamic> row = [
+          "left",
+          leftDataAcc[0][i],
+          leftDataAcc[1][i],
+          leftDataAcc[2][i],
+          leftDataRot[0][i],
+          leftDataRot[1][i],
+          leftDataRot[2][i],
+        ];
+        rows.add(row);
+      }
+    }
+    if (json["imuData"]["right"]["dataAcc"] != null &&
+        json["imuData"]["right"]["dataRot"] != null) {
+      rightDataAcc = json["imuData"]["right"]["dataAcc"];
+      rightDataRot = json["imuData"]["right"]["dataRot"];
+
+      for (int i = 0; i < rightDataRot[0].length; i++) {
+        List<dynamic> row = [
+          "right",
+          rightDataAcc[0][i],
+          rightDataAcc[1][i],
+          rightDataAcc[2][i],
+          rightDataRot[0][i],
+          rightDataRot[1][i],
+          rightDataRot[2][i],
+        ];
+        rows.add(row);
+      }
+    }
+    if (json["imuData"]['forward']["dataAcc"] != null &&
+        json["imuData"]['forward']["dataRot"] != null) {
+      forwardDataAcc = json["imuData"]["forward"]["dataAcc"];
+      forwardDataRot = json["imuData"]["forward"]["dataRot"];
+
+      for (int i = 0; i < forwardDataRot[0].length; i++) {
+        List<dynamic> row = [
+          "forward",
+          forwardDataAcc[0][i],
+          forwardDataAcc[1][i],
+          forwardDataAcc[2][i],
+          forwardDataRot[0][i],
+          forwardDataRot[1][i],
+          forwardDataRot[2][i],
+        ];
+        rows.add(row);
+      }
+    }
+    if (json["imuData"]['backward']["dataAcc"] != null &&
+        json["imuData"]['backward']["dataRot"] != null) {
+      backwardDataAcc = json["imuData"]["backward"]["dataAcc"];
+      backwardDataRot = json["imuData"]["backward"]["dataRot"];
+
+      for (int i = 0; i < backwardDataRot[0].length; i++) {
+        List<dynamic> row = [
+          "backward",
+          backwardDataAcc[0][i],
+          backwardDataAcc[1][i],
+          backwardDataAcc[2][i],
+          backwardDataRot[0][i],
+          backwardDataRot[1][i],
+          backwardDataRot[2][i],
+        ];
+        rows.add(row);
+      }
+    }
     fileName = "imuData_patient${thirdPartyID}_test_${tDate}";
   }
 
-  exportIMUData(fileName, json);
+  // Export patient data
+  String csv = const ListToCsvConverter().convert(rows);
+  String fileContent = csv;
+  XFile csvFile = await createCSVFile(fileName, fileContent);
+  await exportCSV(csvFile);
 }
 
 void exportData(
@@ -499,28 +596,28 @@ Map<int, Map<String, dynamic>> processIncidentTestJSON(
   return processedJson;
 }
 
-void exportIMUData(String fileName, Map<String, dynamic> json) async {
-  List<List<dynamic>> rows = [];
-  Map<int, Map<String, dynamic>> processedJson = {};
+// void exportIMUData(String fileName, Map<String, dynamic> json) async {
+//   List<List<dynamic>> rows = [];
+//   Map<int, Map<String, dynamic>> processedJson = {};
 
-  // Parse JSON
+//   // Parse JSON
 
-  rows.add(csvHeader);
-  // Reorder the row data so that it matches the csv column order
-  processedJson.forEach((test, row) {
-    List<dynamic> orderedRow = [];
-    for (String header in csvHeader) {
-      orderedRow.add(row[header]);
-    }
-    rows.add(orderedRow);
-  });
+//   rows.add(csvHeader);
+//   // Reorder the row data so that it matches the csv column order
+//   processedJson.forEach((test, row) {
+//     List<dynamic> orderedRow = [];
+//     for (String header in csvHeader) {
+//       orderedRow.add(row[header]);
+//     }
+//     rows.add(orderedRow);
+//   });
 
-  // Export patient data
-  String csv = const ListToCsvConverter().convert(rows);
-  String fileContent = csv;
-  XFile csvFile = await createCSVFile(fileName, fileContent);
-  await exportCSV(csvFile);
-}
+//   // Export patient data
+//   String csv = const ListToCsvConverter().convert(rows);
+//   String fileContent = csv;
+//   XFile csvFile = await createCSVFile(fileName, fileContent);
+//   await exportCSV(csvFile);
+// }
 
 /* ------------------------------------- CSV ------------------------------------- */
 

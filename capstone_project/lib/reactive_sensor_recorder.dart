@@ -91,7 +91,7 @@ class ReactiveSensorRecorder {
   ReactiveSensorRecorder(String testDirection) {
     stopEvent = Event();
 
-    FlutterRingtonePlayer.play(
+    FlutterRingtonePlayer().play(
       android: AndroidSounds.notification,
       ios: IosSounds.chime,
       looping: false, // Android only - API >= 28
@@ -128,8 +128,8 @@ class ReactiveSensorRecorder {
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
     player = AudioPlayer();
-    const successSoundPath = "sounds/Success.mp3";
-    const failureSoundPath = "sounds/Failure.mp3";
+    const successSoundPath = "sounds/success.mp3";
+    //const failureSoundPath = "assets/sounds/Failure.mp3";
 
     //starts a sequence that checks for the angle of patient
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),
@@ -230,7 +230,7 @@ class ReactiveSensorRecorder {
       } else if (dropped && norm < motionlessThreshold) {
         counter++;
         if (counter == 100) {
-          FlutterRingtonePlayer.play(
+          FlutterRingtonePlayer().play(
             android: AndroidSounds.notification,
             ios: IosSounds.chime,
             looping: false, // Android only - API >= 28

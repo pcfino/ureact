@@ -89,7 +89,7 @@ class StaticDynamicRecorder {
 
   SensorRecorderResults endRecording() {
     if (_staticTest) {
-      FlutterRingtonePlayer.play(
+      FlutterRingtonePlayer().play(
         android: AndroidSounds.notification,
         ios: IosSounds.glass,
         looping: true, // Android only - API >= 28
@@ -103,7 +103,7 @@ class StaticDynamicRecorder {
   }
 
   void startRecording() {
-    FlutterRingtonePlayer.play(
+    FlutterRingtonePlayer().play(
       android: AndroidSounds.notification,
       ios: IosSounds.glass,
       looping: true, // Android only - API >= 28
@@ -113,7 +113,7 @@ class StaticDynamicRecorder {
 
     const samplePeriod = 20; // ms
     const sampleDuration = Duration(milliseconds: samplePeriod);
-    Timer(const Duration(seconds: 3), () => FlutterRingtonePlayer.stop());
+    Timer(const Duration(seconds: 3), () => FlutterRingtonePlayer().stop());
 
     _killTimer = false;
 

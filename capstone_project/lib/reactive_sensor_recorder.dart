@@ -105,14 +105,14 @@ class ReactiveSensorRecorder {
 
     _results = null;
 
-    _gyroscopeStreamEvent = gyroscopeEventStream().listen((event) {
+    _gyroscopeStreamEvent = gyroscopeEventStream(samplingPeriod: SensorInterval.gameInterval).listen((event) {
       _gyroX = event.y;
       _gyroY = event.x;
       _gyroZ = event.z;
       //print("gyroscope: $_gyroX, $_gyroY, $_gyroZ");
     });
 
-    _accelerometerStreamEvent = accelerometerEventStream().listen((event) {
+    _accelerometerStreamEvent = accelerometerEventStream(samplingPeriod: SensorInterval.gameInterval).listen((event) {
       _accX = event.y;
       _accY = event.x;
       _accZ = event.z;
@@ -123,6 +123,7 @@ class ReactiveSensorRecorder {
       }
       //print("accelerometer: $_accX, $_accY, $_accZ");
     });
+
 
     const samplePeriod = 20; // ms
     int angleMetTime = 0;

@@ -91,7 +91,7 @@ class ReactiveSensorRecorder {
   ReactiveSensorRecorder(String testDirection) {
     stopEvent = Event();
 
-    FlutterRingtonePlayer.play(
+    FlutterRingtonePlayer().play(
       android: AndroidSounds.notification,
       ios: IosSounds.chime,
       looping: false, // Android only - API >= 28
@@ -105,14 +105,18 @@ class ReactiveSensorRecorder {
 
     _results = null;
 
-    _gyroscopeStreamEvent = gyroscopeEventStream().listen((event) {
+    _gyroscopeStreamEvent =
+        gyroscopeEventStream(samplingPeriod: SensorInterval.gameInterval)
+            .listen((event) {
       _gyroX = event.y;
       _gyroY = event.x;
       _gyroZ = event.z;
       //print("gyroscope: $_gyroX, $_gyroY, $_gyroZ");
     });
 
-    _accelerometerStreamEvent = accelerometerEventStream().listen((event) {
+    _accelerometerStreamEvent =
+        accelerometerEventStream(samplingPeriod: SensorInterval.gameInterval)
+            .listen((event) {
       _accX = event.y;
       _accY = event.x;
       _accZ = event.z;
@@ -127,8 +131,7 @@ class ReactiveSensorRecorder {
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
     player = AudioPlayer();
-    const successSoundPath = "sounds/Success.mp3";
-    const failureSoundPath = "sounds/Failure.mp3";
+    const successSoundPath = "sounds/success.mp3";
 
     //starts a sequence that checks for the angle of patient
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),
@@ -229,7 +232,7 @@ class ReactiveSensorRecorder {
       } else if (dropped && norm < motionlessThreshold) {
         counter++;
         if (counter == 100) {
-          FlutterRingtonePlayer.play(
+          FlutterRingtonePlayer().play(
             android: AndroidSounds.notification,
             ios: IosSounds.chime,
             looping: false, // Android only - API >= 28

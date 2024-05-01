@@ -3,7 +3,7 @@
     <application
         android:label="capstone_project"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ureact">
         <activity
             android:name=".MainActivity"
             android:exported="true"

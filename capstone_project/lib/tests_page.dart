@@ -144,7 +144,7 @@ class _TestsPage extends State<TestsPage> {
   void exportPopUp() {
     showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
@@ -176,31 +176,18 @@ class _TestsPage extends State<TestsPage> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Export'),
-                // onPressed: () {
-                //   if (rID == null && sID == null && dID == null) {
-                //     null;
-                //   } else {
-                //     Navigator.of(context).pop();
-                //     if (expData == "Test Data") {
-                //       exportTest(widget.pID, widget.tID);
-                //     } else if (expData == "IMU Data") {
-                //       exportIMU(rID, sID, dID);
-                //     }
-                //   }
-                // },
-                onPressed: (rID == null && sID == null && dID == null)
-                    ? null
-                    : () {
-                        if (expData == "Test Data") {
-                          exportTest(widget.pID, widget.tID);
-                        } else if (expData == "IMU Data") {
-                          exportIMU(
-                              rID, sID, dID, widget.thirdPartyID, test?.tDate);
-                        }
-                        Navigator.of(context).pop();
-                      },
-              ),
+                  child: const Text('Export'),
+                  onPressed: (rID == null && sID == null && dID == null)
+                      ? null
+                      : () {
+                          if (expData == "Test Data") {
+                            exportTest(widget.pID, widget.tID);
+                          } else if (expData == "IMU Data") {
+                            exportIMU(rID, sID, dID, widget.thirdPartyID,
+                                test?.tDate);
+                          }
+                          Navigator.of(context).pop();
+                        }),
             ],
           );
         });

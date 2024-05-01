@@ -141,6 +141,11 @@ void exportIMU(
   List<dynamic> forwardDataRot = [];
   List<dynamic> backwardDataRot = [];
 
+  // List<dynamic> leftTimeStampData = [];
+  // List<dynamic> rightTimeStampData = [];
+  // List<dynamic> forwardTimeStampData = [];
+  // List<dynamic> backwardTimeStampData = [];
+
   List<dynamic> imuHeader = [
     "direction",
     "accelX",
@@ -149,6 +154,7 @@ void exportIMU(
     "rotX",
     "rotY",
     "rotZ",
+    // "timestamp"
   ];
   rows.add(imuHeader);
 
@@ -159,6 +165,7 @@ void exportIMU(
         json["imuData"]["left"]["dataRot"] != null) {
       leftDataAcc = json["imuData"]["left"]["dataAcc"];
       leftDataRot = json["imuData"]["left"]["dataRot"];
+      // leftTimeStampData = json["imuData"]["left"]["timeStamps"];
 
       for (int i = 0; i < leftDataRot[0].length; i++) {
         List<dynamic> row = [
@@ -169,6 +176,7 @@ void exportIMU(
           leftDataRot[0][i],
           leftDataRot[1][i],
           leftDataRot[2][i],
+          // leftTimeStampData[i],
         ];
         rows.add(row);
       }
@@ -177,6 +185,7 @@ void exportIMU(
         json["imuData"]["right"]["dataRot"] != null) {
       rightDataAcc = json["imuData"]["right"]["dataAcc"];
       rightDataRot = json["imuData"]["right"]["dataRot"];
+      // rightTimeStampData = json["imuData"]["right"]["timeStamps"];
 
       for (int i = 0; i < rightDataRot[0].length; i++) {
         List<dynamic> row = [
@@ -187,6 +196,7 @@ void exportIMU(
           rightDataRot[0][i],
           rightDataRot[1][i],
           rightDataRot[2][i],
+          // rightTimeStampData[i],
         ];
         rows.add(row);
       }
@@ -195,6 +205,7 @@ void exportIMU(
         json["imuData"]['forward']["dataRot"] != null) {
       forwardDataAcc = json["imuData"]["forward"]["dataAcc"];
       forwardDataRot = json["imuData"]["forward"]["dataRot"];
+      // forwardTimeStampData = json["imuData"]["forward"]["timeStamps"];
 
       for (int i = 0; i < forwardDataRot[0].length; i++) {
         List<dynamic> row = [
@@ -205,6 +216,7 @@ void exportIMU(
           forwardDataRot[0][i],
           forwardDataRot[1][i],
           forwardDataRot[2][i],
+          // forwardTimeStampData[i],
         ];
         rows.add(row);
       }
@@ -213,6 +225,7 @@ void exportIMU(
         json["imuData"]['backward']["dataRot"] != null) {
       backwardDataAcc = json["imuData"]["backward"]["dataAcc"];
       backwardDataRot = json["imuData"]["backward"]["dataRot"];
+      // backwardTimeStampData = json["imuData"]["backward"]["timeStamps"];
 
       for (int i = 0; i < backwardDataRot[0].length; i++) {
         List<dynamic> row = [
@@ -223,6 +236,7 @@ void exportIMU(
           backwardDataRot[0][i],
           backwardDataRot[1][i],
           backwardDataRot[2][i],
+          // backwardTimeStampData[i],
         ];
         rows.add(row);
       }

@@ -17,6 +17,7 @@ class ReactiveTestPage extends StatefulWidget {
   ReactiveTestPage({
     super.key,
     required this.pID,
+    required this.thirdPartyID,
     required this.tID,
     required this.direction,
     required this.forward,
@@ -39,6 +40,7 @@ class ReactiveTestPage extends StatefulWidget {
 
   final String direction;
   final int pID;
+  final String? thirdPartyID;
   final double forward;
   final double left;
   final double right;
@@ -47,15 +49,19 @@ class ReactiveTestPage extends StatefulWidget {
   dynamic forwardDataAcc;
   dynamic forwardDataRot;
   dynamic forwardDataFs;
+  dynamic forwardTime;
   dynamic backwardDataAcc;
   dynamic backwardDataRot;
   dynamic backwardDataFs;
+  dynamic backwardTime;
   dynamic leftDataAcc;
   dynamic leftDataRot;
   dynamic leftDataFs;
+  dynamic leftTime;
   dynamic rightDataAcc;
   dynamic rightDataRot;
   dynamic rightDataFs;
+  dynamic rightTime;
 
   final int tID;
 
@@ -91,6 +97,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                     pageBuilder: (context, animation1, animation2) =>
                         ReactiveTestPage(
                       pID: widget.pID,
+                      thirdPartyID: widget.thirdPartyID,
                       direction: widget.direction,
                       forward: widget.forward,
                       left: widget.left,
@@ -126,18 +133,22 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         widget.forwardDataAcc = sensorData.formattedAccData();
         widget.forwardDataRot = sensorData.formattedGyrData();
         widget.forwardDataFs = sensorData.fs;
+        widget.forwardTime = sensorData.timeStamps;
       } else if (widget.direction == "Backward") {
         widget.backwardDataAcc = sensorData.formattedAccData();
         widget.backwardDataRot = sensorData.formattedGyrData();
         widget.backwardDataFs = sensorData.fs;
+        widget.backwardTime = sensorData.timeStamps;
       } else if (widget.direction == "Left") {
         widget.leftDataAcc = sensorData.formattedAccData();
         widget.leftDataRot = sensorData.formattedGyrData();
         widget.leftDataFs = sensorData.fs;
+        widget.leftTime = sensorData.timeStamps;
       } else if (widget.direction == "Right") {
         widget.rightDataAcc = sensorData.formattedAccData();
         widget.rightDataRot = sensorData.formattedGyrData();
         widget.rightDataFs = sensorData.fs;
+        widget.rightTime = sensorData.timeStamps;
       }
       nextTest();
     } catch (e) {
@@ -151,21 +162,25 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     dynamic imuData = {
       "rID": rID,
       "forward": {
+        "timeStamps": widget.forwardTime,
         "dataAcc": widget.forwardDataAcc,
         "dataRot": widget.forwardDataRot,
         "fps": widget.forwardDataFs,
       },
       "backward": {
+        "timeStamps": widget.backwardTime,
         "dataAcc": widget.backwardDataAcc,
         "dataRot": widget.backwardDataRot,
         "fps": widget.backwardDataFs,
       },
       "left": {
+        "timeStamps": widget.leftTime,
         "dataAcc": widget.leftDataAcc,
         "dataRot": widget.leftDataRot,
         "fps": widget.leftDataFs,
       },
       "right": {
+        "timeStamps": widget.rightTime,
         "dataAcc": widget.rightDataAcc,
         "dataRot": widget.rightDataRot,
         "fps": widget.rightDataFs,
@@ -186,6 +201,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             direction: 'Backward',
             forward: timeToStab,
             left: widget.left,
@@ -203,6 +219,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         context,
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
+            thirdPartyID: widget.thirdPartyID,
             pID: widget.pID,
             direction: 'Left',
             forward: widget.forward,
@@ -225,6 +242,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             direction: 'Right',
             forward: widget.forward,
             left: timeToStab,
@@ -254,6 +272,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
             MaterialPageRoute(
               builder: (context) => ReactiveTestResultsPage(
                 pID: widget.pID,
+                thirdPartyID: widget.thirdPartyID,
                 administeredBy: createdReactive.administeredBy,
                 forward: widget.forward * 1000,
                 left: widget.left * 1000,
@@ -321,6 +340,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
             MaterialPageRoute(
               builder: (context) => ReactiveTestResultsPage(
                 pID: widget.pID,
+                thirdPartyID: widget.thirdPartyID,
                 administeredBy: createdReactive.administeredBy,
                 forward: widget.forward,
                 left: widget.left,
@@ -347,6 +367,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
         MaterialPageRoute(
           builder: (context) => ReactiveTestPage(
             pID: widget.pID,
+            thirdPartyID: widget.thirdPartyID,
             direction: nextDir,
             forward: widget.forward,
             left: widget.left,
@@ -395,7 +416,11 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => TestsPage(tID: widget.tID, pID: widget.pID),
+        builder: (context) => TestsPage(
+          tID: widget.tID,
+          pID: widget.pID,
+          thirdPartyID: widget.thirdPartyID,
+        ),
       ),
     );
   }

@@ -583,7 +583,9 @@ class _PatientPage extends State<PatientPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => IncidentPage(
-                                          iID: incidents![index].iID),
+                                        iID: incidents![index].iID,
+                                        thirdPartyID: patient?.thirdPartyID,
+                                      ),
                                     ),
                                   );
                                 }
@@ -603,6 +605,7 @@ class _PatientPage extends State<PatientPage> {
                       MaterialPageRoute(
                         builder: (context) => CreateIncidentPage(
                           pID: patient!.pID,
+                          thirdPartyID: patient!.thirdPartyID,
                         ),
                       ));
                 },

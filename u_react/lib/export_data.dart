@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:u_react/api/export_api.dart' as export_api;
 import 'package:u_react/api/imu_api.dart' as imu_api;
+import 'package:u_react/models/dynamic.dart';
 
 /* ------------------------------------- Headers ------------------------------------- */
 
@@ -75,11 +76,7 @@ Future<dynamic> getTestData(int pID, int tID) async {
 
 Future<dynamic> getIMUData(int? rID, int? sID, int? dID) async {
   try {
-    // print("rID is: " + rID.toString());
-    // print("sID is: " + sID.toString());
-    // print("dID is: " + dID.toString());
     dynamic jsonExport = await imu_api.getIMU(rID, sID, dID);
-    // print(jsonExport);
     return jsonExport[0];
   } catch (e) {
     print("Error fetching export data: $e");
@@ -131,116 +128,326 @@ void exportIMU(
     int? rID, int? sID, int? dID, String? thirdPartyID, String? tDate) async {
   String fileName = "";
   List<List<dynamic>> rows = [];
-  List<dynamic> leftDataAcc = [];
-  List<dynamic> rightDataAcc = [];
-  List<dynamic> forwardDataAcc = [];
-  List<dynamic> backwardDataAcc = [];
+  // List<dynamic> leftDataAcc = [];
+  // List<dynamic> rightDataAcc = [];
+  // List<dynamic> forwardDataAcc = [];
+  // List<dynamic> backwardDataAcc = [];
+  // List<dynamic> tlSolidDataAcc = [];
+  // List<dynamic> slSolidDataAcc = [];
+  List<dynamic> dataAcc = [];
 
-  List<dynamic> leftDataRot = [];
-  List<dynamic> rightDataRot = [];
-  List<dynamic> forwardDataRot = [];
-  List<dynamic> backwardDataRot = [];
+  // List<dynamic> leftDataRot = [];
+  // List<dynamic> rightDataRot = [];
+  // List<dynamic> forwardDataRot = [];
+  // List<dynamic> backwardDataRot = [];
+  // List<dynamic> tlSolidDataRot = [];
+  // List<dynamic> slSolidDataRot = [];
+  List<dynamic> dataRot = [];
 
   // List<dynamic> leftTimeStampData = [];
   // List<dynamic> rightTimeStampData = [];
   // List<dynamic> forwardTimeStampData = [];
   // List<dynamic> backwardTimeStampData = [];
+  // List<dynamic> tlSolidTimeStampData = [];
+  // List<dynamic> slSolidTimeStampData = [];
+  List<dynamic> timestampData = [];
 
   List<dynamic> imuHeader = [
-    "direction",
+    "test",
     "accelX",
     "accelY",
     "accelZ",
     "rotX",
     "rotY",
     "rotZ",
-    // "timestamp"
+    "timestamp"
   ];
   rows.add(imuHeader);
 
   Map<String, dynamic> json = await getIMUData(rID, sID, dID);
+  print(rID.toString() + " " + sID.toString() + " " + dID.toString());
+  print(json);
 
   if (json.containsKey('imuID')) {
     if (json["imuData"]["left"]["dataAcc"] != null &&
         json["imuData"]["left"]["dataRot"] != null) {
-      leftDataAcc = json["imuData"]["left"]["dataAcc"];
-      leftDataRot = json["imuData"]["left"]["dataRot"];
-      // leftTimeStampData = json["imuData"]["left"]["timeStamps"];
+      // leftDataAcc = json["imuData"]["left"]["dataAcc"];
+      dataAcc = json["imuData"]["left"]["dataAcc"];
+      // leftDataRot = json["imuData"]["left"]["dataRot"];
+      dataRot = json["imuData"]["left"]["dataRot"];
 
-      for (int i = 0; i < leftDataRot[0].length; i++) {
+      // leftTimeStampData = json["imuData"]["left"]["timeStamps"];
+      timestampData = json["imuData"]["left"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
         List<dynamic> row = [
-          "left",
-          leftDataAcc[0][i],
-          leftDataAcc[1][i],
-          leftDataAcc[2][i],
-          leftDataRot[0][i],
-          leftDataRot[1][i],
-          leftDataRot[2][i],
-          // leftTimeStampData[i],
+          "reactive-left",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
         ];
         rows.add(row);
       }
+      print("finished left");
     }
     if (json["imuData"]["right"]["dataAcc"] != null &&
         json["imuData"]["right"]["dataRot"] != null) {
-      rightDataAcc = json["imuData"]["right"]["dataAcc"];
-      rightDataRot = json["imuData"]["right"]["dataRot"];
-      // rightTimeStampData = json["imuData"]["right"]["timeStamps"];
+      dataAcc = json["imuData"]["right"]["dataAcc"];
+      dataRot = json["imuData"]["right"]["dataRot"];
+      timestampData = json["imuData"]["right"]["timeStamps"];
 
-      for (int i = 0; i < rightDataRot[0].length; i++) {
+      for (int i = 0; i < dataRot[0].length; i++) {
         List<dynamic> row = [
-          "right",
-          rightDataAcc[0][i],
-          rightDataAcc[1][i],
-          rightDataAcc[2][i],
-          rightDataRot[0][i],
-          rightDataRot[1][i],
-          rightDataRot[2][i],
-          // rightTimeStampData[i],
+          "reactive-right",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
         ];
         rows.add(row);
       }
+      print("finished right");
     }
     if (json["imuData"]['forward']["dataAcc"] != null &&
         json["imuData"]['forward']["dataRot"] != null) {
-      forwardDataAcc = json["imuData"]["forward"]["dataAcc"];
-      forwardDataRot = json["imuData"]["forward"]["dataRot"];
-      // forwardTimeStampData = json["imuData"]["forward"]["timeStamps"];
+      dataAcc = json["imuData"]["forward"]["dataAcc"];
+      dataRot = json["imuData"]["forward"]["dataRot"];
+      timestampData = json["imuData"]["forward"]["timeStamps"];
 
-      for (int i = 0; i < forwardDataRot[0].length; i++) {
+      for (int i = 0; i < dataRot[0].length; i++) {
         List<dynamic> row = [
-          "forward",
-          forwardDataAcc[0][i],
-          forwardDataAcc[1][i],
-          forwardDataAcc[2][i],
-          forwardDataRot[0][i],
-          forwardDataRot[1][i],
-          forwardDataRot[2][i],
-          // forwardTimeStampData[i],
+          "reactive-forward",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
         ];
         rows.add(row);
       }
+      print("finished forward");
     }
     if (json["imuData"]['backward']["dataAcc"] != null &&
         json["imuData"]['backward']["dataRot"] != null) {
-      backwardDataAcc = json["imuData"]["backward"]["dataAcc"];
-      backwardDataRot = json["imuData"]["backward"]["dataRot"];
-      // backwardTimeStampData = json["imuData"]["backward"]["timeStamps"];
+      dataAcc = json["imuData"]["backward"]["dataAcc"];
+      dataRot = json["imuData"]["backward"]["dataRot"];
+      timestampData = json["imuData"]["backward"]["timeStamps"];
 
-      for (int i = 0; i < backwardDataRot[0].length; i++) {
+      for (int i = 0; i < dataRot[0].length; i++) {
         List<dynamic> row = [
-          "backward",
-          backwardDataAcc[0][i],
-          backwardDataAcc[1][i],
-          backwardDataAcc[2][i],
-          backwardDataRot[0][i],
-          backwardDataRot[1][i],
-          backwardDataRot[2][i],
-          // backwardTimeStampData[i],
+          "reactive-backward",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
         ];
         rows.add(row);
       }
+      print("finished backward");
     }
+    print(json["imuData"].keys);
+    if (json["imuData"]["tlSolid"]["dataAcc"] != null &&
+        json["imuData"]["tlSolid"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["tlSolid"]["dataAcc"];
+      dataRot = json["imuData"]["tlSolid"]["dataRot"];
+      timestampData = json["imuData"]["tlSolid"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "static-tlSolid",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished tlSolid");
+    }
+    if (json["imuData"]["slSolid"]["dataAcc"] != null &&
+        json["imuData"]["slSolid"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["slSolid"]["dataAcc"];
+      dataRot = json["imuData"]["slSolid"]["dataRot"];
+      timestampData = json["imuData"]["slSolid"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "static-slSolid",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished slSolid");
+    }
+    if (json["imuData"]["tandSolid"]["dataAcc"] != null &&
+        json["imuData"]["tandSolid"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["tandSolid"]["dataAcc"];
+      dataRot = json["imuData"]["tandSolid"]["dataRot"];
+      timestampData = json["imuData"]["tandSolid"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "static-tandSolid",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished tandSOlid");
+    }
+    if (json["imuData"]["tlFoam"]["dataAcc"] != null &&
+        json["imuData"]["tlFoam"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["tlFoam"]["dataAcc"];
+      dataRot = json["imuData"]["tlFoam"]["dataRot"];
+      timestampData = json["imuData"]["tlFoam"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "static-tlFoam",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished tlFoam");
+    }
+    if (json["imuData"]["slFoam"]["dataAcc"] != null &&
+        json["imuData"]["slFoam"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["slFoam"]["dataAcc"];
+      dataRot = json["imuData"]["slFoam"]["dataRot"];
+      timestampData = json["imuData"]["slFoam"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "static-slFoam",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished slFoam");
+    }
+    if (json["imuData"]["tandFoam"]["dataAcc"] != null &&
+        json["imuData"]["tandFoam"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["tandFoam"]["dataAcc"];
+      dataRot = json["imuData"]["tandFoam"]["dataRot"];
+      timestampData = json["imuData"]["tandFoam"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "static-tandFoam",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished tandFoam");
+    }
+    if (json["imuData"]["t1"]["dataAcc"] != null &&
+        json["imuData"]["t1"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["t1"]["dataAcc"];
+      dataRot = json["imuData"]["t1"]["dataRot"];
+      timestampData = json["imuData"]["t1"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "dynamic-t1",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished t1");
+    }
+    if (json["imuData"]["t2"]["dataAcc"] != null &&
+        json["imuData"]["t2"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["t2"]["dataAcc"];
+      dataRot = json["imuData"]["t2"]["dataRot"];
+      timestampData = json["imuData"]["t2"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "dynamic-t2",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished t2");
+    }
+    if (json["imuData"]["t3"]["dataAcc"] != null &&
+        json["imuData"]["t3"]["dataRot"] != null) {
+      dataAcc = json["imuData"]["t3"]["dataAcc"];
+      dataRot = json["imuData"]["t3"]["dataRot"];
+      timestampData = json["imuData"]["t3"]["timeStamps"];
+
+      for (int i = 0; i < dataRot[0].length; i++) {
+        List<dynamic> row = [
+          "dynamic-t3",
+          dataAcc[0][i],
+          dataAcc[1][i],
+          dataAcc[2][i],
+          dataRot[0][i],
+          dataRot[1][i],
+          dataRot[2][i],
+          timestampData[i],
+        ];
+        rows.add(row);
+      }
+      print("finished t3");
+    }
+
     fileName = "imuData_patient${thirdPartyID}_test_${tDate}";
   }
 

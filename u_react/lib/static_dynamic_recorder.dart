@@ -66,14 +66,14 @@ class StaticDynamicRecorder {
 
   StaticDynamicRecorder(bool staticTest) {
     _staticTest = staticTest;
-    gyroscopeEventStream(samplingPeriod: SensorInterval.gameInterval)
+    gyroscopeEventStream(samplingPeriod: SensorInterval.fastestInterval)
         .listen((event) {
       _gyroX = event.y;
       _gyroY = event.x;
       _gyroZ = event.z;
     });
 
-    accelerometerEventStream(samplingPeriod: SensorInterval.gameInterval)
+    accelerometerEventStream(samplingPeriod: SensorInterval.fastestInterval)
         .listen((event) {
       _accX = event.y;
       _accY = event.x;

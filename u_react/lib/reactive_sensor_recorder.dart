@@ -106,7 +106,7 @@ class ReactiveSensorRecorder {
     _results = null;
 
     _gyroscopeStreamEvent =
-        gyroscopeEventStream(samplingPeriod: SensorInterval.gameInterval)
+        gyroscopeEventStream(samplingPeriod: SensorInterval.fastestInterval)
             .listen((event) {
       _gyroX = event.y;
       _gyroY = event.x;
@@ -115,7 +115,7 @@ class ReactiveSensorRecorder {
     });
 
     _accelerometerStreamEvent =
-        accelerometerEventStream(samplingPeriod: SensorInterval.gameInterval)
+        accelerometerEventStream(samplingPeriod: SensorInterval.fastestInterval)
             .listen((event) {
       _accX = event.y;
       _accY = event.x;

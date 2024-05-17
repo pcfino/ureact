@@ -106,7 +106,7 @@ class ReactiveSensorRecorder {
     _results = null;
 
     _gyroscopeStreamEvent =
-        gyroscopeEventStream(samplingPeriod: SensorInterval.fastestInterval)
+        gyroscopeEventStream(samplingPeriod: SensorInterval.gameInterval)
             .listen((event) {
       _gyroX = event.y;
       _gyroY = event.x;
@@ -115,7 +115,7 @@ class ReactiveSensorRecorder {
     });
 
     _accelerometerStreamEvent =
-        accelerometerEventStream(samplingPeriod: SensorInterval.fastestInterval)
+        accelerometerEventStream(samplingPeriod: SensorInterval.gameInterval)
             .listen((event) {
       _accX = event.y;
       _accY = event.x;
@@ -131,7 +131,7 @@ class ReactiveSensorRecorder {
     const samplePeriod = 20; // ms
     int angleMetTime = 0;
     player = AudioPlayer();
-    const successSoundPath = "sounds/success.mp3";
+    const successSoundPath = "sounds/Success.mp3";
 
     //starts a sequence that checks for the angle of patient
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),
@@ -140,6 +140,7 @@ class ReactiveSensorRecorder {
         // After 2 seconds in correct position
         if (angleMetTime == 100) {
           startRecording();
+          player.stop();
           _running = true;
           preTimer.cancel();
         } else {
@@ -308,12 +309,17 @@ class ReactiveSensorRecorder {
     minAngle = minAngle * pi / 180;
     maxAngle = maxAngle * pi / 180;
 
-    if (radAngle >= initAngle + minAngle && radAngle <= initAngle + maxAngle) {
+    minAngle += initAngle;
+    maxAngle += initAngle;
+
+    //debugPrint("rad Angle: " + radAngle.toString());
+    //debugPrint("Min Angle: " + minAngle.toString());
+    //debugPrint("Max Angle: " + maxAngle.toString());
+
+    if (radAngle >= minAngle && radAngle <= maxAngle) {
       _ready = true;
     } else {
       _ready = false;
     }
-    //print(_ready);
-    //angleMeet([_accX, _accY, _accZ], front, back, left, right);
   }
 }

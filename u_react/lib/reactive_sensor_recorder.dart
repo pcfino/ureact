@@ -140,7 +140,7 @@ class ReactiveSensorRecorder {
         // After 2 seconds in correct position
         if (angleMetTime == 100) {
           startRecording();
-          player.stop();
+          //player.stop();
           _running = true;
           preTimer.cancel();
         } else {
@@ -153,7 +153,7 @@ class ReactiveSensorRecorder {
         //player.play(AssetSource(failureSoundPath));
         angleMetTime = 0;
       }
-      angleMeet([_accX, _accY, _accZ]);
+      angleMeet([_accX.toDouble(), _accY.toDouble(), _accZ.toDouble()]);
     });
   }
 
@@ -290,13 +290,13 @@ class ReactiveSensorRecorder {
           sqrt((_init_accX * _init_accX) +
               (_init_accY * _init_accY) +
               (_init_accZ * _init_accZ)));
-    } else if (_testDirection == 'right') {
+    } else if (_testDirection == 'left') {
       minAngle = -7;
       maxAngle = -5;
       radAngle = atan(x / sqrt((y * y) + (z * z)));
       initAngle = atan(_init_accX /
           sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
-    } else if (_testDirection == 'left') {
+    } else if (_testDirection == 'right') {
       minAngle = 5;
       maxAngle = 7;
       radAngle = atan(x / sqrt((y * y) + (z * z)));

@@ -91,7 +91,7 @@ class ReactiveSensorRecorder {
   ReactiveSensorRecorder(String testDirection) {
     stopEvent = Event();
 
-    FlutterRingtonePlayer.play(
+    FlutterRingtonePlayer().play(
       android: AndroidSounds.notification,
       ios: IosSounds.chime,
       looping: false, // Android only - API >= 28
@@ -105,14 +105,18 @@ class ReactiveSensorRecorder {
 
     _results = null;
 
-    _gyroscopeStreamEvent = gyroscopeEventStream().listen((event) {
+    _gyroscopeStreamEvent =
+        gyroscopeEventStream(samplingPeriod: SensorInterval.gameInterval)
+            .listen((event) {
       _gyroX = event.y;
       _gyroY = event.x;
       _gyroZ = event.z;
       //print("gyroscope: $_gyroX, $_gyroY, $_gyroZ");
     });
 
-    _accelerometerStreamEvent = accelerometerEventStream().listen((event) {
+    _accelerometerStreamEvent =
+        accelerometerEventStream(samplingPeriod: SensorInterval.gameInterval)
+            .listen((event) {
       _accX = event.y;
       _accY = event.x;
       _accZ = event.z;
@@ -128,7 +132,6 @@ class ReactiveSensorRecorder {
     int angleMetTime = 0;
     player = AudioPlayer();
     const successSoundPath = "sounds/Success.mp3";
-    const failureSoundPath = "sounds/Failure.mp3";
 
     //starts a sequence that checks for the angle of patient
     preTimer = Timer.periodic(const Duration(milliseconds: samplePeriod),
@@ -137,6 +140,7 @@ class ReactiveSensorRecorder {
         // After 2 seconds in correct position
         if (angleMetTime == 100) {
           startRecording();
+          //player.stop();
           _running = true;
           preTimer.cancel();
         } else {
@@ -149,7 +153,7 @@ class ReactiveSensorRecorder {
         //player.play(AssetSource(failureSoundPath));
         angleMetTime = 0;
       }
-      angleMeet([_accX, _accY, _accZ]);
+      angleMeet([_accX.toDouble(), _accY.toDouble(), _accZ.toDouble()]);
     });
   }
 
@@ -229,7 +233,7 @@ class ReactiveSensorRecorder {
       } else if (dropped && norm < motionlessThreshold) {
         counter++;
         if (counter == 100) {
-          FlutterRingtonePlayer.play(
+          FlutterRingtonePlayer().play(
             android: AndroidSounds.notification,
             ios: IosSounds.chime,
             looping: false, // Android only - API >= 28
@@ -286,13 +290,13 @@ class ReactiveSensorRecorder {
           sqrt((_init_accX * _init_accX) +
               (_init_accY * _init_accY) +
               (_init_accZ * _init_accZ)));
-    } else if (_testDirection == 'right') {
+    } else if (_testDirection == 'left') {
       minAngle = -7;
       maxAngle = -5;
       radAngle = atan(x / sqrt((y * y) + (z * z)));
       initAngle = atan(_init_accX /
           sqrt((_init_accY * _init_accY) + (_init_accZ * _init_accZ)));
-    } else if (_testDirection == 'left') {
+    } else if (_testDirection == 'right') {
       minAngle = 5;
       maxAngle = 7;
       radAngle = atan(x / sqrt((y * y) + (z * z)));
@@ -305,12 +309,17 @@ class ReactiveSensorRecorder {
     minAngle = minAngle * pi / 180;
     maxAngle = maxAngle * pi / 180;
 
-    if (radAngle >= initAngle + minAngle && radAngle <= initAngle + maxAngle) {
+    minAngle += initAngle;
+    maxAngle += initAngle;
+
+    //debugPrint("rad Angle: " + radAngle.toString());
+    //debugPrint("Min Angle: " + minAngle.toString());
+    //debugPrint("Max Angle: " + maxAngle.toString());
+
+    if (radAngle >= minAngle && radAngle <= maxAngle) {
       _ready = true;
     } else {
       _ready = false;
     }
-    //print(_ready);
-    //angleMeet([_accX, _accY, _accZ], front, back, left, right);
   }
 }

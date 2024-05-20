@@ -66,13 +66,15 @@ class StaticDynamicRecorder {
 
   StaticDynamicRecorder(bool staticTest) {
     _staticTest = staticTest;
-    gyroscopeEventStream().listen((event) {
+    gyroscopeEventStream(samplingPeriod: SensorInterval.fastestInterval)
+        .listen((event) {
       _gyroX = event.y;
       _gyroY = event.x;
       _gyroZ = event.z;
     });
 
-    accelerometerEventStream().listen((event) {
+    accelerometerEventStream(samplingPeriod: SensorInterval.fastestInterval)
+        .listen((event) {
       _accX = event.y;
       _accY = event.x;
       _accZ = event.z;
@@ -89,7 +91,7 @@ class StaticDynamicRecorder {
 
   SensorRecorderResults endRecording() {
     if (_staticTest) {
-      FlutterRingtonePlayer.play(
+      FlutterRingtonePlayer().play(
         android: AndroidSounds.notification,
         ios: IosSounds.glass,
         looping: true, // Android only - API >= 28
@@ -103,7 +105,7 @@ class StaticDynamicRecorder {
   }
 
   void startRecording() {
-    FlutterRingtonePlayer.play(
+    FlutterRingtonePlayer().play(
       android: AndroidSounds.notification,
       ios: IosSounds.glass,
       looping: true, // Android only - API >= 28
@@ -113,7 +115,7 @@ class StaticDynamicRecorder {
 
     const samplePeriod = 20; // ms
     const sampleDuration = Duration(milliseconds: samplePeriod);
-    Timer(const Duration(seconds: 3), () => FlutterRingtonePlayer.stop());
+    Timer(const Duration(seconds: 3), () => FlutterRingtonePlayer().stop());
 
     _killTimer = false;
 

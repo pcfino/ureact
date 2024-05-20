@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.1.4 <4.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -35,18 +35,18 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   http: ^1.1.0
-  sensors_plus: ^4.0.2
+  sensors_plus: ^5.0.1
   provider: ^6.1.1
-  flutter_ringtone_player: ^3.2.0
+  flutter_ringtone_player: ^4.0.0+2
   json_annotation: ^4.8.1
-  file_picker: ^6.1.1
-  share_plus: ^7.2.2
-  csv: ^5.1.1
+  file_picker: ^8.0.0+1
+  share_plus: ^9.0.0
+  csv: ^6.0.0
   path_provider: ^2.1.2
   azlistview: ^2.0.0
   circular_countdown_timer: ^0.2.3
   event: ^2.1.2
-  audioplayers: ^5.2.1
+  audioplayers: ^6.0.0
   session_manager: ^0.0.4
 
 dev_dependencies:
@@ -58,7 +58,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.2
   build_runner: ^2.4.8
   json_serializable: ^6.7.1
   test: ^1.24.3

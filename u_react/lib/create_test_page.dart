@@ -10,11 +10,16 @@ import 'package:u_react/api/test_api.dart';
 
 class CreateTestPage extends StatefulWidget {
   const CreateTestPage(
-      {super.key, required this.iID, required this.pID, required this.name});
+      {super.key,
+      required this.iID,
+      required this.pID,
+      required this.thirdPartyID,
+      required this.name});
 
   final int iID;
   final int pID;
   final String name;
+  final String? thirdPartyID;
   @override
   State<CreateTestPage> createState() => _CreateTestPage();
 }
@@ -103,7 +108,10 @@ class _CreateTestPage extends State<CreateTestPage> {
             Navigator.pushReplacement(
               context,
               SlideRightRoute(
-                page: IncidentPage(iID: widget.iID),
+                page: IncidentPage(
+                  iID: widget.iID,
+                  thirdPartyID: widget.thirdPartyID,
+                ),
               ),
             );
           }),
@@ -118,8 +126,11 @@ class _CreateTestPage extends State<CreateTestPage> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            TestsPage(tID: createdTest.tID, pID: widget.pID),
+                        builder: (context) => TestsPage(
+                          tID: createdTest.tID,
+                          pID: widget.pID,
+                          thirdPartyID: widget.thirdPartyID,
+                        ),
                       ),
                     );
                   }

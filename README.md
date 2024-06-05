@@ -51,14 +51,9 @@ When you're ready to make this README your own, just edit this file and use the 
 ## Suggestions for a good README
 Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## UReact
+Our project has focused on creating a mobile application to streamline balance tests to evaluate athletes for concussions. Currently, these tests rely on laboratory-grade sensors, and there is no streamlined process for visualizing and interpreting the data. Our application uses an accelerometer and gyroscope from the phone instead of traditional sensors. The application is cross-platform, built with the Flutter framework, and uses a backend hosted on AWS to store and process data. Our goal is to allow clinicians and researchers to quickly perform tests and read data to inform rehabilitation plans, training regiments, and return-to-play assessments. 
+For more information visit our website: https://sites.google.com/view/ureact/home
 
 ## Visuals
 Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.

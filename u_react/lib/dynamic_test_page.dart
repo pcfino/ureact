@@ -168,6 +168,12 @@ class _DynamicTestPage extends State<DynamicTestPage> {
             t3Duration: widget.t1Duration,
             t3TurnSpeed: widget.t1TurnSpeed,
             t3MLSway: widget.t1MLSway,
+            t1DataAcc: widget.t1DataAcc,
+            t1DataRot: widget.t1DataAcc,
+            t1DataFs: widget.t1DataAcc,
+            t2DataRot: widget.t2DataAcc,
+            t2DataAcc: widget.t2DataAcc,
+            t2DataFs: widget.t2DataAcc,
           ),
         ),
       );
@@ -562,6 +568,8 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   if (createdDynamic != null &&
                                       context.mounted) {
                                     await sendIMU(createdDynamic.dID);
+                                    print(createdDynamic.dID);
+                                    print("hi");
                                     String admin = await SessionManager()
                                         .getString("username");
 

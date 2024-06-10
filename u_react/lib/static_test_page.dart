@@ -121,7 +121,7 @@ class _StaticTestPage extends State<StaticTestPage> {
       widget.slSolidDataRot = sensorData.formattedGyrData();
       widget.slSolidDataFs = sensorData.fs;
       widget.slSolidTime = sensorData.timeStamps;
-    } else if (widget.stance == "Tandem Leg Stance (Solid)") {
+    } else if (widget.stance == "Tandem Stance (Solid)") {
       widget.tandSolidDataAcc = sensorData.formattedAccData();
       widget.tandSolidDataRot = sensorData.formattedGyrData();
       widget.tandSolidDataFs = sensorData.fs;
@@ -136,7 +136,7 @@ class _StaticTestPage extends State<StaticTestPage> {
       widget.slFoamDataRot = sensorData.formattedGyrData();
       widget.slFoamDataFs = sensorData.fs;
       widget.slFoamTime = sensorData.timeStamps;
-    } else if (widget.stance == "Tandem Leg Stance (Foam)") {
+    } else if (widget.stance == "Tandem Stance (Foam)") {
       widget.tandFoamDataAcc = sensorData.formattedAccData();
       widget.tandFoamDataRot = sensorData.formattedGyrData();
       widget.tandFoamDataFs = sensorData.fs;

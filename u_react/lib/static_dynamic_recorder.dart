@@ -94,7 +94,7 @@ class StaticDynamicRecorder {
       FlutterRingtonePlayer().play(
         android: AndroidSounds.notification,
         ios: IosSounds.glass,
-        looping: true, // Android only - API >= 28
+        looping: false, // Android only - API >= 28
         volume: 0.8, // Android only - API >= 28
         asAlarm: false, // Android only - all APIs
       );
@@ -108,7 +108,7 @@ class StaticDynamicRecorder {
     FlutterRingtonePlayer().play(
       android: AndroidSounds.notification,
       ios: IosSounds.glass,
-      looping: true, // Android only - API >= 28
+      looping: false, // Android only - API >= 28
       volume: 0.8, // Android only - API >= 28
       asAlarm: false, // Android only - all APIs
     );

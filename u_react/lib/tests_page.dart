@@ -581,6 +581,7 @@ class _TestsPage extends State<TestsPage> {
                             if (!editMode) {
                               // check if static exists
                               if (test!.staticTest != null) {
+                                print(test!.staticTest!.sID);
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

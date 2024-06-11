@@ -90,7 +90,7 @@ class _CreateTestPage extends State<CreateTestPage> {
     return menuItems;
   }
 
-  String selectedValue = "Pre RTP (Asymptomatic)";
+  String selectedValue = "Acute";
 
   @override
   Widget build(BuildContext context) {

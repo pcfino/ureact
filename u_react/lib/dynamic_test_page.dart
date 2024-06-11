@@ -32,9 +32,11 @@ class DynamicTestPage extends StatefulWidget {
     this.t1DataAcc,
     this.t1DataRot,
     this.t1DataFs,
+    this.t1TimeStamps,
     this.t2DataAcc,
     this.t2DataRot,
     this.t2DataFs,
+    this.t2TimeStamps,
   });
 
   final int pID;
@@ -171,9 +173,11 @@ class _DynamicTestPage extends State<DynamicTestPage> {
             t1DataAcc: widget.t1DataAcc,
             t1DataRot: widget.t1DataAcc,
             t1DataFs: widget.t1DataAcc,
+            t1TimeStamps: widget.t1TimeStamps,
             t2DataRot: widget.t2DataAcc,
             t2DataAcc: widget.t2DataAcc,
             t2DataFs: widget.t2DataAcc,
+            t2TimeStamps: widget.t2TimeStamps,
           ),
         ),
       );
@@ -530,6 +534,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                         t1DataAcc: widget.t1DataAcc,
                                         t1DataRot: widget.t1DataRot,
                                         t1DataFs: widget.t1DataFs,
+                                        t1TimeStamps: widget.t1TimeStamps,
                                       ),
                                     ),
                                   );
@@ -555,9 +560,11 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                         t1DataAcc: widget.t1DataAcc,
                                         t1DataRot: widget.t1DataRot,
                                         t1DataFs: widget.t1DataFs,
+                                        t1TimeStamps: widget.t1TimeStamps,
                                         t2DataAcc: widget.t2DataAcc,
                                         t2DataRot: widget.t2DataRot,
                                         t2DataFs: widget.t2DataFs,
+                                        t2TimeStamps: widget.t2TimeStamps,
                                       ),
                                     ),
                                   );
@@ -568,8 +575,6 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                   if (createdDynamic != null &&
                                       context.mounted) {
                                     await sendIMU(createdDynamic.dID);
-                                    print(createdDynamic.dID);
-                                    print("hi");
                                     String admin = await SessionManager()
                                         .getString("username");
 

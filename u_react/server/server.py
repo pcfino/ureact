@@ -704,6 +704,7 @@ def insertIMU():
         id_val = 0
         type_of_id = ""
         data = request.json
+
         # Check if the "id" field is present
         if "dID" in data:
             id_val = data["dID"]
@@ -1066,6 +1067,14 @@ def timeToStability():
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
 
+    # print("DataAcc:", dataAcc)
+    # print()
+    # print("DataRot:", dataRot)
+    # print()
+    # print("fs:", fs)
+    # print()
+
+
     accNorm = np.linalg.norm(dataAcc, axis=0)
     rotNorm = np.linalg.norm(dataRot, axis=0)
 
@@ -1087,22 +1096,23 @@ def timeToStability():
     #     i -= 1
     
     peaks = []
-    height_u = 15.0
-    is_peaks_two = False
-    while True:
-        if height_u < 4.0:
-            break
+    # height_u = 15.0
+    # is_peaks_two = False
+    # while True:
+    #     if height_u < 4.0:
+    #         break
 
-        peaks, _ = signal.find_peaks(np.flip(accNorm), height=height_u)
+    #     peaks, _ = signal.find_peaks(np.flip(accNorm), height=height_u)
         
-        if len(peaks) == 2:
-            is_peaks_two = True
-            break
+    #     if len(peaks) >= 2:
+    #         is_peaks_two = True
+    #         break
 
-        height_u -= 0.1
+    #     height_u -= 0.1
 
-    if is_peaks_two is False:
-        peaks = [peaks[0], peaks[-1]]
+    # peaks = [peaks[0], peaks[-1]]
+
+    peaks, _ = signal.find_peaks(np.flip(accNorm), prominence=5)
 
     # THIS SHOULD PRINT THE PEAKS WE JUST GOT FROM THIS DATA
     # print(accNorm[len(accNorm) - peaks[0] - 1], accNorm[len(accNorm) - peaks[-1] - 1])
@@ -1135,6 +1145,10 @@ def timeToStability():
     EndTTS = EndTTS+movementReg + 2
 
     TTS = (EndTTS - t0)/fs
+
+    if TTS < 0.3 or TTS > 3.5:
+        return jsonify(t0 = int(t0), EndTTS = int(EndTTS), TTS = 0)
+
 
     return jsonify(t0 = int(t0), EndTTS = int(EndTTS), TTS = TTS)
 

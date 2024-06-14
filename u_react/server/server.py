@@ -1159,7 +1159,7 @@ def sway():
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
 
-    dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
+    #dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
 
     Fc = 3.5
 

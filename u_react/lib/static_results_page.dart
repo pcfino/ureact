@@ -45,6 +45,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.slSolidML);
     return MaterialApp(
       title: 'Test Results',
       theme: ThemeData(
@@ -124,7 +125,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.tlSolidML.toStringAsFixed(3)} cm/s\u00B2",
+                          "${(widget.tlSolidML * 100).toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -156,7 +157,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.tandSolidML.toStringAsFixed(3)} cm/s\u00B2",
+                          "${(widget.tandSolidML * 100).toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -188,7 +189,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.slSolidML.toStringAsFixed(3)} cm/s\u00B2",
+                          "${(widget.slSolidML * 100).toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -234,7 +235,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.tlFoamML.toStringAsFixed(3)} cm/s\u00B2",
+                          "${(widget.tlFoamML * 100).toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -266,7 +267,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.tandFoamML.toStringAsFixed(3)} cm/s\u00B2",
+                          "${(widget.tandFoamML * 100).toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -298,7 +299,7 @@ class _StaticResultsPage extends State<StaticResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.slFoamML.toStringAsFixed(3)} cm/s\u00B2",
+                          "${(widget.slFoamML * 100).toStringAsFixed(3)} cm/s\u00B2",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),

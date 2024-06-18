@@ -284,11 +284,11 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                 pID: widget.pID,
                 thirdPartyID: widget.thirdPartyID,
                 administeredBy: createdReactive.administeredBy,
-                forward: widget.forward * 1000,
-                left: widget.left * 1000,
-                right: timeToStab * 1000,
-                backward: widget.backward * 1000,
-                median: normMedian * 1000,
+                forward: widget.forward,
+                left: widget.left,
+                right: timeToStab,
+                backward: widget.backward,
+                median: normMedian,
                 tID: widget.tID,
               ),
             ),
@@ -327,8 +327,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
     } else {
       median = vals[0];
     }
-    double normMedian = double.parse(median.toStringAsFixed(2));
-    return normMedian;
+    return median;
   }
 
   void skip() async {
@@ -356,7 +355,7 @@ class _ReactiveTestPage extends State<ReactiveTestPage> {
                 left: widget.left,
                 right: widget.right,
                 backward: widget.backward,
-                median: double.parse(median.toStringAsFixed(2)),
+                median: median,
                 tID: widget.tID,
               ),
             ),

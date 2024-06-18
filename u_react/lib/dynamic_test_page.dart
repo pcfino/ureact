@@ -217,9 +217,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     // Values for duration
     double dMax = max(widget.t1Duration, max(widget.t2Duration, duration));
     double dMin = min(widget.t1Duration, min(widget.t2Duration, duration));
-    double dMean = double.parse(
-        ((widget.t1Duration + widget.t2Duration + duration) / 3)
-            .toStringAsFixed(3));
+    double dMean = (widget.t1Duration + widget.t2Duration + duration) / 3;
     double dMedian;
     if ((widget.t1Duration <= widget.t2Duration) &&
         (widget.t2Duration <= duration)) {
@@ -244,9 +242,8 @@ class _DynamicTestPage extends State<DynamicTestPage> {
         max(widget.t1TurnSpeed, max(widget.t2TurnSpeed, turningSpeed));
     double tsMin =
         min(widget.t1TurnSpeed, min(widget.t2TurnSpeed, turningSpeed));
-    double tsMean = double.parse(
-        ((widget.t1TurnSpeed + widget.t2TurnSpeed + turningSpeed) / 3)
-            .toStringAsFixed(3));
+    double tsMean =
+        (widget.t1TurnSpeed + widget.t2TurnSpeed + turningSpeed) / 3;
     double tsMedian;
     if ((widget.t1TurnSpeed <= widget.t2TurnSpeed) &&
         (widget.t2TurnSpeed <= turningSpeed)) {
@@ -269,8 +266,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     // Values for ML
     double mlMax = max(widget.t1MLSway, max(widget.t2MLSway, mlSway));
     double mlMin = min(widget.t1MLSway, min(widget.t2MLSway, mlSway));
-    double mlMean = double.parse(
-        ((widget.t1MLSway + widget.t2MLSway + mlSway) / 3).toStringAsFixed(3));
+    double mlMean = (widget.t1MLSway + widget.t2MLSway + mlSway) / 3;
     double mlMedian;
     if ((widget.t1MLSway <= widget.t2MLSway) && (widget.t2MLSway <= mlSway)) {
       mlMedian = widget.t2MLSway;
@@ -499,16 +495,10 @@ class _DynamicTestPage extends State<DynamicTestPage> {
 
                               if (context.mounted) {
                                 double duration = data["duration"];
-                                duration =
-                                    double.parse(duration.toStringAsFixed(3));
                                 double turningSpeed = data["turningSpeed"];
-                                turningSpeed = double.parse(
-                                    turningSpeed.toStringAsFixed(3));
                                 double mlSway =
                                     (data["rmsMlGoing"] + data["rmsMlReturn"]) /
                                         2;
-                                mlSway =
-                                    double.parse(mlSway.toStringAsFixed(3));
 
                                 if (duration == 0) {
                                   throwTestError();
@@ -591,20 +581,17 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                                 createdDynamic.t1Duration,
                                             t1TurnSpeed:
                                                 createdDynamic.t1TurnSpeed,
-                                            t1MLSway:
-                                                createdDynamic.t1MLSway * 100,
+                                            t1MLSway: createdDynamic.t1MLSway,
                                             t2Duration:
                                                 createdDynamic.t2Duration,
                                             t2TurnSpeed:
                                                 createdDynamic.t2TurnSpeed,
-                                            t2MLSway:
-                                                createdDynamic.t2MLSway * 100,
+                                            t2MLSway: createdDynamic.t2MLSway,
                                             t3Duration:
                                                 createdDynamic.t3Duration,
                                             t3TurnSpeed:
                                                 createdDynamic.t3TurnSpeed,
-                                            t3MLSway:
-                                                createdDynamic.t3MLSway * 100,
+                                            t3MLSway: createdDynamic.t3MLSway,
                                             dMax: createdDynamic.dMax,
                                             dMin: createdDynamic.dMin,
                                             dMean: createdDynamic.dMean,
@@ -613,11 +600,10 @@ class _DynamicTestPage extends State<DynamicTestPage> {
                                             tsMin: createdDynamic.tsMin,
                                             tsMean: createdDynamic.tsMean,
                                             tsMedian: createdDynamic.tsMedian,
-                                            mlMax: createdDynamic.mlMax * 100,
-                                            mlMin: createdDynamic.mlMin * 100,
-                                            mlMean: createdDynamic.mlMean * 100,
-                                            mlMedian:
-                                                createdDynamic.mlMedian * 100,
+                                            mlMax: createdDynamic.mlMax,
+                                            mlMin: createdDynamic.mlMin,
+                                            mlMean: createdDynamic.mlMean,
+                                            mlMedian: createdDynamic.mlMedian,
                                             tID: widget.tID,
                                           ),
                                         ),

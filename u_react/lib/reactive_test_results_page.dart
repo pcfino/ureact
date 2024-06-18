@@ -120,7 +120,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.median.toInt().toString()} ms",
+                          "${widget.median.toStringAsFixed(3)} s",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -152,7 +152,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.forward.toInt().toString()} ms",
+                          "${widget.forward.toStringAsFixed(3)} s",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -184,7 +184,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.backward.toInt().toString()} ms",
+                          "${widget.backward.toStringAsFixed(3)} s",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -216,7 +216,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.left.toInt().toString()} ms",
+                          "${widget.left.toStringAsFixed(3)} s",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -248,7 +248,7 @@ class _TestResultsPageState extends State<ReactiveTestResultsPage> {
                           ),
                         ),
                         trailing: Text(
-                          "${widget.right.toInt().toString()} ms",
+                          "${widget.right.toStringAsFixed(3)} s",
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),

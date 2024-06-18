@@ -206,7 +206,7 @@ class _StaticTestPage extends State<StaticTestPage> {
         "slSolidML": widget.slSolidML,
         "slFoamML": widget.slFoamML,
         "tandSolidML": widget.tandSolidML,
-        "tandFoamML": double.parse(dataML.toStringAsFixed(2)),
+        "tandFoamML": dataML,
         "tID": widget.tID,
       });
       Static staticTest = Static.fromJson(jsonStatic);
@@ -219,7 +219,7 @@ class _StaticTestPage extends State<StaticTestPage> {
   Future stopRecording() async {
     timer!.cancel();
     dynamic dataML = await getStaticData();
-    double mlSway = double.parse(dataML.toStringAsFixed(5));
+    double mlSway = dataML;
     if (context.mounted) {
       if (widget.stance == "Two Leg Stance (Solid)") {
         Navigator.pushReplacement(
@@ -444,12 +444,12 @@ class _StaticTestPage extends State<StaticTestPage> {
                   thirdPartyID: widget.thirdPartyID,
                   administeredBy: createdStatic.administeredBy,
                   tID: widget.tID,
-                  tlSolidML: widget.tlSolidML * 100,
-                  tlFoamML: widget.tlFoamML * 100,
-                  slSolidML: widget.slSolidML * 100,
-                  slFoamML: widget.slFoamML * 100,
-                  tandSolidML: widget.tandSolidML * 100,
-                  tandFoamML: mlSway * 100,
+                  tlSolidML: widget.tlSolidML,
+                  tlFoamML: widget.tlFoamML,
+                  slSolidML: widget.slSolidML,
+                  slFoamML: widget.slFoamML,
+                  tandSolidML: widget.tandSolidML,
+                  tandFoamML: mlSway,
                 ),
               ),
             );

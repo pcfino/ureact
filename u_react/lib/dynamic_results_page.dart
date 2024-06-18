@@ -203,28 +203,28 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.dMax.toString(),
+                                    widget.dMax.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.dMin.toString(),
+                                    widget.dMin.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.dMean.toString(),
+                                    widget.dMean.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.dMedian.toString(),
+                                    widget.dMedian.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -247,28 +247,28 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.tsMax.toString(),
+                                    widget.tsMax.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.tsMin.toString(),
+                                    widget.tsMin.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.tsMean.toString(),
+                                    widget.tsMean.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.tsMedian.toString(),
+                                    widget.tsMedian.toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -291,28 +291,28 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.mlMax.toString(),
+                                    (widget.mlMax * 100).toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.mlMin.toString(),
+                                    (widget.mlMin * 100).toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.mlMean.toString(),
+                                    (widget.mlMean * 100).toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   flex: 2,
                                   child: Text(
-                                    widget.mlMedian.toString(),
+                                    (widget.mlMedian * 100).toStringAsFixed(3),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -352,14 +352,14 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                               ListTile(
                                 title: const Text('Duration (s)'),
                                 trailing: Text(
-                                  widget.t1Duration.toString(),
+                                  widget.t1Duration.toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
                               ListTile(
                                 title: const Text('Turn Speed (deg/s)'),
                                 trailing: Text(
-                                  widget.t1TurnSpeed.toString(),
+                                  widget.t1TurnSpeed.toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
@@ -368,7 +368,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                   'ML Sway (cm/s\u00B2)',
                                 ),
                                 trailing: Text(
-                                  widget.t1MLSway.toString(),
+                                  (widget.t1MLSway * 100).toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
@@ -406,14 +406,14 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                               ListTile(
                                 title: const Text('Duration (s)'),
                                 trailing: Text(
-                                  widget.t2Duration.toString(),
+                                  widget.t2Duration.toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
                               ListTile(
                                 title: const Text('Turn Speed (deg/s)'),
                                 trailing: Text(
-                                  widget.t2TurnSpeed.toString(),
+                                  widget.t2TurnSpeed.toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
@@ -422,7 +422,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                   'ML Sway (cm/s\u00B2)',
                                 ),
                                 trailing: Text(
-                                  widget.t2MLSway.toString(),
+                                  (widget.t2MLSway * 100).toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
@@ -460,14 +460,14 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                               ListTile(
                                 title: const Text('Duration (s)'),
                                 trailing: Text(
-                                  widget.t3Duration.toString(),
+                                  widget.t3Duration.toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
                               ListTile(
                                 title: const Text('Turn Speed (deg/s)'),
                                 trailing: Text(
-                                  widget.t3TurnSpeed.toString(),
+                                  widget.t3TurnSpeed.toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
@@ -476,7 +476,7 @@ class _DynamicResultsPage extends State<DynamicResultsPage> {
                                   'ML Sway (cm/s\u00B2)',
                                 ),
                                 trailing: Text(
-                                  widget.t3MLSway.toString(),
+                                  (widget.t3MLSway * 100).toStringAsFixed(3),
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),

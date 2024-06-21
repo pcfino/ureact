@@ -1167,9 +1167,9 @@ def sway():
     # [Fc] cuttoff frequency and [Fs] sampling frequency.
 
     [b,a] = signal.butter(4,(Fc/(fs/2)))
-    Sway_ml = signal.filtfilt(b,a, dataAcc[2]) / 9.81 # z-direction
-    Sway_ap = signal.filtfilt(b,a, dataAcc[1]) / 9.81 # y-direction
-    Sway_v = signal.filtfilt(b,a, dataAcc[0]) / 9.81 # x-direction
+    Sway_ml = signal.filtfilt(b,a, dataAcc[1]) / 9.81 # z-direction
+    Sway_ap = signal.filtfilt(b,a, dataAcc[0]) / 9.81 # y-direction
+    Sway_v = signal.filtfilt(b,a, dataAcc[2]) / 9.81 # x-direction
 
     rms_ml = rms(Sway_ml)
     rms_ap = rms(Sway_ap)
@@ -1189,10 +1189,10 @@ def tandemGait():
     # print("DataRot 1:", dataRot[1])
     # print("DataRot 2:", dataRot[2])
 
+    dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
+
     # find the beginning and end
     peaks, _ = signal.find_peaks(dataRot[2], height=0.1)
-
-    dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
 
     begin = peaks[0]
     end = peaks[len(peaks)-1]

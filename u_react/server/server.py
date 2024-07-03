@@ -1086,31 +1086,8 @@ def timeToStability():
     qrf = signal.filtfilt(b, a, rotNorm) < 14/180*np.pi
     qf = np.logical_and(qaF, qrf)
 
-    #find t0
-    # 14.6
-    # we know that 4 returned 5 peaks
-    # print("accNorm:")
-    # i = len(accNorm) - 1
-    # for val in accNorm:
-    #     print(i, val)
-    #     i -= 1
     
     peaks = []
-    # height_u = 15.0
-    # is_peaks_two = False
-    # while True:
-    #     if height_u < 4.0:
-    #         break
-
-    #     peaks, _ = signal.find_peaks(np.flip(accNorm), height=height_u)
-        
-    #     if len(peaks) >= 2:
-    #         is_peaks_two = True
-    #         break
-
-    #     height_u -= 0.1
-
-    # peaks = [peaks[0], peaks[-1]]
 
     peaks, _ = signal.find_peaks(np.flip(accNorm), prominence=5)
 
@@ -1159,7 +1136,7 @@ def sway():
     dataRot = request.json.get('dataRot')
     fs = request.json.get('fs')
 
-    #dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
+    dataRot, dataAcc = alignData(dataRot, dataAcc, fs)
 
     Fc = 3.5
 
@@ -1167,9 +1144,9 @@ def sway():
     # [Fc] cuttoff frequency and [Fs] sampling frequency.
 
     [b,a] = signal.butter(4,(Fc/(fs/2)))
-    Sway_ml = signal.filtfilt(b,a, dataAcc[1]) / 9.81 # z-direction
-    Sway_ap = signal.filtfilt(b,a, dataAcc[0]) / 9.81 # y-direction
-    Sway_v = signal.filtfilt(b,a, dataAcc[2]) / 9.81 # x-direction
+    Sway_ml = signal.filtfilt(b,a, dataAcc[1]) #/ 9.81 # z-direction
+    Sway_ap = signal.filtfilt(b,a, dataAcc[0]) #/ 9.81 # y-direction
+    Sway_v = signal.filtfilt(b,a, dataAcc[2]) #/ 9.81 # x-direction
 
     rms_ml = rms(Sway_ml)
     rms_ap = rms(Sway_ap)
@@ -1247,13 +1224,13 @@ def rms(arr):
 
 def alignData(dataRot, dataAcc, fs):
     gR = resample(dataRot, 180 / np.pi)
-    accR = resample(dataAcc, 1)
+    accR = resample(dataAcc, 1 / 9.81)
 
     acceleration, q = rotateAcc(accR, fs * 2)
     rotation = rotateVec(gR, q)
 
     rotation = np.array(rotation) * np.pi / 180.0
-    acceleration = np.array(acceleration) * 9.807
+    acceleration = np.array(acceleration) * 9.81
 
     return rotation, acceleration
 

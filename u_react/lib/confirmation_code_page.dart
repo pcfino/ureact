@@ -19,6 +19,8 @@ class ConfirmationCodePage extends StatefulWidget {
 
 class _ConfirmationCodePage extends State<ConfirmationCodePage> {
   ColorScheme cs = ColorScheme.fromSeed(seedColor: Colors.red);
+
+  /// Nodes for each of the number fields.
   FocusNode one = FocusNode();
   FocusNode two = FocusNode();
   FocusNode three = FocusNode();
@@ -27,6 +29,7 @@ class _ConfirmationCodePage extends State<ConfirmationCodePage> {
   FocusNode six = FocusNode();
   FocusNode btn = FocusNode();
 
+  /// Controllers for each of the number fields.
   final TextEditingController _controllerOne = TextEditingController();
   final TextEditingController _controllerTwo = TextEditingController();
   final TextEditingController _controllerThree = TextEditingController();
@@ -34,6 +37,7 @@ class _ConfirmationCodePage extends State<ConfirmationCodePage> {
   final TextEditingController _controllerFive = TextEditingController();
   final TextEditingController _controllerSix = TextEditingController();
 
+  /// Sends the code to be confirmed.
   Future<dynamic> confirm() async {
     try {
       String code = _controllerOne.text +
@@ -52,6 +56,7 @@ class _ConfirmationCodePage extends State<ConfirmationCodePage> {
     }
   }
 
+  /// Confirms the code, if confirmed push the login page.
   void enter() async {
     dynamic confirmed = await confirm();
     if (context.mounted && confirmed['status'] == true) {

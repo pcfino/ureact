@@ -15,12 +15,14 @@ class CreateIncidentPage extends StatefulWidget {
   State<CreateIncidentPage> createState() => _CreateIncidentPage();
 }
 
+/// Page for creating a new incident with the required fields.
 class _CreateIncidentPage extends State<CreateIncidentPage> {
   final TextEditingController _date = TextEditingController();
   final TextEditingController _notes = TextEditingController(text: "");
   late Incident incident;
   String selectedValue = "Concussion";
 
+  /// Set the dropdown options as either Baseline or Concussion.
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(value: "Baseline", child: Text("Baseline")),
@@ -29,6 +31,7 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
     return menuItems;
   }
 
+  /// Sends the incident to be created.
   Future<dynamic> createIncident() async {
     try {
       dynamic jsonIncident = await create({
@@ -44,6 +47,7 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
     }
   }
 
+  /// Error to throw in case of invalid data.
   void throwError() {
     showDialog<void>(
       context: context,
@@ -170,7 +174,7 @@ class _CreateIncidentPage extends State<CreateIncidentPage> {
                     if (selectedDate != null) {
                       setState(() {
                         _date.text =
-                            "${selectedDate.year}/${selectedDate.month}/${selectedDate.day}";
+                            "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
                       });
                     }
                   },

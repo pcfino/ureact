@@ -4,10 +4,10 @@ import 'package:u_react/patient_page.dart';
 import 'package:u_react/settings_page.dart';
 import 'package:u_react/api/patient_api.dart';
 import 'package:flutter/material.dart';
-
 import 'package:azlistview/azlistview.dart';
 import 'package:session_manager/session_manager.dart';
 
+/// Allows for the alphabetical scroll bar on the right hand side of the home page.
 class AzItem extends ISuspensionBean {
   final String name;
   final String tag;
@@ -25,7 +25,10 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePage();
 }
 
+/// Handles the UI and API calls for the home page.
 class _HomePage extends State<HomePage> {
+  /// Retrieves the list of patients from the database using the stored orgID.
+  /// Sorts the patients by last name.
   Future<dynamic> getPatients() async {
     try {
       String orgID = await SessionManager().getString("orgID");
@@ -42,12 +45,11 @@ class _HomePage extends State<HomePage> {
     }
   }
 
+  /// Filters the list based on the given string that comes from the search bar.
   List<Patient> updateList(List<Patient> list, [String? value]) {
     if (value == null) return list;
     return list
         .where((element) =>
-            element.lastName.toLowerCase().contains(value.toLowerCase()) ||
-            element.firstName.toLowerCase().contains(value.toLowerCase()) ||
             ("${element.firstName} ${element.lastName}")
                 .toLowerCase()
                 .contains(value.toLowerCase()) ||

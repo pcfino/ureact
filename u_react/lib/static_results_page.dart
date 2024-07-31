@@ -45,7 +45,6 @@ class _StaticResultsPage extends State<StaticResultsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.slSolidML);
     return MaterialApp(
       title: 'Test Results',
       theme: ThemeData(

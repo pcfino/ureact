@@ -21,12 +21,16 @@ class App extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
+    /// Set the future the first time the page is created.
     future = getGroups();
   }
 
+  /// Controllers for login fields.
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
+  /// Call to login the user, taking the username and password.
   Future<dynamic> logInUser() async {
     try {
       var confirmed = await logIn({
@@ -39,6 +43,7 @@ class App extends State<MyApp> {
     }
   }
 
+  /// Retrieve the groups in the system.
   Future<dynamic> getGroups() async {
     try {
       List<dynamic> jsonGroupList = await getOrgNames() as List;
@@ -52,6 +57,7 @@ class App extends State<MyApp> {
     }
   }
 
+  /// Set the group being logged into.
   Future<dynamic> setGroup() async {
     try {
       var groupSet = {"orgName": defaultValue};
@@ -63,6 +69,7 @@ class App extends State<MyApp> {
     }
   }
 
+  /// Create the dropdown list with the group names.
   List<DropdownMenuItem<String>> getDropdownItems(List<String> groupNames) {
     List<DropdownMenuItem<String>> dropdownGroups = List.empty(growable: true);
     for (String groupName in groupNames) {

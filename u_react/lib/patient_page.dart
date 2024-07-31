@@ -23,9 +23,12 @@ class _PatientPage extends State<PatientPage> {
   @override
   void initState() {
     super.initState();
+
+    /// Set the future the first time the page is created.
     future = getPatient(widget.pID);
   }
 
+  /// Get a single patient based on their pID.
   Future<dynamic> getPatient(int pID) async {
     try {
       var jsonPatient = await get(pID);
@@ -36,6 +39,8 @@ class _PatientPage extends State<PatientPage> {
     }
   }
 
+  /// Save a patient with a map of their data. Update the current patient
+  /// data accordingly.
   Future<dynamic> savePatient(Map<String, dynamic> updatePatient) async {
     try {
       var jsonPatient = await update(widget.pID, updatePatient);
@@ -52,6 +57,7 @@ class _PatientPage extends State<PatientPage> {
     }
   }
 
+  /// Delete a patient from the database given their pID.
   Future<dynamic> deletePatient(int pID) async {
     try {
       bool deleted = await delete(pID);
@@ -64,6 +70,7 @@ class _PatientPage extends State<PatientPage> {
     }
   }
 
+  /// Error to throw when the saved data is invalid.
   void throwError() {
     showDialog<void>(
       context: context,
@@ -91,6 +98,38 @@ class _PatientPage extends State<PatientPage> {
     );
   }
 
+  /// Handles edit/save operations
+  void editSaveButton() async {
+    if (!editMode) {
+      setState(() {
+        mode = 'Save';
+        editMode = true;
+      });
+    } else if (editMode) {
+      if (firstName.text == "" || lastName.text == "" || dOB.text == "") {
+        throwError();
+      } else {
+        editMode = false;
+        var updatePatient = {
+          "firstName": firstName.text,
+          "lastName": lastName.text,
+          "dOB": dOB.text,
+          "height": feet * 12 + inches,
+          "weight": weight,
+          "sport": sport.text,
+          "gender": gen,
+          "thirdPartyID": thirdPartyID.text
+        };
+        await savePatient(updatePatient);
+        setPatient();
+        setState(() {
+          mode = 'Edit';
+        });
+      }
+    }
+  }
+
+  /// Set all of the UI data with the patient data.
   void setPatient() {
     feet = patient!.height! ~/ 12;
     inches = patient!.height! % 12;
@@ -108,6 +147,7 @@ class _PatientPage extends State<PatientPage> {
     incidents?.sort((a, b) => b.iDate.compareTo(a.iDate));
   }
 
+  /// Controllers for the patient data fields.
   final TextEditingController fullName = TextEditingController();
   final TextEditingController firstName = TextEditingController();
   final TextEditingController lastName = TextEditingController();
@@ -120,6 +160,7 @@ class _PatientPage extends State<PatientPage> {
   bool editMode = false;
   String mode = 'Edit';
 
+  /// Patient data
   Patient? patient;
   int feet = 0;
   int inches = 0;
@@ -133,6 +174,7 @@ class _PatientPage extends State<PatientPage> {
       future: future,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          /// To avoid reloading the patient data once it has already been loaded.
           if (patient == null) {
             patient = snapshot.data! as Patient;
             setPatient();
@@ -155,6 +197,7 @@ class _PatientPage extends State<PatientPage> {
                   );
                 }),
                 actions: <Widget>[
+                  /// Display the trash button when in edit mode
                   if (editMode)
                     IconButton(
                       icon: const Icon(
@@ -166,35 +209,7 @@ class _PatientPage extends State<PatientPage> {
                     ),
                   TextButton(
                     onPressed: () async {
-                      if (!editMode) {
-                        setState(() {
-                          mode = 'Save';
-                          editMode = true;
-                        });
-                      } else if (editMode) {
-                        if (firstName.text == "" ||
-                            lastName.text == "" ||
-                            dOB.text == "") {
-                          throwError();
-                        } else {
-                          editMode = false;
-                          var updatePatient = {
-                            "firstName": firstName.text,
-                            "lastName": lastName.text,
-                            "dOB": dOB.text,
-                            "height": feet * 12 + inches,
-                            "weight": weight,
-                            "sport": sport.text,
-                            "gender": gen,
-                            "thirdPartyID": thirdPartyID.text
-                          };
-                          await savePatient(updatePatient);
-                          setPatient();
-                          setState(() {
-                            mode = 'Edit';
-                          });
-                        }
-                      }
+                      editSaveButton();
                     },
                     child: Text(mode),
                   ),
@@ -506,7 +521,6 @@ class _PatientPage extends State<PatientPage> {
                         children: [
                           Expanded(
                             child: DropdownButtonFormField(
-                              //disabledHint: Text(gen),
                               value: gen,
                               items: const [
                                 DropdownMenuItem<String>(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
+/// Holds accelerometer fields.
 class AccelerometerData {
   late final List<double> x;
   late final List<double> y;
@@ -14,6 +15,7 @@ class AccelerometerData {
   }
 }
 
+/// Holds gyroscope fields.
 class GyroscopeData {
   late final List<double> x;
   late final List<double> y;
@@ -26,6 +28,7 @@ class GyroscopeData {
   }
 }
 
+/// Holds the results of the sensor recorder.
 class SensorRecorderResults {
   late final AccelerometerData accData;
   late final GyroscopeData gyrData;
@@ -48,6 +51,7 @@ class SensorRecorderResults {
   }
 }
 
+/// IMU data is recorded here.
 class StaticDynamicRecorder {
   late SensorRecorderResults _results;
   late bool _killTimer;
@@ -59,8 +63,6 @@ class StaticDynamicRecorder {
   double _accX = 0.0;
   double _accY = 0.0;
   double _accZ = 0.0;
-
-  bool _ready = false;
 
   late bool _staticTest;
 
@@ -80,13 +82,7 @@ class StaticDynamicRecorder {
       _accZ = event.z;
     });
 
-    const samplePeriod = 20; // ms
-    Timer.periodic(const Duration(milliseconds: samplePeriod), (timer) async {
-      if (_ready) {
-        timer.cancel();
-      }
-      startRecording();
-    });
+    startRecording();
   }
 
   SensorRecorderResults endRecording() {
@@ -115,17 +111,12 @@ class StaticDynamicRecorder {
 
     const samplePeriod = 20; // ms
     const sampleDuration = Duration(milliseconds: samplePeriod);
-    Timer(const Duration(seconds: 3), () => FlutterRingtonePlayer().stop());
 
     _killTimer = false;
 
     _results = SensorRecorderResults(samplePeriod);
 
     Timer.periodic(sampleDuration, (timer) async {
-      // // 30 seconds
-      // if (timer.tick == 1500) {
-      //   timer.cancel();
-      // }
       if (_killTimer) {
         timer.cancel();
       }
@@ -140,6 +131,5 @@ class StaticDynamicRecorder {
 
       _results.timeStamps.add(DateTime.now().millisecondsSinceEpoch);
     });
-    _ready = true;
   }
 }

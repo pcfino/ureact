@@ -16,6 +16,7 @@ class IncidentPage extends StatefulWidget {
   State<IncidentPage> createState() => _IncidentPage();
 }
 
+/// Displays all of the incident data given the iID
 class _IncidentPage extends State<IncidentPage> {
   Incident? incident;
   final TextEditingController _date = TextEditingController();
@@ -24,6 +25,7 @@ class _IncidentPage extends State<IncidentPage> {
   bool editMode = false;
   String mode = 'Edit';
 
+  /// Set dropdown items as either Baseline or Concussion.
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(value: "Baseline", child: Text("Baseline")),
@@ -32,6 +34,7 @@ class _IncidentPage extends State<IncidentPage> {
     return menuItems;
   }
 
+  /// Get the incident data given the iID.
   Future<dynamic> getIncident(int iID) async {
     try {
       dynamic jsonIncident = await get(iID);
@@ -42,6 +45,7 @@ class _IncidentPage extends State<IncidentPage> {
     }
   }
 
+  /// Update the incident with the given incident map.
   Future<dynamic> updateIncident(
       int iID, Map<String, dynamic> saveIncident) async {
     try {
@@ -51,6 +55,7 @@ class _IncidentPage extends State<IncidentPage> {
     }
   }
 
+  /// Throw error in case of invalid data.
   void throwError() {
     showDialog<void>(
       context: context,

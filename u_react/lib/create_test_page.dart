@@ -24,7 +24,9 @@ class CreateTestPage extends StatefulWidget {
   State<CreateTestPage> createState() => _CreateTestPage();
 }
 
+/// Page for creating a new patient with the required fields.
 class _CreateTestPage extends State<CreateTestPage> {
+  /// Send data to create a new test.
   Future<dynamic> createTest() async {
     try {
       String name = widget.name == "Baseline" ? "Baseline" : selectedValue;
@@ -41,6 +43,7 @@ class _CreateTestPage extends State<CreateTestPage> {
     }
   }
 
+  /// Throw error in case of invalid data.
   void throwError() {
     showDialog<void>(
       context: context,
@@ -68,9 +71,11 @@ class _CreateTestPage extends State<CreateTestPage> {
     );
   }
 
+  /// Controllers for test data.
   final TextEditingController date = TextEditingController();
   final TextEditingController notes = TextEditingController();
 
+  /// Sets the dropdown list.
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(value: "Acute", child: Text("Acute")),
@@ -90,6 +95,7 @@ class _CreateTestPage extends State<CreateTestPage> {
     return menuItems;
   }
 
+  /// Default value.
   String selectedValue = "Acute";
 
   @override

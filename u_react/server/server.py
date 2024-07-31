@@ -1160,7 +1160,6 @@ def sway():
     rms_ml = rms(Sway_ml)
     rms_ap = rms(Sway_ap)
     rms_v = rms(Sway_v)
-    # print("right before the return in sway")
 
     return jsonify(rmsMl = rms_ml, rmsAp = rms_ap, rmsV = rms_v)
 

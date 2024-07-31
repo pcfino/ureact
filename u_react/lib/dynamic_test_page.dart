@@ -71,6 +71,7 @@ class DynamicTestPage extends StatefulWidget {
   State<DynamicTestPage> createState() => _DynamicTestPage();
 }
 
+/// Page to run a dynamic test.
 class _DynamicTestPage extends State<DynamicTestPage> {
   @override
   void initState() {
@@ -79,8 +80,10 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
   }
 
+  /// Records the smartphone sensor data.
   late StaticDynamicRecorder? sensorRecorder;
 
+  /// Throw an error in case of invalid test.
   void throwTestError() {
     showDialog<void>(
       context: context,
@@ -111,6 +114,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     );
   }
 
+  /// Skip the current trial of the test and move on to the next.
   void skip() async {
     if (widget.trialNumber == 3) {
       Dynamic? createdDynamic = await createDynamicTest(0, 0, 0);
@@ -184,6 +188,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     }
   }
 
+  /// Get the data from the sensor recorder and run the test script.
   Future<dynamic> getDynamicData() async {
     var sensorData = sensorRecorder!.endRecording();
 
@@ -212,6 +217,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     return decodedData;
   }
 
+  /// Create a new dynamic test in the database.
   Future<dynamic> createDynamicTest(
       double duration, double turningSpeed, double mlSway) async {
     // Values for duration
@@ -318,6 +324,7 @@ class _DynamicTestPage extends State<DynamicTestPage> {
     }
   }
 
+  /// Send the raw IMU data to the database.
   Future<dynamic> sendIMU(int dID) async {
     dynamic imuData = {
       "dID": dID,

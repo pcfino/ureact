@@ -65,6 +65,7 @@ class DynamicResultsPage extends StatefulWidget {
   State<DynamicResultsPage> createState() => _DynamicResultsPage();
 }
 
+/// Displays the results of the dynamic test.
 class _DynamicResultsPage extends State<DynamicResultsPage> {
   @override
   void initState() {

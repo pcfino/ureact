@@ -53,9 +53,6 @@ class SensorRecorderResults {
 }
 
 class ReactiveSensorRecorder {
-  // late final Stream<AccelerometerEvent> _accStream;
-  // late final Stream<GyroscopeEvent> _gyrStream;
-  // late final List<StreamSubscription> _streamSubscriptions;
   late SensorRecorderResults? _results;
   late bool _killTimer;
 

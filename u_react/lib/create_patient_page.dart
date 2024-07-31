@@ -17,7 +17,9 @@ class CreatePatientPage extends StatefulWidget {
   State<CreatePatientPage> createState() => _CreatePatientPage();
 }
 
+/// Page for creating a new patient with the required fields.
 class _CreatePatientPage extends State<CreatePatientPage> {
+  /// Send the data to create a new patient.
   Future<dynamic> createPatient() async {
     try {
       String orgID = await SessionManager().getString("orgID");
@@ -40,6 +42,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
     }
   }
 
+  /// Throw error in case of invalid patient data.
   void throwError() {
     showDialog<void>(
       context: context,
@@ -67,6 +70,7 @@ class _CreatePatientPage extends State<CreatePatientPage> {
     );
   }
 
+  /// Controllers for patient data.
   final TextEditingController firstName = TextEditingController();
   final TextEditingController lastName = TextEditingController();
   final TextEditingController _date = TextEditingController();

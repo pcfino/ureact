@@ -68,6 +68,7 @@ class StaticDynamicRecorder {
 
   StaticDynamicRecorder(bool staticTest) {
     _staticTest = staticTest;
+
     gyroscopeEventStream(samplingPeriod: SensorInterval.fastestInterval)
         .listen((event) {
       _gyroX = event.y;
@@ -85,6 +86,7 @@ class StaticDynamicRecorder {
     startRecording();
   }
 
+  /// End sensor recording and kill timer.
   SensorRecorderResults endRecording() {
     if (_staticTest) {
       FlutterRingtonePlayer().play(
@@ -100,6 +102,7 @@ class StaticDynamicRecorder {
     return _results;
   }
 
+  /// Begin recording IMU data.
   void startRecording() {
     FlutterRingtonePlayer().play(
       android: AndroidSounds.notification,

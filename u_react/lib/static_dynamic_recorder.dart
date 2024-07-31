@@ -55,6 +55,7 @@ class SensorRecorderResults {
 class StaticDynamicRecorder {
   late SensorRecorderResults _results;
   late bool _killTimer;
+  final _streamSubscriptions = <StreamSubscription<dynamic>>[];
 
   double _gyroX = 0.0;
   double _gyroY = 0.0;
@@ -69,25 +70,30 @@ class StaticDynamicRecorder {
   StaticDynamicRecorder(bool staticTest) {
     _staticTest = staticTest;
 
-    gyroscopeEventStream(samplingPeriod: SensorInterval.fastestInterval)
-        .listen((event) {
+    _streamSubscriptions.add(
+        gyroscopeEventStream(samplingPeriod: SensorInterval.fastestInterval)
+            .listen((event) {
       _gyroX = event.y;
       _gyroY = event.x;
       _gyroZ = event.z;
-    });
-
-    accelerometerEventStream(samplingPeriod: SensorInterval.fastestInterval)
-        .listen((event) {
+    }));
+    _streamSubscriptions.add(
+        accelerometerEventStream(samplingPeriod: SensorInterval.fastestInterval)
+            .listen((event) {
       _accX = event.y;
       _accY = event.x;
       _accZ = event.z;
-    });
+    }));
 
     startRecording();
   }
 
   /// End sensor recording and kill timer.
   SensorRecorderResults endRecording() {
+    for (final subscription in _streamSubscriptions) {
+      subscription.cancel();
+    }
+
     if (_staticTest) {
       FlutterRingtonePlayer().play(
         android: AndroidSounds.notification,

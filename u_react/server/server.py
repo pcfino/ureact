@@ -1126,15 +1126,15 @@ def timeToStability():
     movementReg = len(accNorm) - (movementF + 2)
 
     # find the index of release point
-    EndTTS = 0
-    for i, j in enumerate(qf[movementReg:]):
-        if (j == 1):
-            EndTTS = i
-            break
+    # EndTTS = 0
+    # for i, j in enumerate(qf[movementReg:]):
+    #    if (j == 1):
+    #        EndTTS = i
+    #        break
 
-    EndTTS = EndTTS+movementReg + 2
+    # EndTTS = EndTTS+movementReg + 2
 
-    TTS = (EndTTS - t0)/fs
+    # TTS = (EndTTS - t0)/fs
 
     return jsonify(t0 = int(t0), EndTTS = int(EndTTS), TTS = TTS)
 
